@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Class {
+public class Lesson {
 
 	private Set<Group> groups = new HashSet<>();
 	private Teacher teacher;
