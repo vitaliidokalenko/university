@@ -4,13 +4,13 @@ import java.util.List;
 
 public class Timetable {
 
-	private List<Class> classes;
+	private List<Lesson> lessons;
 
-	public List<Class> getClasses() {
-		return classes;
+	public List<Lesson> getLessons() {
+		return lessons;
 	}
 
-	public void setClasses(List<Class> classes) {
-		this.classes = classes;
+	public void setLessons(List<Lesson> lessons) {
+		this.lessons = lessons;
 	}
 }
