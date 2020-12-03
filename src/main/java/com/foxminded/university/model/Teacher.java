@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.foxminded.university.Gender;
+
 public class Teacher {
 
 	private int id;
@@ -14,8 +16,8 @@ public class Teacher {
 	private String phone;
 	private String email;
 	private String address;
-	private LocalDate birthday;
-	private String gender;
+	private LocalDate birthDate;
+	private Gender gender;
 
 	public Teacher(String name, String surname) {
 		this.name = name;
@@ -86,19 +88,19 @@ public class Teacher {
 		this.address = address;
 	}
 
-	public LocalDate getBirthday() {
-		return birthday;
+	public LocalDate getBirthDate() {
+		return birthDate;
 	}
 
-	public void setBirthday(LocalDate birthday) {
-		this.birthday = birthday;
+	public void setBirthDate(LocalDate birthDate) {
+		this.birthDate = birthDate;
 	}
 
-	public String getGender() {
+	public Gender getGender() {
 		return gender;
 	}
 
-	public void setGender(String gender) {
+	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
 }
