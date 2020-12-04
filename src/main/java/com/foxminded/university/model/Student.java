@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.foxminded.university.Gender;
-
 public class Student {
 
 	private int id;
