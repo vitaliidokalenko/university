@@ -14,7 +14,7 @@ public class Teacher {
 	private String phone;
 	private String email;
 	private String address;
-	private LocalDate birthDate;
+	private LocalDate birthdate;
 	private Gender gender;
 
 	public Teacher(String name, String surname) {
@@ -86,12 +86,12 @@ public class Teacher {
 		this.address = address;
 	}
 
-	public LocalDate getBirthDate() {
-		return birthDate;
+	public LocalDate getBirthdate() {
+		return birthdate;
 	}
 
-	public void setBirthDate(LocalDate birthDate) {
-		this.birthDate = birthDate;
+	public void setBirthdate(LocalDate birthdate) {
+		this.birthdate = birthdate;
 	}
 
 	public Gender getGender() {
