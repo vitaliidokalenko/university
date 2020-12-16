@@ -6,12 +6,21 @@ import java.util.Set;
 
 public class Lesson {
 
+	private Long id;
 	private Set<Group> groups = new HashSet<>();
 	private Teacher teacher;
 	private Course course;
 	private Room room;
 	private LocalDate date;
 	private Timeframe timeframe;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public Set<Group> getGroups() {
 		return groups;

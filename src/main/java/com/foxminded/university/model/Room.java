@@ -2,7 +2,7 @@ package com.foxminded.university.model;
 
 public class Room {
 
-	private int id;
+	private Long id;
 	private String name;
 	private int capacity;
 
@@ -10,11 +10,11 @@ public class Room {
 		this.name = name;
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

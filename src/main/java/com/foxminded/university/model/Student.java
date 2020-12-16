@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Student {
 
-	private int id;
+	private Long id;
 	private String name;
 	private String surname;
 	private Group group;
@@ -22,11 +22,11 @@ public class Student {
 		this.surname = surname;
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
