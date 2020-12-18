@@ -2,8 +2,8 @@ package com.foxminded.university.ui;
 
 import java.util.Scanner;
 
+import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.model.Group;
-import com.foxminded.university.repository.GroupRepository;
 
 public class GroupMenu {
 
@@ -17,11 +17,11 @@ public class GroupMenu {
 	private static final String PRINT_GROUPS_FORMAT = "id %d. %s%n";
 
 	private final Scanner scanner;
-	private final GroupRepository repository;
+	private final GroupDao groupDao;
 
-	public GroupMenu(Scanner scanner) {
+	public GroupMenu(Scanner scanner, GroupDao groupDao) {
 		this.scanner = scanner;
-		this.repository = new GroupRepository();
+		this.groupDao = groupDao;
 	}
 
 	public void runMenu() {
@@ -60,17 +60,16 @@ public class GroupMenu {
 	private void addGroup() {
 		System.out.println(NAME_INQUIRY);
 		String name = scanner.nextLine();
-		repository.create(new Group(name));
+		groupDao.create(new Group(name));
 	}
 
 	private void removeGroup() {
 		System.out.println(ID_INQUIRY);
-		int id = scanner.nextInt();
-		repository.deleteById(id);
+		long id = scanner.nextInt();
+		groupDao.deleteById(id);
 	}
 
 	private void printGroups() {
-		repository.getGroups()
-				.forEach(g -> System.out.printf(PRINT_GROUPS_FORMAT, g.getId(), g.getName()));
+		groupDao.getAll().forEach(g -> System.out.printf(PRINT_GROUPS_FORMAT, g.getId(), g.getName()));
 	}
 }

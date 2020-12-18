@@ -2,8 +2,9 @@ package com.foxminded.university.ui;
 
 import java.util.Scanner;
 
+import com.foxminded.university.dao.StudentDao;
+import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Student;
-import com.foxminded.university.repository.StudentRepository;
 
 public class StudentMenu {
 
@@ -12,17 +13,20 @@ public class StudentMenu {
 	private static final String A_COMMAND = "a. Add student to repository";
 	private static final String B_COMMAND = "b. Remove student from repository";
 	private static final String C_COMMAND = "c. Show list of students";
-	private static final String NAME_INQUIRY = "Please, insert student`s name:";
-	private static final String SURNAME_INQUIRY = "Please, insert student`s surname:";
-	private static final String ID_INQUIRY = "Please, insert student`s id:";
+	private static final String NAME_INQUIRY = "Please, insert student's name:";
+	private static final String SURNAME_INQUIRY = "Please, insert student's surname:";
+	private static final String GENDER_ENQUIRY_FORMAT = "Please, choose student's gender%n%s%n%s%n";
+	private static final String MALE_GENDER = "a. MALE";
+	private static final String FEMALE_GENDER = "b. FEMALE";
+	private static final String ID_INQUIRY = "Please, insert student's id:";
 	private static final String PRINT_STUDENTS_FORMAT = "id %d. %s %s%n";
 
 	private final Scanner scanner;
-	private final StudentRepository repository;
+	private final StudentDao studentDao;
 
-	public StudentMenu(Scanner scanner) {
+	public StudentMenu(Scanner scanner, StudentDao studentDao) {
 		this.scanner = scanner;
-		this.repository = new StudentRepository();
+		this.studentDao = studentDao;
 	}
 
 	public void runMenu() {
@@ -63,17 +67,25 @@ public class StudentMenu {
 		String name = scanner.nextLine();
 		System.out.println(SURNAME_INQUIRY);
 		String surname = scanner.nextLine();
-		repository.create(new Student(name, surname));
+		Student student = new Student(name, surname);
+		System.out.printf(GENDER_ENQUIRY_FORMAT, MALE_GENDER, FEMALE_GENDER);
+		String genderChoice = scanner.nextLine();
+		if (genderChoice.equals("a")) {
+			student.setGender(Gender.MALE);
+		} else if (genderChoice.equals("b")) {
+			student.setGender(Gender.FEMALE);
+		}
+		studentDao.create(student);
 	}
 
 	private void printStudents() {
-		repository.getStudents()
+		studentDao.getAll()
 				.forEach(s -> System.out.printf(PRINT_STUDENTS_FORMAT, s.getId(), s.getName(), s.getSurname()));
 	}
 
 	private void removeStudent() {
 		System.out.println(ID_INQUIRY);
-		int id = scanner.nextInt();
-		repository.deleteById(id);
+		long id = scanner.nextInt();
+		studentDao.deleteById(id);
 	}
 }

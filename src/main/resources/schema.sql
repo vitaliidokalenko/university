@@ -5,10 +5,11 @@ DROP TABLE IF EXISTS rooms CASCADE;
 DROP TABLE IF EXISTS students CASCADE;
 DROP TABLE IF EXISTS teachers CASCADE;
 DROP TABLE IF EXISTS timeframes CASCADE;
-DROP TABLE IF EXISTS lessons;
+DROP TABLE IF EXISTS lessons CASCADE;
 DROP TABLE IF EXISTS courses_rooms;
 DROP TABLE IF EXISTS students_courses;
 DROP TABLE IF EXISTS teachers_courses;
+DROP TABLE IF EXISTS lessons_groups;
 
 CREATE TYPE gender AS ENUM(
 	'MALE',
@@ -51,7 +52,7 @@ CREATE TABLE students(
 	student_email VARCHAR ( 100 ) DEFAULT NULL,
 	student_address VARCHAR ( 100 ) DEFAULT NULL,
 	student_birthdate DATE DEFAULT NULL,
-	student_gender gender DEFAULT NULL,
+	student_gender VARCHAR ( 20 ) NOT NULL,
 	CONSTRAINT fk_groups
 		FOREIGN KEY(group_id)
 			REFERENCES groups(group_id)
@@ -76,7 +77,7 @@ CREATE TABLE teachers(
 	teacher_email VARCHAR ( 100 ) DEFAULT NULL,
 	teacher_address VARCHAR ( 100 ) DEFAULT NULL,
 	teacher_birthdate DATE DEFAULT NULL,
-	teacher_gender gender DEFAULT NULL
+	teacher_gender VARCHAR ( 20 ) NOT NULL
 );
 
 CREATE TABLE teachers_courses(
@@ -97,18 +98,15 @@ CREATE TABLE timeframes(
 );
 
 CREATE TABLE lessons(
+	lesson_id SERIAL PRIMARY KEY,
 	lesson_date DATE NOT NULL,
 	timeframe_id INT NOT NULL,
-	group_id INT NOT NULL,
 	course_id INT NOT NULL,
 	teacher_id INT NOT NULL,
 	room_id INT NOT NULL,
 	CONSTRAINT fk_timeframes
 		FOREIGN KEY(timeframe_id)
 			REFERENCES timeframes(timeframe_id),
-	CONSTRAINT fk_groups
-		FOREIGN KEY(group_id)
-			REFERENCES groups(group_id),
 	CONSTRAINT fk_courses
 		FOREIGN KEY(course_id)
 			REFERENCES courses(course_id),
@@ -118,4 +116,14 @@ CREATE TABLE lessons(
 	CONSTRAINT fk_rooms
 		FOREIGN KEY(room_id)
 			REFERENCES rooms(room_id)
+);
+
+CREATE TABLE lessons_groups(
+	lesson_id INT NOT NULL,
+	group_id  INT NOT NULL,
+	FOREIGN KEY (lesson_id)
+		REFERENCES lessons(lesson_id) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY (group_id)
+		REFERENCES groups(group_id) ON UPDATE CASCADE ON DELETE CASCADE,
+	UNIQUE (lesson_id, group_id)
 );

@@ -2,8 +2,8 @@ package com.foxminded.university.ui;
 
 import java.util.Scanner;
 
+import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.model.Course;
-import com.foxminded.university.repository.CourseRepository;
 
 public class CourseMenu {
 
@@ -17,11 +17,11 @@ public class CourseMenu {
 	private static final String PRINT_COURSES_FORMAT = "id %d. %s%n";
 
 	private final Scanner scanner;
-	private final CourseRepository repository;
+	private final CourseDao courseDao;
 
-	public CourseMenu(Scanner scanner) {
+	public CourseMenu(Scanner scanner, CourseDao courseDao) {
 		this.scanner = scanner;
-		this.repository = new CourseRepository();
+		this.courseDao = courseDao;
 	}
 
 	public void runMenu() {
@@ -60,17 +60,16 @@ public class CourseMenu {
 	private void addCourse() {
 		System.out.println(NAME_INQUIRY);
 		String name = scanner.nextLine();
-		repository.create(new Course(name));
+		courseDao.create(new Course(name));
 	}
 
 	private void removeCourse() {
 		System.out.println(ID_INQUIRY);
-		int id = scanner.nextInt();
-		repository.deleteById(id);
+		long id = scanner.nextInt();
+		courseDao.deleteById(id);
 	}
 
 	private void printCourses() {
-		repository.getCourses()
-				.forEach(c -> System.out.printf(PRINT_COURSES_FORMAT, c.getId(), c.getName()));
+		courseDao.getAll().forEach(c -> System.out.printf(PRINT_COURSES_FORMAT, c.getId(), c.getName()));
 	}
 }
