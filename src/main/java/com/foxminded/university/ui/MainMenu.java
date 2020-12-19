@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.foxminded.university.config.AppConfig;
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.RoomDao;
@@ -23,14 +22,23 @@ public class MainMenu {
 	private static final String ROOM = "e. Room";
 	private static final String TIMEFRAME = "f. Timeframe";
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-	private final Scanner scanner = new Scanner(System.in);
-	private final StudentMenu studentMenu = new StudentMenu(scanner, context.getBean(StudentDao.class));
-	private final TeacherMenu teacherMenu = new TeacherMenu(scanner, context.getBean(TeacherDao.class));
-	private final GroupMenu groupMenu = new GroupMenu(scanner, context.getBean(GroupDao.class));
-	private final CourseMenu courseMenu = new CourseMenu(scanner, context.getBean(CourseDao.class));
-	private final RoomMenu roomMenu = new RoomMenu(scanner, context.getBean(RoomDao.class));
-	private final TimeframeMenu timeframeMenu = new TimeframeMenu(scanner, context.getBean(TimeframeDao.class));
+	private final Scanner scanner;
+	private final StudentMenu studentMenu;
+	private final TeacherMenu teacherMenu;
+	private final GroupMenu groupMenu;
+	private final CourseMenu courseMenu;
+	private final RoomMenu roomMenu;
+	private final TimeframeMenu timeframeMenu;
+
+	public MainMenu(AnnotationConfigApplicationContext context) {
+		scanner = new Scanner(System.in);
+		studentMenu = new StudentMenu(scanner, context.getBean(StudentDao.class));
+		teacherMenu = new TeacherMenu(scanner, context.getBean(TeacherDao.class));
+		groupMenu = new GroupMenu(scanner, context.getBean(GroupDao.class));
+		courseMenu = new CourseMenu(scanner, context.getBean(CourseDao.class));
+		roomMenu = new RoomMenu(scanner, context.getBean(RoomDao.class));
+		timeframeMenu = new TimeframeMenu(scanner, context.getBean(TimeframeDao.class));
+	}
 
 	public void runMenu() {
 		boolean exit = false;
@@ -69,7 +77,6 @@ public class MainMenu {
 			}
 		}
 		scanner.close();
-		context.close();
 	}
 
 	private void printMenu() {
