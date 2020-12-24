@@ -2,6 +2,7 @@ package com.foxminded.university.model;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Student {
@@ -100,5 +101,28 @@ public class Student {
 
 	public void setGender(Gender gender) {
 		this.gender = gender;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(address, birthdate, email, gender, group, id, name, phone, surname);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Student other = (Student) obj;
+		return Objects.equals(address, other.address) && Objects.equals(birthdate, other.birthdate)
+				&& Objects.equals(email, other.email) && gender == other.gender && Objects.equals(group, other.group)
+				&& Objects.equals(id, other.id) && Objects.equals(name, other.name)
+				&& Objects.equals(phone, other.phone) && Objects.equals(surname, other.surname);
 	}
 }

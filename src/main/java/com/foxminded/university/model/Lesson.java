@@ -2,6 +2,7 @@ package com.foxminded.university.model;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Lesson {
@@ -68,5 +69,27 @@ public class Lesson {
 
 	public void setTimeframe(Timeframe timeframe) {
 		this.timeframe = timeframe;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(course, date, id, room, teacher, timeframe);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Lesson other = (Lesson) obj;
+		return Objects.equals(course, other.course) && Objects.equals(date, other.date) && Objects.equals(id, other.id)
+				&& Objects.equals(room, other.room) && Objects.equals(teacher, other.teacher)
+				&& Objects.equals(timeframe, other.timeframe);
 	}
 }
