@@ -1,7 +1,5 @@
 package com.foxminded.university;
 
-import javax.sql.DataSource;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.foxminded.university.config.AppConfig;
@@ -15,7 +13,7 @@ public class Main {
 		String schema = "schema.sql";
 
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		ScriptRunner scriptRunner = new ScriptRunner(context.getBean(DataSource.class));
+		ScriptRunner scriptRunner = context.getBean(ScriptRunner.class);
 		scriptRunner.runScript(schema);
 		MainMenu menu = new MainMenu(context);
 		menu.runMenu();
