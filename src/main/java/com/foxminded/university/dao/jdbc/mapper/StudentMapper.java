@@ -22,10 +22,10 @@ public class StudentMapper implements RowMapper<Student> {
 	private static final String STUDENT_GENDER = "student_gender";
 	private static final String GROUP_ID = "group_id";
 
-	private JdbcGroupDao jdbcGroupDao;
+	private JdbcGroupDao groupDao;
 
-	public StudentMapper(JdbcGroupDao jdbcGroupDao) {
-		this.jdbcGroupDao = jdbcGroupDao;
+	public StudentMapper(JdbcGroupDao groupDao) {
+		this.groupDao = groupDao;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class StudentMapper implements RowMapper<Student> {
 		student.setAddress(rs.getString(STUDENT_ADDRESS));
 		student.setBirthdate(rs.getObject(STUDENT_BIRTHDATE, LocalDate.class));
 		student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
-		student.setGroup(jdbcGroupDao.findById(rs.getLong(GROUP_ID)));
+		student.setGroup(groupDao.findById(rs.getLong(GROUP_ID)));
 		return student;
 	}
 }

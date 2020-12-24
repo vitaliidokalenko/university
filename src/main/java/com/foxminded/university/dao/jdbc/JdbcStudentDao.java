@@ -1,10 +1,6 @@
 package com.foxminded.university.dao.jdbc;
 
-import static java.sql.Types.DATE;
-import static java.sql.Types.INTEGER;
-import static java.sql.Types.OTHER;
-import static java.sql.Types.VARCHAR;
-
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.dao.jdbc.mapper.StudentMapper;
+import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
 
@@ -48,14 +45,14 @@ public class JdbcStudentDao implements StudentDao {
 
 	private JdbcTemplate jdbcTemplate;
 	private SimpleJdbcInsert jdbcInsert;
-	private JdbcGroupDao jdbcGroupDao;
+	private JdbcGroupDao groupDao;
 
 	@Autowired
-	public JdbcStudentDao(DataSource dataSource, JdbcGroupDao jdbcGroupDao) {
+	public JdbcStudentDao(DataSource dataSource, JdbcGroupDao groupDao) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(STUDENTS_TABLE_NAME)
 				.usingGeneratedKeyColumns(STUDENT_ID);
-		this.jdbcGroupDao = jdbcGroupDao;
+		this.groupDao = groupDao;
 	}
 
 	@Override
@@ -75,21 +72,26 @@ public class JdbcStudentDao implements StudentDao {
 	@Override
 	public Student findById(Long studentId) {
 		return jdbcTemplate
-				.queryForObject(FIND_STUDENT_BY_ID_QUERY, new Object[] { studentId }, new StudentMapper(jdbcGroupDao));
+				.queryForObject(FIND_STUDENT_BY_ID_QUERY, new Object[] { studentId }, new StudentMapper(groupDao));
 	}
 
 	@Override
 	public List<Student> getAll() {
-		return jdbcTemplate.query(GET_STUDENTS_QUERY, new StudentMapper(jdbcGroupDao));
+		return jdbcTemplate.query(GET_STUDENTS_QUERY, new StudentMapper(groupDao));
 	}
 
 	@Override
 	public void update(Student student) {
 		jdbcTemplate.update(UPDATE_STUDENT_QUERY,
-				new Object[] { Optional.ofNullable(student).map(Student::getGroup).map(Group::getId).orElse(null),
-						student.getName(), student.getSurname(), student.getPhone(), student.getEmail(),
-						student.getAddress(), student.getBirthdate(), student.getGender(), student.getId() },
-				new int[] { INTEGER, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, DATE, OTHER, INTEGER });
+				Optional.ofNullable(student).map(Student::getGroup).map(Group::getId).orElse(null),
+				student.getName(),
+				student.getSurname(),
+				student.getPhone(),
+				student.getEmail(),
+				student.getAddress(),
+				student.getBirthdate(),
+				student.getGender().toString(),
+				student.getId());
 	}
 
 	@Override
@@ -98,9 +100,18 @@ public class JdbcStudentDao implements StudentDao {
 	}
 
 	@Override
-	public List<Student> getStudentsByGroupId(Long groupId) {
-		return jdbcTemplate
-				.query(GET_STUDENTS_BY_GROUP_ID_QUERY, new Object[] { groupId }, new StudentMapper(jdbcGroupDao));
+	public List<Student> getStudentsByGroup(Group group) {
+		return jdbcTemplate.query(GET_STUDENTS_BY_GROUP_ID_QUERY, new Object[] { group.getId() }, (rs, rowNum) -> {
+			Student student = new Student(rs.getString(STUDENT_NAME), rs.getString(STUDENT_SURNAME));
+			student.setId(rs.getLong(STUDENT_ID));
+			student.setPhone(rs.getString(STUDENT_PHONE));
+			student.setEmail(rs.getString(STUDENT_EMAIL));
+			student.setAddress(rs.getString(STUDENT_ADDRESS));
+			student.setBirthdate(rs.getObject(STUDENT_BIRTHDATE, LocalDate.class));
+			student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
+			student.setGroup(group);
+			return student;
+		});
 	}
 
 	@Override
@@ -116,6 +127,6 @@ public class JdbcStudentDao implements StudentDao {
 	@Override
 	public List<Student> getStudentsByCourseId(Long courseId) {
 		return jdbcTemplate
-				.query(GET_STUDENTS_BY_COURSE_ID_QUERY, new Object[] { courseId }, new StudentMapper(jdbcGroupDao));
+				.query(GET_STUDENTS_BY_COURSE_ID_QUERY, new Object[] { courseId }, new StudentMapper(groupDao));
 	}
 }

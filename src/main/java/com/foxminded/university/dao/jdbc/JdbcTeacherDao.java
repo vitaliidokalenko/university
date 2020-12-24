@@ -1,10 +1,5 @@
 package com.foxminded.university.dao.jdbc;
 
-import static java.sql.Types.DATE;
-import static java.sql.Types.INTEGER;
-import static java.sql.Types.OTHER;
-import static java.sql.Types.VARCHAR;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,10 +75,15 @@ public class JdbcTeacherDao implements TeacherDao {
 	@Override
 	public void update(Teacher teacher) {
 		jdbcTemplate.update(UPDATE_TEACHER_QUERY,
-				new Object[] { teacher.getName(), teacher.getSurname(), teacher.getRank(), teacher.getPhone(),
-						teacher.getEmail(), teacher.getAddress(), teacher.getBirthdate(), teacher.getGender(),
-						teacher.getId() },
-				new int[] { VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, VARCHAR, DATE, OTHER, INTEGER });
+				teacher.getName(),
+				teacher.getSurname(),
+				teacher.getRank(),
+				teacher.getPhone(),
+				teacher.getEmail(),
+				teacher.getAddress(),
+				teacher.getBirthdate(),
+				teacher.getGender().toString(),
+				teacher.getId());
 	}
 
 	@Override

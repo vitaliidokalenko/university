@@ -2,6 +2,7 @@ package com.foxminded.university.dao;
 
 import java.util.List;
 
+import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
 
 public interface StudentDao {
@@ -16,7 +17,7 @@ public interface StudentDao {
 
 	public void deleteById(Long studentId);
 
-	public List<Student> getStudentsByGroupId(Long groupId);
+	public List<Student> getStudentsByGroup(Group group);
 
 	public void createStudentCourse(Long studentId, Long courseId);
 
