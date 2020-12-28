@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,14 +24,10 @@ public class JdbcTeacherDaoTest {
 	private static final String TEACHERS_TABLE_NAME = "teachers";
 	private static final String TEACHERS_COURSES_TABLE_NAME = "teachers_courses";
 
-	private JdbcTemplate jdbcTemplate;
-	private JdbcTeacherDao teacherDao;
-
 	@Autowired
-	public JdbcTeacherDaoTest(DataSource dataSource, JdbcTeacherDao teacherDao) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.teacherDao = teacherDao;
-	}
+	private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private JdbcTeacherDao teacherDao;
 
 	@Test
 	@Sql({ "/schema.sql", "/dataTeachers.sql" })

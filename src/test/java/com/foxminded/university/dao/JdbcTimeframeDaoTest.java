@@ -7,8 +7,6 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,14 +22,10 @@ public class JdbcTimeframeDaoTest {
 
 	private static final String TIMEFRAMES_TABLE_NAME = "timeframes";
 
-	private JdbcTemplate jdbcTemplate;
-	private JdbcTimeframeDao timeframeDao;
-
 	@Autowired
-	public JdbcTimeframeDaoTest(DataSource dataSource, JdbcTimeframeDao timeframeDao) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.timeframeDao = timeframeDao;
-	}
+	private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private JdbcTimeframeDao timeframeDao;
 
 	@Test
 	@Sql({ "/schema.sql", "/dataTimeframes.sql" })

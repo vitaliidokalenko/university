@@ -6,8 +6,6 @@ import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,15 +20,11 @@ import com.foxminded.university.model.Group;
 public class JdbcGroupDaoTest {
 
 	private static final String GROUPS_TABLE_NAME = "groups";
-	
-	private JdbcTemplate jdbcTemplate;
-	private JdbcGroupDao groupDao;
 
 	@Autowired
-	public JdbcGroupDaoTest(DataSource dataSource, JdbcGroupDao groupDao) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.groupDao = groupDao;
-	}
+	private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private JdbcGroupDao groupDao;
 
 	@Test
 	@Sql({ "/schema.sql", "/dataGroups.sql" })

@@ -3,8 +3,6 @@ package com.foxminded.university.dao;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,14 +17,10 @@ public class ScriptRunnerTest {
 	private static final String GROUPS_TABLE_NAME = "groups";
 	private static final String SQL_FILE = "testScript.sql";
 
-	private JdbcTemplate jdbcTemplate;
-	private ScriptRunner scriptRunner;
-
 	@Autowired
-	public ScriptRunnerTest(DataSource dataSource, ScriptRunner scriptRunner) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.scriptRunner = scriptRunner;
-	}
+	private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private ScriptRunner scriptRunner;
 
 	@Test
 	@Sql({ "/schema.sql", "/dataGroups.sql" })

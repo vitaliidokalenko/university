@@ -6,8 +6,6 @@ import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,14 +21,10 @@ public class JdbcRoomDaoTest {
 
 	private static final String ROOMS_TABLE_NAME = "rooms";
 
-	private JdbcTemplate jdbcTemplate;
-	private JdbcRoomDao roomDao;
-
 	@Autowired
-	public JdbcRoomDaoTest(DataSource dataSource, JdbcRoomDao roomDao) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.roomDao = roomDao;
-	}
+	private JdbcTemplate jdbcTemplate;
+	@Autowired
+	private JdbcRoomDao roomDao;
 
 	@Test
 	@Sql({ "/schema.sql", "/dataRooms.sql" })
