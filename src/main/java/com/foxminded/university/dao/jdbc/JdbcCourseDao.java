@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -36,9 +34,9 @@ public class JdbcCourseDao implements CourseDao {
 	private SimpleJdbcInsert jdbcInsert;
 
 	@Autowired
-	public JdbcCourseDao(DataSource dataSource) {
-		jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(COURSES_TABLE_NAME)
+	public JdbcCourseDao(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(COURSES_TABLE_NAME)
 				.usingGeneratedKeyColumns(COURSE_ID);
 	}
 

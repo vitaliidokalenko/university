@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -32,9 +30,9 @@ public class JdbcGroupDao implements GroupDao {
 	private SimpleJdbcInsert jdbcInsert;
 
 	@Autowired
-	public JdbcGroupDao(DataSource dataSource) {
-		jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(GROUPS_TABLE_NAME)
+	public JdbcGroupDao(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(GROUPS_TABLE_NAME)
 				.usingGeneratedKeyColumns(GROUP_ID);
 	}
 

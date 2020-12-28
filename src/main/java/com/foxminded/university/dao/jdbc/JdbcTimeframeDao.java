@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -35,9 +33,9 @@ public class JdbcTimeframeDao implements TimeframeDao {
 	private SimpleJdbcInsert jdbcInsert;
 
 	@Autowired
-	public JdbcTimeframeDao(DataSource dataSource) {
-		jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(TIMEFRAMES_TABLE_NAME)
+	public JdbcTimeframeDao(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(TIMEFRAMES_TABLE_NAME)
 				.usingGeneratedKeyColumns(TIMEFRAME_ID);
 	}
 

@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -33,9 +31,10 @@ public class JdbcRoomDao implements RoomDao {
 	private SimpleJdbcInsert jdbcInsert;
 
 	@Autowired
-	public JdbcRoomDao(DataSource dataSource) {
-		jdbcTemplate = new JdbcTemplate(dataSource);
-		jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(ROOMS_TABLE_NAME).usingGeneratedKeyColumns(ROOM_ID);
+	public JdbcRoomDao(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(ROOMS_TABLE_NAME)
+				.usingGeneratedKeyColumns(ROOM_ID);
 	}
 
 	@Override

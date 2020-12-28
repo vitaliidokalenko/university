@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -52,10 +50,10 @@ public class JdbcLessonDao implements LessonDao {
 	private JdbcRoomDao roomDao;
 
 	@Autowired
-	public JdbcLessonDao(DataSource dataSource, JdbcTimeframeDao timeframeDao, JdbcCourseDao courseDao,
+	public JdbcLessonDao(JdbcTemplate jdbcTemplate, JdbcTimeframeDao timeframeDao, JdbcCourseDao courseDao,
 			JdbcTeacherDao teacherDao, JdbcRoomDao roomDao) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(LESSONS_TABLE_NAME)
+		this.jdbcTemplate = jdbcTemplate;
+		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(LESSONS_TABLE_NAME)
 				.usingGeneratedKeyColumns(LESSON_ID);
 		this.timeframeDao = timeframeDao;
 		this.courseDao = courseDao;

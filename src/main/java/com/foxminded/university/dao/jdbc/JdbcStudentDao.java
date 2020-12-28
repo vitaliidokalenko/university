@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -48,9 +46,9 @@ public class JdbcStudentDao implements StudentDao {
 	private JdbcGroupDao groupDao;
 
 	@Autowired
-	public JdbcStudentDao(DataSource dataSource, JdbcGroupDao groupDao) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.jdbcInsert = new SimpleJdbcInsert(dataSource).withTableName(STUDENTS_TABLE_NAME)
+	public JdbcStudentDao(JdbcTemplate jdbcTemplate, JdbcGroupDao groupDao) {
+		this.jdbcTemplate = jdbcTemplate;
+		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(STUDENTS_TABLE_NAME)
 				.usingGeneratedKeyColumns(STUDENT_ID);
 		this.groupDao = groupDao;
 	}
