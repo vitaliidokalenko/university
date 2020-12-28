@@ -91,7 +91,7 @@ public class JdbcRoomDaoTest {
 	@Test
 	@Sql({ "/schema.sql", "/dataRooms.sql" })
 	public void givenRoomId_whenDeleteById_thenRoomIsDeleted() {
-		int expectedRows = 2;
+		int expectedRows = countRowsInTable(jdbcTemplate, ROOMS_TABLE_NAME) - 1;
 
 		roomDao.deleteById(1L);
 

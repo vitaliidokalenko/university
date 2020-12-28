@@ -85,7 +85,7 @@ public class JdbcGroupDaoTest {
 	@Test
 	@Sql({ "/schema.sql", "/dataGroups.sql" })
 	public void givenGroupId_whenDeleteById_thenGroupIsDeleted() {
-		int expectedRows = 2;
+		int expectedRows = countRowsInTable(jdbcTemplate, GROUPS_TABLE_NAME) - 1;
 
 		groupDao.deleteById(1L);
 

@@ -208,7 +208,7 @@ public class JdbcLessonDaoTest {
 	@Test
 	@Sql({ "/schema.sql", "/dataLessons.sql" })
 	public void givenLessonId_whenDeleteById_thenLessonIsDeleted() {
-		int expectedRows = 2;
+		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_TABLE_NAME) - 1;
 
 		lessonDao.deleteById(1L);
 
@@ -219,7 +219,7 @@ public class JdbcLessonDaoTest {
 	@Test
 	@Sql({ "/schema.sql", "/dataLessons.sql" })
 	public void givenLessonIdAndGroupId_whenCreateLessonGroup_thenRightDataAddedToTable() {
-		int expectedRows = 3;
+		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME) + 3;
 
 		lessonDao.createLessonsGroups(1L, 1L);
 		lessonDao.createLessonsGroups(1L, 2L);
@@ -232,7 +232,7 @@ public class JdbcLessonDaoTest {
 	@Test
 	@Sql({ "/schema.sql", "/data.sql" })
 	public void givenLessonIdAndGroupId_whenDeleteLessonGroup_thenRightDataDeletedFromTable() {
-		int expectedRows = 3;
+		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME) - 1;
 
 		lessonDao.deleteLessonsGroups(1L, 1L);
 

@@ -31,7 +31,7 @@ public class ScriptRunnerTest {
 	@Test
 	@Sql({ "/schema.sql", "/dataGroups.sql" })
 	public void givenSqlScript_whenExecuteScript_thenScriptExecuted() {
-		int expectedRows = 2;
+		int expectedRows = countRowsInTable(jdbcTemplate, GROUPS_TABLE_NAME) - 1;
 
 		scriptRunner.runScript(SQL_FILE);
 

@@ -105,7 +105,7 @@ public class JdbcTimeframeDaoTest {
 	@Test
 	@Sql({ "/schema.sql", "/dataTimeframes.sql" })
 	public void givenTimeframeId_whenDelete_thenTimeframeIsDeleted() {
-		int expectedRows = 2;
+		int expectedRows = countRowsInTable(jdbcTemplate, TIMEFRAMES_TABLE_NAME) - 1;
 
 		timeframeDao.deleteById(1L);
 

@@ -129,7 +129,7 @@ public class JdbcStudentDaoTest {
 	@Test
 	@Sql({ "/schema.sql", "/dataStudents.sql" })
 	public void givenStudentId_whenDeleteById_thenStudentIsDeleted() {
-		int expectedRows = 2;
+		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_TABLE_NAME) - 1;
 
 		studentDao.deleteById(1L);
 
@@ -157,7 +157,7 @@ public class JdbcStudentDaoTest {
 	@Test
 	@Sql({ "/schema.sql", "/dataStudentsCourses.sql" })
 	public void givenStudentIdAndCourseId_whenCreateStudentCourse_thenRightDataAddedToTable() {
-		int expectedRows = 2;
+		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME) + 2;
 
 		studentDao.createStudentCourse(1L, 1L);
 		studentDao.createStudentCourse(1L, 2L);
@@ -170,7 +170,7 @@ public class JdbcStudentDaoTest {
 	@Test
 	@Sql({ "/schema.sql", "/data.sql" })
 	public void givenStudentIdAndCourseId_whenDeleteStudentCourse_thenRightDataDeletedFromTable() {
-		int expectedRows = 3;
+		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME) - 1;
 
 		studentDao.deleteStudentCourse(1L, 1L);
 
