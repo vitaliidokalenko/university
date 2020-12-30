@@ -1,15 +1,13 @@
 package com.foxminded.university.dao.jdbc;
 
-import static com.foxminded.university.dao.jdbc.mapper.CourseMapper.COURSE_DESCRIPTION;
 import static com.foxminded.university.dao.jdbc.mapper.CourseMapper.COURSE_ID;
-import static com.foxminded.university.dao.jdbc.mapper.CourseMapper.COURSE_NAME;
 
-import java.util.HashMap;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.CourseDao;
@@ -19,7 +17,7 @@ import com.foxminded.university.model.Course;
 @Component
 public class JdbcCourseDao implements CourseDao {
 
-	private static final String COURSES_TABLE_NAME = "courses";
+	private static final String CREATE_COURSE_QUERY = "INSERT INTO courses (course_name, course_description) VALUES (?, ?);";
 	private static final String FIND_COURSE_BY_ID_QUERY = "SELECT * FROM courses WHERE course_id = ?";
 	private static final String GET_COURSES_QUERY = "SELECT * FROM courses";
 	private static final String DELETE_COURSE_BY_ID_QUERY = "DELETE FROM courses WHERE course_id = ?;";
@@ -31,20 +29,21 @@ public class JdbcCourseDao implements CourseDao {
 	private static final String GET_COURSES_BY_TEACHER_ID_QUERY = "SELECT * FROM courses JOIN teachers_courses ON teachers_courses.course_id = courses.course_id WHERE teacher_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
-	private SimpleJdbcInsert jdbcInsert;
 
 	public JdbcCourseDao(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(COURSES_TABLE_NAME)
-				.usingGeneratedKeyColumns(COURSE_ID);
 	}
 
 	@Override
 	public void create(Course course) {
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put(COURSE_NAME, course.getName());
-		parameters.put(COURSE_DESCRIPTION, course.getDescription());
-		course.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(connection -> {
+			PreparedStatement statement = connection.prepareStatement(CREATE_COURSE_QUERY, new String[] { COURSE_ID });
+			statement.setString(1, course.getName());
+			statement.setString(2, course.getDescription());
+			return statement;
+		}, keyHolder);
+		course.setId(keyHolder.getKey().longValue());
 	}
 
 	@Override

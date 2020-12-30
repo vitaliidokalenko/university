@@ -7,13 +7,13 @@ import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_ID;
 import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_ID;
 import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.TIMEFRAME_ID;
 
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.LessonDao;
@@ -27,7 +27,8 @@ import com.foxminded.university.model.Timeframe;
 @Component
 public class JdbcLessonDao implements LessonDao {
 
-	private static final String LESSONS_TABLE_NAME = "lessons";
+	private static final String CREATE_LESSON_QUERY = "INSERT INTO lessons (lesson_date, timeframe_id, course_id, teacher_id, room_id) "
+			+ "VALUES (?, ?, ?, ?, ?);";
 	private static final String FIND_LESSON_BY_ID_QUERY = "SELECT * FROM lessons WHERE lesson_id = ?;";
 	private static final String GET_LESSONS_QUERY = "SELECT * FROM lessons";
 	private static final String DELETE_LESSON_BY_ID_QUERY = "DELETE FROM lessons WHERE lesson_id = ?";
@@ -43,7 +44,6 @@ public class JdbcLessonDao implements LessonDao {
 	private static final String GET_LESSONS_BY_ROOM_ID_QUERY = "SELECT * FROM lessons WHERE room_id = ?";
 
 	private JdbcTemplate jdbcTemplate;
-	private SimpleJdbcInsert jdbcInsert;
 	private JdbcTimeframeDao timeframeDao;
 	private JdbcCourseDao courseDao;
 	private JdbcTeacherDao teacherDao;
@@ -52,8 +52,6 @@ public class JdbcLessonDao implements LessonDao {
 	public JdbcLessonDao(JdbcTemplate jdbcTemplate, JdbcTimeframeDao timeframeDao, JdbcCourseDao courseDao,
 			JdbcTeacherDao teacherDao, JdbcRoomDao roomDao) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(LESSONS_TABLE_NAME)
-				.usingGeneratedKeyColumns(LESSON_ID);
 		this.timeframeDao = timeframeDao;
 		this.courseDao = courseDao;
 		this.teacherDao = teacherDao;
@@ -62,13 +60,18 @@ public class JdbcLessonDao implements LessonDao {
 
 	@Override
 	public void create(Lesson lesson) {
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put(LESSON_DATE, lesson.getDate());
-		parameters.put(TIMEFRAME_ID, lesson.getTimeframe().getId());
-		parameters.put(COURSE_ID, lesson.getCourse().getId());
-		parameters.put(TEACHER_ID, lesson.getTeacher().getId());
-		parameters.put(ROOM_ID, lesson.getRoom().getId());
-		lesson.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(connection -> {
+			PreparedStatement statement = connection.prepareStatement(CREATE_LESSON_QUERY,
+					new String[] { LESSON_ID });
+			statement.setObject(1, lesson.getDate());
+			statement.setLong(2, lesson.getTimeframe().getId());
+			statement.setLong(3, lesson.getCourse().getId());
+			statement.setLong(4, lesson.getTeacher().getId());
+			statement.setLong(5, lesson.getRoom().getId());
+			return statement;
+		}, keyHolder);
+		lesson.setId(keyHolder.getKey().longValue());
 	}
 
 	@Override

@@ -1,15 +1,13 @@
 package com.foxminded.university.dao.jdbc;
 
-import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_CAPACITY;
 import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_ID;
-import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_NAME;
 
-import java.util.HashMap;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.RoomDao;
@@ -19,7 +17,7 @@ import com.foxminded.university.model.Room;
 @Component
 public class JdbcRoomDao implements RoomDao {
 
-	private static final String ROOMS_TABLE_NAME = "rooms";
+	private static final String CREATE_ROOM_QUERY = "INSERT INTO rooms (room_name, room_capacity) VALUES (?, ?);";
 	private static final String DELETE_ROOM_BY_ID_QUERY = "DELETE FROM rooms WHERE room_id = ?;";
 	private static final String FIND_ROOM_BY_ID_QUERY = "SELECT * FROM rooms WHERE room_id = ?";
 	private static final String GET_ROOMS_QUERY = "SELECT * FROM rooms;";
@@ -28,20 +26,21 @@ public class JdbcRoomDao implements RoomDao {
 			+ "JOIN courses_rooms ON courses_rooms.room_id = rooms.room_id WHERE course_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
-	private SimpleJdbcInsert jdbcInsert;
 
 	public JdbcRoomDao(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(ROOMS_TABLE_NAME)
-				.usingGeneratedKeyColumns(ROOM_ID);
 	}
 
 	@Override
 	public void create(Room room) {
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put(ROOM_NAME, room.getName());
-		parameters.put(ROOM_CAPACITY, room.getCapacity());
-		room.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(connection -> {
+			PreparedStatement statement = connection.prepareStatement(CREATE_ROOM_QUERY, new String[] { ROOM_ID });
+			statement.setString(1, room.getName());
+			statement.setInt(2, room.getCapacity());
+			return statement;
+		}, keyHolder);
+		room.setId(keyHolder.getKey().longValue());
 	}
 
 	@Override

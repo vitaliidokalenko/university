@@ -1,21 +1,13 @@
 package com.foxminded.university.dao.jdbc;
 
-import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_ADDRESS;
-import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_BIRTHDATE;
-import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_EMAIL;
-import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_GENDER;
 import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_ID;
-import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_NAME;
-import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_PHONE;
-import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_RANK;
-import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_SURNAME;
 
-import java.util.HashMap;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.TeacherDao;
@@ -25,7 +17,8 @@ import com.foxminded.university.model.Teacher;
 @Component
 public class JdbcTeacherDao implements TeacherDao {
 
-	private static final String TEACHERS_TABLE_NAME = "teachers";
+	private static final String CREATE_TEACHER_QUERY = "INSERT INTO teachers (teacher_name, teacher_surname, teacher_rank, teacher_phone, teacher_email, teacher_address, teacher_birthdate, teacher_gender) "
+			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 	private static final String FIND_TEACHER_BY_ID_QUERY = "SELECT * FROM teachers WHERE teacher_id = ?;";
 	private static final String GET_TEACHERS_QUERY = "SELECT * FROM teachers;";
 	private static final String DELETE_TEACHER_BY_ID_QUERY = "DELETE FROM teachers WHERE teacher_id = ?;";
@@ -37,26 +30,28 @@ public class JdbcTeacherDao implements TeacherDao {
 			+ "JOIN teachers_courses ON teachers_courses.teacher_id = teachers.teacher_id WHERE course_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
-	private SimpleJdbcInsert jdbcInsert;
 
 	public JdbcTeacherDao(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(TEACHERS_TABLE_NAME)
-				.usingGeneratedKeyColumns(TEACHER_ID);
 	}
 
 	@Override
 	public void create(Teacher teacher) {
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put(TEACHER_NAME, teacher.getName());
-		parameters.put(TEACHER_SURNAME, teacher.getSurname());
-		parameters.put(TEACHER_RANK, teacher.getRank());
-		parameters.put(TEACHER_PHONE, teacher.getPhone());
-		parameters.put(TEACHER_EMAIL, teacher.getEmail());
-		parameters.put(TEACHER_ADDRESS, teacher.getAddress());
-		parameters.put(TEACHER_BIRTHDATE, teacher.getBirthdate());
-		parameters.put(TEACHER_GENDER, teacher.getGender());
-		teacher.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(connection -> {
+			PreparedStatement statement = connection.prepareStatement(CREATE_TEACHER_QUERY,
+					new String[] { TEACHER_ID });
+			statement.setString(1, teacher.getName());
+			statement.setString(2, teacher.getSurname());
+			statement.setString(3, teacher.getRank());
+			statement.setString(4, teacher.getPhone());
+			statement.setString(5, teacher.getEmail());
+			statement.setString(6, teacher.getAddress());
+			statement.setObject(7, teacher.getBirthdate());
+			statement.setString(8, teacher.getGender().toString());
+			return statement;
+		}, keyHolder);
+		teacher.setId(keyHolder.getKey().longValue());
 	}
 
 	@Override

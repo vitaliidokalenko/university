@@ -1,14 +1,13 @@
 package com.foxminded.university.dao.jdbc;
 
 import static com.foxminded.university.dao.jdbc.mapper.GroupMapper.GROUP_ID;
-import static com.foxminded.university.dao.jdbc.mapper.GroupMapper.GROUP_NAME;
 
-import java.util.HashMap;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.GroupDao;
@@ -18,7 +17,7 @@ import com.foxminded.university.model.Group;
 @Component
 public class JdbcGroupDao implements GroupDao {
 
-	private static final String GROUPS_TABLE_NAME = "groups";
+	private static final String CREATE_GROUP_QUERY = "INSERT INTO groups (group_name) VALUES (?);";
 	private static final String DELETE_GROUP_BY_ID_QUERY = "DELETE FROM groups WHERE group_id = ?;";
 	private static final String FIND_GROUP_BY_ID_QUERY = "SELECT * FROM groups WHERE group_id = ?";
 	private static final String GET_GROUPS_QUERY = "SELECT * FROM groups;";
@@ -27,19 +26,20 @@ public class JdbcGroupDao implements GroupDao {
 			+ "JOIN lessons_groups ON lessons_groups.group_id = groups.group_id WHERE lesson_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
-	private SimpleJdbcInsert jdbcInsert;
 
 	public JdbcGroupDao(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(GROUPS_TABLE_NAME)
-				.usingGeneratedKeyColumns(GROUP_ID);
 	}
 
 	@Override
 	public void create(Group group) {
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put(GROUP_NAME, group.getName());
-		group.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(connection -> {
+			PreparedStatement statement = connection.prepareStatement(CREATE_GROUP_QUERY, new String[] { GROUP_ID });
+			statement.setString(1, group.getName());
+			return statement;
+		}, keyHolder);
+		group.setId(keyHolder.getKey().longValue());
 	}
 
 	@Override

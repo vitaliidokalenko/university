@@ -1,6 +1,5 @@
 package com.foxminded.university.dao.jdbc;
 
-import static com.foxminded.university.dao.jdbc.mapper.GroupMapper.GROUP_ID;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_ADDRESS;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_BIRTHDATE;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_EMAIL;
@@ -10,14 +9,14 @@ import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_NAM
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_PHONE;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_SURNAME;
 
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.StudentDao;
@@ -29,7 +28,8 @@ import com.foxminded.university.model.Student;
 @Component
 public class JdbcStudentDao implements StudentDao {
 
-	private static final String STUDENTS_TABLE_NAME = "students";
+	private static final String CREATE_STUDENT_QUERY = "INSERT INTO students (group_id, student_name, student_surname, student_phone, student_email, student_address, student_birthdate, student_gender) "
+			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 	private static final String FIND_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE student_id = ?;";
 	private static final String GET_STUDENTS_QUERY = "SELECT * FROM students;";
 	private static final String DELETE_STUDENT_BY_ID_QUERY = "DELETE FROM students WHERE student_id = ?;";
@@ -42,28 +42,30 @@ public class JdbcStudentDao implements StudentDao {
 			+ "JOIN students_courses ON students_courses.student_id = students.student_id WHERE course_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
-	private SimpleJdbcInsert jdbcInsert;
 	private JdbcGroupDao groupDao;
 
 	public JdbcStudentDao(JdbcTemplate jdbcTemplate, JdbcGroupDao groupDao) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(STUDENTS_TABLE_NAME)
-				.usingGeneratedKeyColumns(STUDENT_ID);
 		this.groupDao = groupDao;
 	}
 
 	@Override
 	public void create(Student student) {
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put(GROUP_ID, Optional.ofNullable(student).map(Student::getGroup).map(Group::getId).orElse(null));
-		parameters.put(STUDENT_NAME, student.getName());
-		parameters.put(STUDENT_SURNAME, student.getSurname());
-		parameters.put(STUDENT_PHONE, student.getPhone());
-		parameters.put(STUDENT_EMAIL, student.getEmail());
-		parameters.put(STUDENT_ADDRESS, student.getAddress());
-		parameters.put(STUDENT_BIRTHDATE, student.getBirthdate());
-		parameters.put(STUDENT_GENDER, student.getGender());
-		student.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(connection -> {
+			PreparedStatement statement = connection.prepareStatement(CREATE_STUDENT_QUERY,
+					new String[] { STUDENT_ID });
+			statement.setObject(1, Optional.ofNullable(student).map(Student::getGroup).map(Group::getId).orElse(null));
+			statement.setString(2, student.getName());
+			statement.setString(3, student.getSurname());
+			statement.setString(4, student.getPhone());
+			statement.setString(5, student.getEmail());
+			statement.setString(6, student.getAddress());
+			statement.setObject(7, student.getBirthdate());
+			statement.setString(8, student.getGender().toString());
+			return statement;
+		}, keyHolder);
+		student.setId(keyHolder.getKey().longValue());
 	}
 
 	@Override

@@ -1,18 +1,15 @@
 package com.foxminded.university.dao.jdbc;
 
-import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.END_TIME;
-import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.START_TIME;
 import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.TIMEFRAME_ID;
-import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.TIMEFRAME_SEQUANCE;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.TIME;
 
-import java.util.HashMap;
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.TimeframeDao;
@@ -22,28 +19,31 @@ import com.foxminded.university.model.Timeframe;
 @Component
 public class JdbcTimeframeDao implements TimeframeDao {
 
-	private static final String TIMEFRAMES_TABLE_NAME = "timeframes";
+	private static final String CREATE_TIMEFRAME_QUERY = "INSERT INTO timeframes (timeframe_sequance, start_time, end_time) "
+			+ "VALUES (?, ?, ?);";
 	private static final String FIND_TIMEFRAME_BY_ID_QUERY = "SELECT * FROM timeframes WHERE timeframe_id = ?;";
 	private static final String GET_TIMEFRAMES_QUERY = "SELECT * FROM timeframes;";
 	private static final String DELETE_TIMEFRAME_BY_ID_QUERY = "DELETE FROM timeframes WHERE timeframe_id = ?;";
 	private static final String UPDATE_TIMEFRAME_QUERY = "UPDATE timeframes SET timeframe_sequance = ?, start_time = ?, end_time = ? WHERE timeframe_id = ?";
 
 	private JdbcTemplate jdbcTemplate;
-	private SimpleJdbcInsert jdbcInsert;
 
 	public JdbcTimeframeDao(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(TIMEFRAMES_TABLE_NAME)
-				.usingGeneratedKeyColumns(TIMEFRAME_ID);
 	}
 
 	@Override
 	public void create(Timeframe timeframe) {
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put(TIMEFRAME_SEQUANCE, timeframe.getSequance());
-		parameters.put(START_TIME, timeframe.getStartTime());
-		parameters.put(END_TIME, timeframe.getEndTime());
-		timeframe.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(connection -> {
+			PreparedStatement statement = connection.prepareStatement(CREATE_TIMEFRAME_QUERY,
+					new String[] { TIMEFRAME_ID });
+			statement.setInt(1, timeframe.getSequance());
+			statement.setObject(2, timeframe.getStartTime());
+			statement.setObject(3, timeframe.getEndTime());
+			return statement;
+		}, keyHolder);
+		timeframe.setId(keyHolder.getKey().longValue());
 	}
 
 	@Override
