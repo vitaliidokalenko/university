@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -45,7 +44,6 @@ public class JdbcStudentDao implements StudentDao {
 	private SimpleJdbcInsert jdbcInsert;
 	private JdbcGroupDao groupDao;
 
-	@Autowired
 	public JdbcStudentDao(JdbcTemplate jdbcTemplate, JdbcGroupDao groupDao) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.jdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName(STUDENTS_TABLE_NAME)
