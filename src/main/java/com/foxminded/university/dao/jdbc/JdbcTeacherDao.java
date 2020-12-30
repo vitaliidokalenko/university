@@ -1,5 +1,15 @@
 package com.foxminded.university.dao.jdbc;
 
+import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_ADDRESS;
+import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_BIRTHDATE;
+import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_EMAIL;
+import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_GENDER;
+import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_ID;
+import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_NAME;
+import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_PHONE;
+import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_RANK;
+import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_SURNAME;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,15 +26,6 @@ import com.foxminded.university.model.Teacher;
 public class JdbcTeacherDao implements TeacherDao {
 
 	private static final String TEACHERS_TABLE_NAME = "teachers";
-	private static final String TEACHER_ID = "teacher_id";
-	private static final String TEACHER_NAME = "teacher_name";
-	private static final String TEACHER_SURNAME = "teacher_surname";
-	private static final String TEACHER_RANK = "teacher_rank";
-	private static final String TEACHER_PHONE = "teacher_phone";
-	private static final String TEACHER_EMAIL = "teacher_phone";
-	private static final String TEACHER_ADDRESS = "teacher_address";
-	private static final String TEACHER_BIRTHDATE = "teacher_birthdate";
-	private static final String TEACHER_GENDER = "teacher_gender";
 	private static final String FIND_TEACHER_BY_ID_QUERY = "SELECT * FROM teachers WHERE teacher_id = ?;";
 	private static final String GET_TEACHERS_QUERY = "SELECT * FROM teachers;";
 	private static final String DELETE_TEACHER_BY_ID_QUERY = "DELETE FROM teachers WHERE teacher_id = ?;";

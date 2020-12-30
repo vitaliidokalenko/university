@@ -1,5 +1,12 @@
 package com.foxminded.university.dao.jdbc;
 
+import static com.foxminded.university.dao.jdbc.mapper.CourseMapper.COURSE_ID;
+import static com.foxminded.university.dao.jdbc.mapper.LessonMapper.LESSON_DATE;
+import static com.foxminded.university.dao.jdbc.mapper.LessonMapper.LESSON_ID;
+import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_ID;
+import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_ID;
+import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.TIMEFRAME_ID;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -21,12 +28,6 @@ import com.foxminded.university.model.Timeframe;
 public class JdbcLessonDao implements LessonDao {
 
 	private static final String LESSONS_TABLE_NAME = "lessons";
-	private static final String LESSON_ID = "lesson_id";
-	private static final String LESSON_DATE = "lesson_date";
-	private static final String COURSE_ID = "course_id";
-	private static final String TIMEFRAME_ID = "timeframe_id";
-	private static final String TEACHER_ID = "teacher_id";
-	private static final String ROOM_ID = "room_id";
 	private static final String FIND_LESSON_BY_ID_QUERY = "SELECT * FROM lessons WHERE lesson_id = ?;";
 	private static final String GET_LESSONS_QUERY = "SELECT * FROM lessons";
 	private static final String DELETE_LESSON_BY_ID_QUERY = "DELETE FROM lessons WHERE lesson_id = ?";

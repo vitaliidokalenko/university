@@ -1,5 +1,9 @@
 package com.foxminded.university.dao.jdbc;
 
+import static com.foxminded.university.dao.jdbc.mapper.CourseMapper.COURSE_DESCRIPTION;
+import static com.foxminded.university.dao.jdbc.mapper.CourseMapper.COURSE_ID;
+import static com.foxminded.university.dao.jdbc.mapper.CourseMapper.COURSE_NAME;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +20,6 @@ import com.foxminded.university.model.Course;
 public class JdbcCourseDao implements CourseDao {
 
 	private static final String COURSES_TABLE_NAME = "courses";
-	private static final String COURSE_ID = "course_id";
-	private static final String COURSE_NAME = "course_name";
-	private static final String COURSE_DESCRIPTION = "course_description";
 	private static final String FIND_COURSE_BY_ID_QUERY = "SELECT * FROM courses WHERE course_id = ?";
 	private static final String GET_COURSES_QUERY = "SELECT * FROM courses";
 	private static final String DELETE_COURSE_BY_ID_QUERY = "DELETE FROM courses WHERE course_id = ?;";

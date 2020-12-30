@@ -1,5 +1,9 @@
 package com.foxminded.university.dao.jdbc;
 
+import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.END_TIME;
+import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.START_TIME;
+import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.TIMEFRAME_ID;
+import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.TIMEFRAME_SEQUANCE;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.TIME;
 
@@ -19,10 +23,6 @@ import com.foxminded.university.model.Timeframe;
 public class JdbcTimeframeDao implements TimeframeDao {
 
 	private static final String TIMEFRAMES_TABLE_NAME = "timeframes";
-	private static final String TIMEFRAME_ID = "timeframe_id";
-	private static final String TIMEFRAME_SEQUANCE = "timeframe_sequance";
-	private static final String TIMEFRAME_START_TIME = "start_time";
-	private static final String TIMEFRAME_END_TIME = "end_time";
 	private static final String FIND_TIMEFRAME_BY_ID_QUERY = "SELECT * FROM timeframes WHERE timeframe_id = ?;";
 	private static final String GET_TIMEFRAMES_QUERY = "SELECT * FROM timeframes;";
 	private static final String DELETE_TIMEFRAME_BY_ID_QUERY = "DELETE FROM timeframes WHERE timeframe_id = ?;";
@@ -41,8 +41,8 @@ public class JdbcTimeframeDao implements TimeframeDao {
 	public void create(Timeframe timeframe) {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put(TIMEFRAME_SEQUANCE, timeframe.getSequance());
-		parameters.put(TIMEFRAME_START_TIME, timeframe.getStartTime());
-		parameters.put(TIMEFRAME_END_TIME, timeframe.getEndTime());
+		parameters.put(START_TIME, timeframe.getStartTime());
+		parameters.put(END_TIME, timeframe.getEndTime());
 		timeframe.setId(jdbcInsert.executeAndReturnKey(parameters).longValue());
 	}
 

@@ -10,10 +10,10 @@ import com.foxminded.university.model.Timeframe;
 
 public class TimeframeMapper implements RowMapper<Timeframe> {
 
-	private static final String TIMEFRAME_ID = "timeframe_id";
-	private static final String TIMEFRAME_SEQUANCE = "timeframe_sequance";
-	private static final String START_TIME = "start_time";
-	private static final String END_TIME = "end_time";
+	public static final String TIMEFRAME_ID = "timeframe_id";
+	public static final String TIMEFRAME_SEQUANCE = "timeframe_sequance";
+	public static final String START_TIME = "start_time";
+	public static final String END_TIME = "end_time";
 
 	@Override
 	public Timeframe mapRow(ResultSet rs, int rowNum) throws SQLException {

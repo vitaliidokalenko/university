@@ -1,5 +1,8 @@
 package com.foxminded.university.dao.jdbc;
 
+import static com.foxminded.university.dao.jdbc.mapper.GroupMapper.GROUP_ID;
+import static com.foxminded.university.dao.jdbc.mapper.GroupMapper.GROUP_NAME;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +19,6 @@ import com.foxminded.university.model.Group;
 public class JdbcGroupDao implements GroupDao {
 
 	private static final String GROUPS_TABLE_NAME = "groups";
-	private static final String GROUP_ID = "group_id";
-	private static final String GROUP_NAME = "group_name";
 	private static final String DELETE_GROUP_BY_ID_QUERY = "DELETE FROM groups WHERE group_id = ?;";
 	private static final String FIND_GROUP_BY_ID_QUERY = "SELECT * FROM groups WHERE group_id = ?";
 	private static final String GET_GROUPS_QUERY = "SELECT * FROM groups;";

@@ -1,5 +1,9 @@
 package com.foxminded.university.dao.jdbc;
 
+import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_CAPACITY;
+import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_ID;
+import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_NAME;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +20,6 @@ import com.foxminded.university.model.Room;
 public class JdbcRoomDao implements RoomDao {
 
 	private static final String ROOMS_TABLE_NAME = "rooms";
-	private static final String ROOM_ID = "room_id";
-	private static final String ROOM_NAME = "room_name";
-	private static final String ROOM_CAPACITY = "room_capacity";
 	private static final String DELETE_ROOM_BY_ID_QUERY = "DELETE FROM rooms WHERE room_id = ?;";
 	private static final String FIND_ROOM_BY_ID_QUERY = "SELECT * FROM rooms WHERE room_id = ?";
 	private static final String GET_ROOMS_QUERY = "SELECT * FROM rooms;";

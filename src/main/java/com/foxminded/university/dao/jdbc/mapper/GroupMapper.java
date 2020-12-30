@@ -9,8 +9,8 @@ import com.foxminded.university.model.Group;
 
 public class GroupMapper implements RowMapper<Group> {
 
-	private static final String GROUP_NAME = "group_name";
-	private static final String GROUP_ID = "group_id";
+	public static final String GROUP_NAME = "group_name";
+	public static final String GROUP_ID = "group_id";
 
 	@Override
 	public Group mapRow(ResultSet result, int rowNum) throws SQLException {

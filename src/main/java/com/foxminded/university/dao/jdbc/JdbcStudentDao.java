@@ -1,5 +1,15 @@
 package com.foxminded.university.dao.jdbc;
 
+import static com.foxminded.university.dao.jdbc.mapper.GroupMapper.GROUP_ID;
+import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_ADDRESS;
+import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_BIRTHDATE;
+import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_EMAIL;
+import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_GENDER;
+import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_ID;
+import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_NAME;
+import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_PHONE;
+import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_SURNAME;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -20,15 +30,6 @@ import com.foxminded.university.model.Student;
 public class JdbcStudentDao implements StudentDao {
 
 	private static final String STUDENTS_TABLE_NAME = "students";
-	private static final String STUDENT_ID = "student_id";
-	private static final String GROUP_ID = "group_id";
-	private static final String STUDENT_NAME = "student_name";
-	private static final String STUDENT_SURNAME = "student_surname";
-	private static final String STUDENT_PHONE = "student_phone";
-	private static final String STUDENT_EMAIL = "student_email";
-	private static final String STUDENT_ADDRESS = "student_address";
-	private static final String STUDENT_BIRTHDATE = "student_birthdate";
-	private static final String STUDENT_GENDER = "student_gender";
 	private static final String FIND_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE student_id = ?;";
 	private static final String GET_STUDENTS_QUERY = "SELECT * FROM students;";
 	private static final String DELETE_STUDENT_BY_ID_QUERY = "DELETE FROM students WHERE student_id = ?;";
