@@ -27,17 +27,17 @@ import com.foxminded.university.model.Timeframe;
 @Component
 public class JdbcLessonDao implements LessonDao {
 
-	private static final String CREATE_LESSON_QUERY = "INSERT INTO lessons (lesson_date, timeframe_id, course_id, teacher_id, room_id) "
+	private static final String CREATE_LESSON_QUERY = "INSERT INTO lessons (date, timeframe_id, course_id, teacher_id, room_id) "
 			+ "VALUES (?, ?, ?, ?, ?);";
-	private static final String FIND_LESSON_BY_ID_QUERY = "SELECT * FROM lessons WHERE lesson_id = ?;";
+	private static final String FIND_LESSON_BY_ID_QUERY = "SELECT * FROM lessons WHERE id = ?;";
 	private static final String GET_LESSONS_QUERY = "SELECT * FROM lessons";
-	private static final String DELETE_LESSON_BY_ID_QUERY = "DELETE FROM lessons WHERE lesson_id = ?";
-	private static final String UPDATE_LESSON_QUERY = "UPDATE lessons SET lesson_date = ?, timeframe_id = ?, course_id = ?, teacher_id = ?, room_id = ? "
-			+ "WHERE lesson_id = ?";
+	private static final String DELETE_LESSON_BY_ID_QUERY = "DELETE FROM lessons WHERE id = ?";
+	private static final String UPDATE_LESSON_QUERY = "UPDATE lessons SET date = ?, timeframe_id = ?, course_id = ?, teacher_id = ?, room_id = ? "
+			+ "WHERE id = ?";
 	private static final String CREATE_LESSON_GROUP_QUERY = "INSERT INTO lessons_groups (lesson_id, group_id) VALUES(?, ?);";
-	private static final String DELETE_LESSON_GROUP_QUERY = "DELETE FROM lessons_groups WHERE lesson_id = ? AND group_id =?;";
+	private static final String DELETE_LESSON_GROUP_QUERY = "DELETE FROM lessons_groups WHERE lesson_id = ? AND group_id = ?;";
 	private static final String GET_LESSONS_BY_GROUP_ID_QUERY = "SELECT * FROM lessons "
-			+ "JOIN lessons_groups ON lessons_groups.lesson_id = lessons.lesson_id WHERE group_id = ?;";
+			+ "JOIN lessons_groups ON lessons_groups.lesson_id = lessons.id WHERE group_id = ?;";
 	private static final String GET_LESSONS_BY_TIMEFRAME_ID_QUERY = "SELECT * FROM lessons WHERE timeframe_id = ?";
 	private static final String GET_LESSONS_BY_COURSE_ID_QUERY = "SELECT * FROM lessons WHERE course_id = ?";
 	private static final String GET_LESSONS_BY_TEACHER_ID_QUERY = "SELECT * FROM lessons WHERE teacher_id = ?";

@@ -28,18 +28,18 @@ import com.foxminded.university.model.Student;
 @Component
 public class JdbcStudentDao implements StudentDao {
 
-	private static final String CREATE_STUDENT_QUERY = "INSERT INTO students (group_id, student_name, student_surname, student_phone, student_email, student_address, student_birthdate, student_gender) "
+	private static final String CREATE_STUDENT_QUERY = "INSERT INTO students (group_id, name, surname, phone, email, address, birthdate, gender) "
 			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-	private static final String FIND_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE student_id = ?;";
+	private static final String FIND_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE id = ?;";
 	private static final String GET_STUDENTS_QUERY = "SELECT * FROM students;";
-	private static final String DELETE_STUDENT_BY_ID_QUERY = "DELETE FROM students WHERE student_id = ?;";
-	private static final String UPDATE_STUDENT_QUERY = "UPDATE students SET group_id = ?, student_name = ?, student_surname = ?, student_phone = ?, student_email = ?, student_address = ?, student_birthdate = ?, student_gender = ? "
-			+ "WHERE student_id = ?;";
+	private static final String DELETE_STUDENT_BY_ID_QUERY = "DELETE FROM students WHERE id = ?;";
+	private static final String UPDATE_STUDENT_QUERY = "UPDATE students SET id = ?, name = ?, surname = ?, phone = ?, email = ?, address = ?, birthdate = ?, gender = ? "
+			+ "WHERE id = ?;";
 	private static final String GET_STUDENTS_BY_GROUP_ID_QUERY = "SELECT * FROM students WHERE group_id = ?;";
 	private static final String CREATE_STUDENT_COURSE_QUERY = "INSERT INTO students_courses (student_id, course_id) VALUES(?, ?);";
 	private static final String DELETE_STUDENT_COURSE_QUERY = "DELETE FROM students_courses WHERE student_id = ? AND course_id =?;";
 	private static final String GET_STUDENTS_BY_COURSE_ID_QUERY = "SELECT * FROM students "
-			+ "JOIN students_courses ON students_courses.student_id = students.student_id WHERE course_id = ?;";
+			+ "JOIN students_courses ON students_courses.student_id = students.id WHERE course_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcGroupDao groupDao;

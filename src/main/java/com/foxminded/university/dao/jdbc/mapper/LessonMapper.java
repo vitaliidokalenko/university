@@ -1,10 +1,5 @@
 package com.foxminded.university.dao.jdbc.mapper;
 
-import static com.foxminded.university.dao.jdbc.mapper.CourseMapper.COURSE_ID;
-import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_ID;
-import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_ID;
-import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.TIMEFRAME_ID;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -19,8 +14,12 @@ import com.foxminded.university.model.Lesson;
 
 public class LessonMapper implements RowMapper<Lesson> {
 
-	public static final String LESSON_ID = "lesson_id";
-	public static final String LESSON_DATE = "lesson_date";
+	public static final String LESSON_ID = "id";
+	public static final String LESSON_DATE = "date";
+	public static final String COURSE_ID = "course_id";
+	public static final String ROOM_ID = "room_id";
+	public static final String TEACHER_ID = "teacher_id";
+	public static final String TIMEFRAME_ID = "timeframe_id";
 
 	private JdbcTimeframeDao timeframeDao;
 	private JdbcCourseDao courseDao;

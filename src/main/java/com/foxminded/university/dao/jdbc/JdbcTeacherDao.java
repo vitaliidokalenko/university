@@ -17,17 +17,17 @@ import com.foxminded.university.model.Teacher;
 @Component
 public class JdbcTeacherDao implements TeacherDao {
 
-	private static final String CREATE_TEACHER_QUERY = "INSERT INTO teachers (teacher_name, teacher_surname, teacher_rank, teacher_phone, teacher_email, teacher_address, teacher_birthdate, teacher_gender) "
+	private static final String CREATE_TEACHER_QUERY = "INSERT INTO teachers (name, surname, rank, phone, email, address, birthdate, gender) "
 			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-	private static final String FIND_TEACHER_BY_ID_QUERY = "SELECT * FROM teachers WHERE teacher_id = ?;";
+	private static final String FIND_TEACHER_BY_ID_QUERY = "SELECT * FROM teachers WHERE id = ?;";
 	private static final String GET_TEACHERS_QUERY = "SELECT * FROM teachers;";
-	private static final String DELETE_TEACHER_BY_ID_QUERY = "DELETE FROM teachers WHERE teacher_id = ?;";
-	private static final String UPDATE_TEACHER_QUERY = "UPDATE teachers SET teacher_name = ?, teacher_surname = ?, teacher_rank = ?, teacher_phone = ?, teacher_email = ?, teacher_address = ?, teacher_birthdate = ?, teacher_gender = ? "
-			+ "WHERE teacher_id = ?;";
+	private static final String DELETE_TEACHER_BY_ID_QUERY = "DELETE FROM teachers WHERE id = ?;";
+	private static final String UPDATE_TEACHER_QUERY = "UPDATE teachers SET name = ?, surname = ?, rank = ?, phone = ?, email = ?, address = ?, birthdate = ?, gender = ? "
+			+ "WHERE id = ?;";
 	private static final String CREATE_TEACHERS_COURSE_QUERY = "INSERT INTO teachers_courses (teacher_id, course_id) VALUES(?, ?);";
 	private static final String DELETE_TEACHERS_COURSE_QUERY = "DELETE FROM teachers_courses WHERE teacher_id = ? AND course_id =?;";
 	private static final String GET_TEACHERS_BY_COURSE_ID_QUERY = "SELECT * FROM teachers "
-			+ "JOIN teachers_courses ON teachers_courses.teacher_id = teachers.teacher_id WHERE course_id = ?;";
+			+ "JOIN teachers_courses ON teachers_courses.teacher_id = teachers.id WHERE course_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
 

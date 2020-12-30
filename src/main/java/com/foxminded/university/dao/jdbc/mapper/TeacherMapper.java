@@ -11,15 +11,15 @@ import com.foxminded.university.model.Teacher;
 
 public class TeacherMapper implements RowMapper<Teacher> {
 
-	public static final String TEACHER_NAME = "teacher_name";
-	public static final String TEACHER_SURNAME = "teacher_surname";
-	public static final String TEACHER_RANK = "teacher_rank";
-	public static final String TEACHER_PHONE = "teacher_phone";
-	public static final String TEACHER_EMAIL = "teacher_email";
-	public static final String TEACHER_ADDRESS = "teacher_address";
-	public static final String TEACHER_BIRTHDATE = "teacher_birthdate";
-	public static final String TEACHER_GENDER = "teacher_gender";
-	public static final String TEACHER_ID = "teacher_id";
+	public static final String TEACHER_ID = "id";
+	public static final String TEACHER_NAME = "name";
+	public static final String TEACHER_SURNAME = "surname";
+	public static final String TEACHER_RANK = "rank";
+	public static final String TEACHER_PHONE = "phone";
+	public static final String TEACHER_EMAIL = "email";
+	public static final String TEACHER_ADDRESS = "address";
+	public static final String TEACHER_BIRTHDATE = "birthdate";
+	public static final String TEACHER_GENDER = "gender";
 
 	@Override
 	public Teacher mapRow(ResultSet rs, int rowNum) throws SQLException {

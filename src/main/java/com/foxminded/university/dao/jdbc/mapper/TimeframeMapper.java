@@ -10,8 +10,8 @@ import com.foxminded.university.model.Timeframe;
 
 public class TimeframeMapper implements RowMapper<Timeframe> {
 
-	public static final String TIMEFRAME_ID = "timeframe_id";
-	public static final String TIMEFRAME_SEQUANCE = "timeframe_sequance";
+	public static final String TIMEFRAME_ID = "id";
+	public static final String TIMEFRAME_SEQUANCE = "sequance";
 	public static final String START_TIME = "start_time";
 	public static final String END_TIME = "end_time";
 

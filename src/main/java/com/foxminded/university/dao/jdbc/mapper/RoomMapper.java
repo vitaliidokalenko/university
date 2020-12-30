@@ -9,9 +9,9 @@ import com.foxminded.university.model.Room;
 
 public class RoomMapper implements RowMapper<Room> {
 
-	public static final String ROOM_ID = "room_id";
-	public static final String ROOM_NAME = "room_name";
-	public static final String ROOM_CAPACITY = "room_capacity";
+	public static final String ROOM_ID = "id";
+	public static final String ROOM_NAME = "name";
+	public static final String ROOM_CAPACITY = "capacity";
 
 	@Override
 	public Room mapRow(ResultSet rs, int rowNum) throws SQLException {

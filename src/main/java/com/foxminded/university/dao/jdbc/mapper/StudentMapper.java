@@ -1,7 +1,5 @@
 package com.foxminded.university.dao.jdbc.mapper;
 
-import static com.foxminded.university.dao.jdbc.mapper.GroupMapper.GROUP_ID;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -14,14 +12,15 @@ import com.foxminded.university.model.Student;
 
 public class StudentMapper implements RowMapper<Student> {
 
-	public static final String STUDENT_NAME = "student_name";
-	public static final String STUDENT_SURNAME = "student_surname";
-	public static final String STUDENT_ID = "student_id";
-	public static final String STUDENT_PHONE = "student_phone";
-	public static final String STUDENT_EMAIL = "student_email";
-	public static final String STUDENT_ADDRESS = "student_address";
-	public static final String STUDENT_BIRTHDATE = "student_birthdate";
-	public static final String STUDENT_GENDER = "student_gender";
+	public static final String STUDENT_ID = "id";
+	public static final String GROUP_ID = "group_id";
+	public static final String STUDENT_NAME = "name";
+	public static final String STUDENT_SURNAME = "surname";
+	public static final String STUDENT_PHONE = "phone";
+	public static final String STUDENT_EMAIL = "email";
+	public static final String STUDENT_ADDRESS = "address";
+	public static final String STUDENT_BIRTHDATE = "birthdate";
+	public static final String STUDENT_GENDER = "gender";
 
 	private JdbcGroupDao groupDao;
 

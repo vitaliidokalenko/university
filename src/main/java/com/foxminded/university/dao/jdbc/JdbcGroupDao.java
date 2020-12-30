@@ -17,13 +17,13 @@ import com.foxminded.university.model.Group;
 @Component
 public class JdbcGroupDao implements GroupDao {
 
-	private static final String CREATE_GROUP_QUERY = "INSERT INTO groups (group_name) VALUES (?);";
-	private static final String DELETE_GROUP_BY_ID_QUERY = "DELETE FROM groups WHERE group_id = ?;";
-	private static final String FIND_GROUP_BY_ID_QUERY = "SELECT * FROM groups WHERE group_id = ?";
+	private static final String CREATE_GROUP_QUERY = "INSERT INTO groups (name) VALUES (?);";
+	private static final String DELETE_GROUP_BY_ID_QUERY = "DELETE FROM groups WHERE id = ?;";
+	private static final String FIND_GROUP_BY_ID_QUERY = "SELECT * FROM groups WHERE id = ?";
 	private static final String GET_GROUPS_QUERY = "SELECT * FROM groups;";
-	private static final String UPDATE_GROUP_QUERY = "UPDATE groups SET group_name = ? WHERE group_id = ?;";
+	private static final String UPDATE_GROUP_QUERY = "UPDATE groups SET name = ? WHERE id = ?;";
 	private static final String GET_GROUPS_BY_LESSON_ID_QUERY = "SELECT * FROM groups "
-			+ "JOIN lessons_groups ON lessons_groups.group_id = groups.group_id WHERE lesson_id = ?;";
+			+ "JOIN lessons_groups ON lessons_groups.group_id = groups.id WHERE lesson_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
 

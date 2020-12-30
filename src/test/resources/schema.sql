@@ -17,113 +17,113 @@ CREATE TYPE gender AS ENUM(
 );
 
 CREATE TABLE courses(
-	course_id SERIAL PRIMARY KEY,
-	course_name VARCHAR ( 100 ) UNIQUE NOT NULL,
-	course_description VARCHAR ( 250 ) DEFAULT NULL
+	id SERIAL PRIMARY KEY,
+	name VARCHAR ( 100 ) UNIQUE NOT NULL,
+	description VARCHAR ( 250 ) DEFAULT NULL
 );
 
 CREATE TABLE rooms(
-	room_id SERIAL PRIMARY KEY,
-	room_name VARCHAR ( 100 ) UNIQUE NOT NULL,
-	room_capacity INT NOT NULL
+	id SERIAL PRIMARY KEY,
+	name VARCHAR ( 100 ) UNIQUE NOT NULL,
+	capacity INT NOT NULL
 );
 
 CREATE TABLE courses_rooms(
 	course_id INT NOT NULL,
 	room_id INT NOT NULL,
 	FOREIGN KEY (course_id)
-		REFERENCES courses(course_id) ON UPDATE CASCADE ON DELETE CASCADE,
+		REFERENCES courses(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (room_id)
-		REFERENCES rooms(room_id) ON UPDATE CASCADE ON DELETE CASCADE,
+		REFERENCES rooms(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	UNIQUE (course_id, room_id)
 );
 
 CREATE TABLE groups(
-	group_id SERIAL PRIMARY KEY,
-	group_name VARCHAR ( 100 ) UNIQUE NOT NULL
+	id SERIAL PRIMARY KEY,
+	name VARCHAR ( 100 ) UNIQUE NOT NULL
 );
 
 CREATE TABLE students(
-	student_id SERIAL PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	group_id INT DEFAULT NULL,
-	student_name VARCHAR ( 100 ) NOT NULL,
-	student_surname VARCHAR ( 100 ) NOT NULL,
-	student_phone VARCHAR ( 100 ) DEFAULT NULL,
-	student_email VARCHAR ( 100 ) DEFAULT NULL,
-	student_address VARCHAR ( 100 ) DEFAULT NULL,
-	student_birthdate DATE DEFAULT NULL,
-	student_gender VARCHAR ( 20 ) NOT NULL,
+	name VARCHAR ( 100 ) NOT NULL,
+	surname VARCHAR ( 100 ) NOT NULL,
+	phone VARCHAR ( 100 ) DEFAULT NULL,
+	email VARCHAR ( 100 ) DEFAULT NULL,
+	address VARCHAR ( 100 ) DEFAULT NULL,
+	birthdate DATE DEFAULT NULL,
+	gender VARCHAR ( 20 ) NOT NULL,
 	CONSTRAINT fk_groups
 		FOREIGN KEY(group_id)
-			REFERENCES groups(group_id)
+			REFERENCES groups(id)
 );
 
 CREATE TABLE students_courses(
 	student_id INT NOT NULL,
 	course_id  INT NOT NULL,
 	FOREIGN KEY (student_id)
-		REFERENCES students(student_id) ON UPDATE CASCADE ON DELETE CASCADE,
+		REFERENCES students(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (course_id)
-		REFERENCES courses(course_id) ON UPDATE CASCADE ON DELETE CASCADE,
+		REFERENCES courses(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	UNIQUE (student_id, course_id)	
 );
 
 CREATE TABLE teachers(
-	teacher_id SERIAL PRIMARY KEY,
-	teacher_name VARCHAR ( 100 ) NOT NULL,
-	teacher_surname VARCHAR ( 100 ) NOT NULL,
-	teacher_rank VARCHAR ( 100 ) DEFAULT NULL,
-	teacher_phone VARCHAR ( 100 ) DEFAULT NULL,
-	teacher_email VARCHAR ( 100 ) DEFAULT NULL,
-	teacher_address VARCHAR ( 100 ) DEFAULT NULL,
-	teacher_birthdate DATE DEFAULT NULL,
-	teacher_gender VARCHAR ( 20 ) NOT NULL
+	id SERIAL PRIMARY KEY,
+	name VARCHAR ( 100 ) NOT NULL,
+	surname VARCHAR ( 100 ) NOT NULL,
+	rank VARCHAR ( 100 ) DEFAULT NULL,
+	phone VARCHAR ( 100 ) DEFAULT NULL,
+	email VARCHAR ( 100 ) DEFAULT NULL,
+	address VARCHAR ( 100 ) DEFAULT NULL,
+	birthdate DATE DEFAULT NULL,
+	gender VARCHAR ( 20 ) NOT NULL
 );
 
 CREATE TABLE teachers_courses(
 	teacher_id INT NOT NULL,
 	course_id  INT NOT NULL,
 	FOREIGN KEY (teacher_id)
-		REFERENCES teachers(teacher_id) ON UPDATE CASCADE ON DELETE CASCADE,
+		REFERENCES teachers(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (course_id)
-		REFERENCES courses(course_id) ON UPDATE CASCADE ON DELETE CASCADE,
+		REFERENCES courses(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	UNIQUE (teacher_id, course_id)	
 );
 
 CREATE TABLE timeframes(
-	timeframe_id SERIAL PRIMARY KEY,
-	timeframe_sequance INT NOT NULL,
+	id SERIAL PRIMARY KEY,
+	sequance INT NOT NULL,
 	start_time TIME NOT NULL,
 	end_time TIME NOT NULL
 );
 
 CREATE TABLE lessons(
-	lesson_id SERIAL PRIMARY KEY,
-	lesson_date DATE NOT NULL,
+	id SERIAL PRIMARY KEY,
+	date DATE NOT NULL,
 	timeframe_id INT NOT NULL,
 	course_id INT NOT NULL,
 	teacher_id INT NOT NULL,
 	room_id INT NOT NULL,
 	CONSTRAINT fk_timeframes
 		FOREIGN KEY(timeframe_id)
-			REFERENCES timeframes(timeframe_id),
+			REFERENCES timeframes(id),
 	CONSTRAINT fk_courses
 		FOREIGN KEY(course_id)
-			REFERENCES courses(course_id),
+			REFERENCES courses(id),
 	CONSTRAINT fk_teachers
 		FOREIGN KEY(teacher_id)
-			REFERENCES teachers(teacher_id),
+			REFERENCES teachers(id),
 	CONSTRAINT fk_rooms
 		FOREIGN KEY(room_id)
-			REFERENCES rooms(room_id)
+			REFERENCES rooms(id)
 );
 
 CREATE TABLE lessons_groups(
 	lesson_id INT NOT NULL,
 	group_id  INT NOT NULL,
 	FOREIGN KEY (lesson_id)
-		REFERENCES lessons(lesson_id) ON UPDATE CASCADE ON DELETE CASCADE,
+		REFERENCES lessons(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY (group_id)
-		REFERENCES groups(group_id) ON UPDATE CASCADE ON DELETE CASCADE,
+		REFERENCES groups(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	UNIQUE (lesson_id, group_id)
 );

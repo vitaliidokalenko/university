@@ -17,13 +17,13 @@ import com.foxminded.university.model.Room;
 @Component
 public class JdbcRoomDao implements RoomDao {
 
-	private static final String CREATE_ROOM_QUERY = "INSERT INTO rooms (room_name, room_capacity) VALUES (?, ?);";
-	private static final String DELETE_ROOM_BY_ID_QUERY = "DELETE FROM rooms WHERE room_id = ?;";
-	private static final String FIND_ROOM_BY_ID_QUERY = "SELECT * FROM rooms WHERE room_id = ?";
+	private static final String CREATE_ROOM_QUERY = "INSERT INTO rooms (name, capacity) VALUES (?, ?);";
+	private static final String DELETE_ROOM_BY_ID_QUERY = "DELETE FROM rooms WHERE id = ?;";
+	private static final String FIND_ROOM_BY_ID_QUERY = "SELECT * FROM rooms WHERE id = ?";
 	private static final String GET_ROOMS_QUERY = "SELECT * FROM rooms;";
-	private static final String UPDATE_ROOM_QUERY = "UPDATE rooms SET room_name = ?, room_capacity = ? WHERE room_id = ?;";
+	private static final String UPDATE_ROOM_QUERY = "UPDATE rooms SET name = ?, capacity = ? WHERE id = ?;";
 	private static final String GET_ROOMS_BY_COURSE_ID_QUERY = "SELECT * FROM rooms "
-			+ "JOIN courses_rooms ON courses_rooms.room_id = rooms.room_id WHERE course_id = ?;";
+			+ "JOIN courses_rooms ON courses_rooms.room_id = rooms.id WHERE course_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
 

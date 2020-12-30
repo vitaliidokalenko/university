@@ -19,12 +19,12 @@ import com.foxminded.university.model.Timeframe;
 @Component
 public class JdbcTimeframeDao implements TimeframeDao {
 
-	private static final String CREATE_TIMEFRAME_QUERY = "INSERT INTO timeframes (timeframe_sequance, start_time, end_time) "
+	private static final String CREATE_TIMEFRAME_QUERY = "INSERT INTO timeframes (sequance, start_time, end_time) "
 			+ "VALUES (?, ?, ?);";
-	private static final String FIND_TIMEFRAME_BY_ID_QUERY = "SELECT * FROM timeframes WHERE timeframe_id = ?;";
+	private static final String FIND_TIMEFRAME_BY_ID_QUERY = "SELECT * FROM timeframes WHERE id = ?;";
 	private static final String GET_TIMEFRAMES_QUERY = "SELECT * FROM timeframes;";
-	private static final String DELETE_TIMEFRAME_BY_ID_QUERY = "DELETE FROM timeframes WHERE timeframe_id = ?;";
-	private static final String UPDATE_TIMEFRAME_QUERY = "UPDATE timeframes SET timeframe_sequance = ?, start_time = ?, end_time = ? WHERE timeframe_id = ?";
+	private static final String DELETE_TIMEFRAME_BY_ID_QUERY = "DELETE FROM timeframes WHERE id = ?;";
+	private static final String UPDATE_TIMEFRAME_QUERY = "UPDATE timeframes SET sequance = ?, start_time = ?, end_time = ? WHERE id = ?";
 
 	private JdbcTemplate jdbcTemplate;
 

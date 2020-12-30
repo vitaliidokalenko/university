@@ -9,9 +9,9 @@ import com.foxminded.university.model.Course;
 
 public class CourseMapper implements RowMapper<Course> {
 
-	public static final String COURSE_ID = "course_id";
-	public static final String COURSE_NAME = "course_name";
-	public static final String COURSE_DESCRIPTION = "course_description";
+	public static final String COURSE_ID = "id";
+	public static final String COURSE_NAME = "name";
+	public static final String COURSE_DESCRIPTION = "description";
 
 	@Override
 	public Course mapRow(ResultSet rs, int rowNum) throws SQLException {
