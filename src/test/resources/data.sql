@@ -1,12 +1,12 @@
 INSERT INTO groups (name) VALUES ('AA-11');
 INSERT INTO groups (name) VALUES ('BB-22');
 INSERT INTO groups (name) VALUES ('CC-33');
-INSERT INTO students (group_id, name, surname, birthdate, gender) VALUES (1, 'Anna', 'Dvorecka', '2001-01-01', 'FEMALE');
-INSERT INTO students (group_id, name, surname, birthdate, gender) VALUES (2, 'Sergii', 'Koklush', '2002-02-02', 'MALE');
-INSERT INTO students (group_id, name, surname, birthdate, gender) VALUES (null, 'Vladislav', 'Ostrovski', '2003-03-03', 'MALE');
-INSERT INTO teachers (name, surname, birthdate, gender) VALUES ('Victor', 'Doncov', '1991-01-01', 'MALE');
-INSERT INTO teachers (name, surname, birthdate, gender) VALUES ('Aleksandra', 'Ivanova', '1992-02-02', 'FEMALE');
-INSERT INTO teachers (name, surname, birthdate, gender) VALUES ('Anatoly', 'Sviridov', '1993-03-03', 'MALE');
+INSERT INTO students (group_id, name, surname, birth_date, gender) VALUES (1, 'Anna', 'Dvorecka', '2001-01-01', 'FEMALE');
+INSERT INTO students (group_id, name, surname, birth_date, gender) VALUES (2, 'Sergii', 'Koklush', '2002-02-02', 'MALE');
+INSERT INTO students (group_id, name, surname, birth_date, gender) VALUES (null, 'Vladislav', 'Ostrovski', '2003-03-03', 'MALE');
+INSERT INTO teachers (name, surname, birth_date, gender) VALUES ('Victor', 'Doncov', '1991-01-01', 'MALE');
+INSERT INTO teachers (name, surname, birth_date, gender) VALUES ('Aleksandra', 'Ivanova', '1992-02-02', 'FEMALE');
+INSERT INTO teachers (name, surname, birth_date, gender) VALUES ('Anatoly', 'Sviridov', '1993-03-03', 'MALE');
 INSERT INTO timeframes (sequance, start_time, end_time) VALUES (1, '08:00', '09:20');
 INSERT INTO timeframes (sequance, start_time, end_time) VALUES (2, '09:40', '11:00');
 INSERT INTO timeframes (sequance, start_time, end_time) VALUES (3, '11:20', '12:40');

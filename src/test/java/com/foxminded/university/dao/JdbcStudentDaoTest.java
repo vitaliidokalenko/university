@@ -40,16 +40,16 @@ public class JdbcStudentDaoTest {
 		Student student1 = new Student("Anna", "Dvorecka");
 		student1.setId(1L);
 		student1.setGroup(group1);
-		student1.setBirthdate(LocalDate.parse("2001-01-01"));
+		student1.setBirthDate(LocalDate.parse("2001-01-01"));
 		student1.setGender(Gender.FEMALE);
 		Student student2 = new Student("Sergii", "Koklush");
 		student2.setId(2L);
 		student2.setGroup(group2);
-		student2.setBirthdate(LocalDate.parse("2002-02-02"));
+		student2.setBirthDate(LocalDate.parse("2002-02-02"));
 		student2.setGender(Gender.MALE);
 		Student student3 = new Student("Vladislav", "Ostrovski");
 		student3.setId(3L);
-		student3.setBirthdate(LocalDate.parse("2003-03-03"));
+		student3.setBirthDate(LocalDate.parse("2003-03-03"));
 		student3.setGender(Gender.MALE);
 		List<Student> expected = Arrays.asList(student1, student2, student3);
 
@@ -65,7 +65,7 @@ public class JdbcStudentDaoTest {
 		group.setId(1L);
 		Student expected = new Student("Anna", "Dvorecka");
 		expected.setGroup(group);
-		expected.setBirthdate(LocalDate.parse("2001-01-01"));
+		expected.setBirthDate(LocalDate.parse("2001-01-01"));
 		expected.setGender(Gender.FEMALE);
 
 		studentDao.create(expected);
@@ -79,7 +79,7 @@ public class JdbcStudentDaoTest {
 	public void givenStudentGroupIsNull_whenCreate_thenStudentIsAddedToTable() {
 		Student expected = new Student("Anna", "Dvorecka");
 		expected.setGroup(null);
-		expected.setBirthdate(LocalDate.parse("2001-01-01"));
+		expected.setBirthDate(LocalDate.parse("2001-01-01"));
 		expected.setGender(Gender.FEMALE);
 
 		studentDao.create(expected);
@@ -96,7 +96,7 @@ public class JdbcStudentDaoTest {
 		Student expected = new Student("Anna", "Dvorecka");
 		expected.setId(1L);
 		expected.setGroup(group);
-		expected.setBirthdate(LocalDate.parse("2001-01-01"));
+		expected.setBirthDate(LocalDate.parse("2001-01-01"));
 		expected.setGender(Gender.FEMALE);
 
 		Student actual = studentDao.findById(1L);
@@ -111,7 +111,7 @@ public class JdbcStudentDaoTest {
 		Student expected = new Student("Andrey", "Skorochod");
 		expected.setId(1L);
 		expected.setGroup(group);
-		expected.setBirthdate(LocalDate.parse("2011-01-01"));
+		expected.setBirthDate(LocalDate.parse("2011-01-01"));
 		expected.setGender(Gender.MALE);
 
 		studentDao.update(expected);
@@ -139,7 +139,7 @@ public class JdbcStudentDaoTest {
 		Student student = new Student("Anna", "Dvorecka");
 		student.setId(1L);
 		student.setGroup(group);
-		student.setBirthdate(LocalDate.parse("2001-01-01"));
+		student.setBirthDate(LocalDate.parse("2001-01-01"));
 		student.setGender(Gender.FEMALE);
 		List<Student> expected = Arrays.asList(student);
 
@@ -182,12 +182,12 @@ public class JdbcStudentDaoTest {
 		Student student1 = new Student("Anna", "Dvorecka");
 		student1.setId(1L);
 		student1.setGroup(group1);
-		student1.setBirthdate(LocalDate.parse("2001-01-01"));
+		student1.setBirthDate(LocalDate.parse("2001-01-01"));
 		student1.setGender(Gender.FEMALE);
 		Student student2 = new Student("Sergii", "Koklush");
 		student2.setId(2L);
 		student2.setGroup(group2);
-		student2.setBirthdate(LocalDate.parse("2002-02-02"));
+		student2.setBirthDate(LocalDate.parse("2002-02-02"));
 		student2.setGender(Gender.MALE);
 		List<Student> expected = Arrays.asList(student1, student2);
 

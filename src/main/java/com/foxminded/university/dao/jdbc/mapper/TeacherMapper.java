@@ -18,7 +18,7 @@ public class TeacherMapper implements RowMapper<Teacher> {
 	public static final String TEACHER_PHONE = "phone";
 	public static final String TEACHER_EMAIL = "email";
 	public static final String TEACHER_ADDRESS = "address";
-	public static final String TEACHER_BIRTHDATE = "birthdate";
+	public static final String TEACHER_BIRTH_DATE = "birth_date";
 	public static final String TEACHER_GENDER = "gender";
 
 	@Override
@@ -29,7 +29,7 @@ public class TeacherMapper implements RowMapper<Teacher> {
 		teacher.setPhone(rs.getString(TEACHER_PHONE));
 		teacher.setEmail(rs.getString(TEACHER_EMAIL));
 		teacher.setAddress(rs.getString(TEACHER_ADDRESS));
-		teacher.setBirthdate(rs.getObject(TEACHER_BIRTHDATE, LocalDate.class));
+		teacher.setBirthDate(rs.getObject(TEACHER_BIRTH_DATE, LocalDate.class));
 		teacher.setGender(Gender.valueOf(rs.getString(TEACHER_GENDER)));
 		return teacher;
 	}

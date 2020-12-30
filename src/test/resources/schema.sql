@@ -51,7 +51,7 @@ CREATE TABLE students(
 	phone VARCHAR ( 100 ) DEFAULT NULL,
 	email VARCHAR ( 100 ) DEFAULT NULL,
 	address VARCHAR ( 100 ) DEFAULT NULL,
-	birthdate DATE DEFAULT NULL,
+	birth_date DATE DEFAULT NULL,
 	gender VARCHAR ( 20 ) NOT NULL,
 	CONSTRAINT fk_groups
 		FOREIGN KEY(group_id)
@@ -76,7 +76,7 @@ CREATE TABLE teachers(
 	phone VARCHAR ( 100 ) DEFAULT NULL,
 	email VARCHAR ( 100 ) DEFAULT NULL,
 	address VARCHAR ( 100 ) DEFAULT NULL,
-	birthdate DATE DEFAULT NULL,
+	birth_date DATE DEFAULT NULL,
 	gender VARCHAR ( 20 ) NOT NULL
 );
 

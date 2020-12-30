@@ -17,12 +17,12 @@ import com.foxminded.university.model.Teacher;
 @Component
 public class JdbcTeacherDao implements TeacherDao {
 
-	private static final String CREATE_TEACHER_QUERY = "INSERT INTO teachers (name, surname, rank, phone, email, address, birthdate, gender) "
+	private static final String CREATE_TEACHER_QUERY = "INSERT INTO teachers (name, surname, rank, phone, email, address, birth_date, gender) "
 			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 	private static final String FIND_TEACHER_BY_ID_QUERY = "SELECT * FROM teachers WHERE id = ?;";
 	private static final String GET_TEACHERS_QUERY = "SELECT * FROM teachers;";
 	private static final String DELETE_TEACHER_BY_ID_QUERY = "DELETE FROM teachers WHERE id = ?;";
-	private static final String UPDATE_TEACHER_QUERY = "UPDATE teachers SET name = ?, surname = ?, rank = ?, phone = ?, email = ?, address = ?, birthdate = ?, gender = ? "
+	private static final String UPDATE_TEACHER_QUERY = "UPDATE teachers SET name = ?, surname = ?, rank = ?, phone = ?, email = ?, address = ?, birth_date = ?, gender = ? "
 			+ "WHERE id = ?;";
 	private static final String CREATE_TEACHERS_COURSE_QUERY = "INSERT INTO teachers_courses (teacher_id, course_id) VALUES(?, ?);";
 	private static final String DELETE_TEACHERS_COURSE_QUERY = "DELETE FROM teachers_courses WHERE teacher_id = ? AND course_id =?;";
@@ -47,7 +47,7 @@ public class JdbcTeacherDao implements TeacherDao {
 			statement.setString(4, teacher.getPhone());
 			statement.setString(5, teacher.getEmail());
 			statement.setString(6, teacher.getAddress());
-			statement.setObject(7, teacher.getBirthdate());
+			statement.setObject(7, teacher.getBirthDate());
 			statement.setString(8, teacher.getGender().toString());
 			return statement;
 		}, keyHolder);
@@ -73,7 +73,7 @@ public class JdbcTeacherDao implements TeacherDao {
 				teacher.getPhone(),
 				teacher.getEmail(),
 				teacher.getAddress(),
-				teacher.getBirthdate(),
+				teacher.getBirthDate(),
 				teacher.getGender().toString(),
 				teacher.getId());
 	}

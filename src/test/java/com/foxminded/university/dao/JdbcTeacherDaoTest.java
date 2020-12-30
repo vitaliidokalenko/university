@@ -34,15 +34,15 @@ public class JdbcTeacherDaoTest {
 	public void givenTeachers_whenGetAll_thenGetRightListOfTeachers() {
 		Teacher teacher1 = new Teacher("Victor", "Doncov");
 		teacher1.setId(1L);
-		teacher1.setBirthdate(LocalDate.parse("1991-01-01"));
+		teacher1.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher1.setGender(Gender.MALE);
 		Teacher teacher2 = new Teacher("Aleksandra", "Ivanova");
 		teacher2.setId(2L);
-		teacher2.setBirthdate(LocalDate.parse("1992-02-02"));
+		teacher2.setBirthDate(LocalDate.parse("1992-02-02"));
 		teacher2.setGender(Gender.FEMALE);
 		Teacher teacher3 = new Teacher("Anatoly", "Sviridov");
 		teacher3.setId(3L);
-		teacher3.setBirthdate(LocalDate.parse("1993-03-03"));
+		teacher3.setBirthDate(LocalDate.parse("1993-03-03"));
 		teacher3.setGender(Gender.MALE);
 		List<Teacher> expected = Arrays.asList(teacher1, teacher2, teacher3);
 
@@ -56,7 +56,7 @@ public class JdbcTeacherDaoTest {
 	public void givenTeacher_whenCreate_thenTeacherIsAddedToTable() {
 		Teacher expected = new Teacher("Victor", "Doncov");
 		expected.setId(1L);
-		expected.setBirthdate(LocalDate.parse("1991-01-01"));
+		expected.setBirthDate(LocalDate.parse("1991-01-01"));
 		expected.setGender(Gender.MALE);
 
 		teacherDao.create(expected);
@@ -70,7 +70,7 @@ public class JdbcTeacherDaoTest {
 	public void givenId_whenFindById_thenGetRightTeacher() {
 		Teacher expected = new Teacher("Victor", "Doncov");
 		expected.setId(1L);
-		expected.setBirthdate(LocalDate.parse("1991-01-01"));
+		expected.setBirthDate(LocalDate.parse("1991-01-01"));
 		expected.setGender(Gender.MALE);
 
 		Teacher actual = teacherDao.findById(1L);
@@ -83,7 +83,7 @@ public class JdbcTeacherDaoTest {
 	public void givenUpdatedFields_whenUpdate_thenGetRightTeacher() {
 		Teacher expected = new Teacher("Oleg", "Gricina");
 		expected.setId(1L);
-		expected.setBirthdate(LocalDate.parse("1994-04-04"));
+		expected.setBirthDate(LocalDate.parse("1994-04-04"));
 		expected.setGender(Gender.MALE);
 
 		teacherDao.update(expected);
@@ -131,11 +131,11 @@ public class JdbcTeacherDaoTest {
 	public void givenCourseId_whenGetTeachersByCourseId_thenGetRightListOfTeachers() {
 		Teacher teacher1 = new Teacher("Victor", "Doncov");
 		teacher1.setId(1L);
-		teacher1.setBirthdate(LocalDate.parse("1991-01-01"));
+		teacher1.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher1.setGender(Gender.MALE);
 		Teacher teacher2 = new Teacher("Aleksandra", "Ivanova");
 		teacher2.setId(2L);
-		teacher2.setBirthdate(LocalDate.parse("1992-02-02"));
+		teacher2.setBirthDate(LocalDate.parse("1992-02-02"));
 		teacher2.setGender(Gender.FEMALE);
 		List<Teacher> expected = Arrays.asList(teacher1, teacher2);
 

@@ -15,7 +15,7 @@ public class Teacher {
 	private String phone;
 	private String email;
 	private String address;
-	private LocalDate birthdate;
+	private LocalDate birthDate;
 	private Gender gender;
 
 	public Teacher(String name, String surname) {
@@ -87,12 +87,12 @@ public class Teacher {
 		this.address = address;
 	}
 
-	public LocalDate getBirthdate() {
-		return birthdate;
+	public LocalDate getBirthDate() {
+		return birthDate;
 	}
 
-	public void setBirthdate(LocalDate birthdate) {
-		this.birthdate = birthdate;
+	public void setBirthDate(LocalDate birthDate) {
+		this.birthDate = birthDate;
 	}
 
 	public Gender getGender() {
@@ -105,7 +105,7 @@ public class Teacher {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(address, birthdate, email, gender, id, name, phone, rank, surname);
+		return Objects.hash(address, birthDate, email, gender, id, name, phone, rank, surname);
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class Teacher {
 			return false;
 		}
 		Teacher other = (Teacher) obj;
-		return Objects.equals(address, other.address) && Objects.equals(birthdate, other.birthdate)
+		return Objects.equals(address, other.address) && Objects.equals(birthDate, other.birthDate)
 				&& Objects.equals(email, other.email) && gender == other.gender && Objects.equals(id, other.id)
 				&& Objects.equals(name, other.name) && Objects.equals(phone, other.phone)
 				&& Objects.equals(rank, other.rank) && Objects.equals(surname, other.surname);

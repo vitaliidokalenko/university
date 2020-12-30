@@ -60,15 +60,15 @@ public class JdbcLessonDaoTest {
 		course3.setId(3L);
 		Teacher teacher1 = new Teacher("Victor", "Doncov");
 		teacher1.setId(1L);
-		teacher1.setBirthdate(LocalDate.parse("1991-01-01"));
+		teacher1.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher1.setGender(Gender.MALE);
 		Teacher teacher2 = new Teacher("Aleksandra", "Ivanova");
 		teacher2.setId(2L);
-		teacher2.setBirthdate(LocalDate.parse("1992-02-02"));
+		teacher2.setBirthDate(LocalDate.parse("1992-02-02"));
 		teacher2.setGender(Gender.FEMALE);
 		Teacher teacher3 = new Teacher("Anatoly", "Sviridov");
 		teacher3.setId(3L);
-		teacher3.setBirthdate(LocalDate.parse("1993-03-03"));
+		teacher3.setBirthDate(LocalDate.parse("1993-03-03"));
 		teacher3.setGender(Gender.MALE);
 		Room room1 = new Room("A111");
 		room1.setId(1L);
@@ -119,7 +119,7 @@ public class JdbcLessonDaoTest {
 		course.setId(1L);
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
-		teacher.setBirthdate(LocalDate.parse("1991-01-01"));
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
 		Room room = new Room("A111");
 		room.setId(1L);
@@ -150,7 +150,7 @@ public class JdbcLessonDaoTest {
 		course.setId(1L);
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
-		teacher.setBirthdate(LocalDate.parse("1991-01-01"));
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
 		Room room = new Room("A111");
 		room.setId(1L);
@@ -180,7 +180,7 @@ public class JdbcLessonDaoTest {
 		course.setId(3L);
 		Teacher teacher = new Teacher("Anatoly", "Sviridov");
 		teacher.setId(3L);
-		teacher.setBirthdate(LocalDate.parse("1993-03-03"));
+		teacher.setBirthDate(LocalDate.parse("1993-03-03"));
 		teacher.setGender(Gender.MALE);
 		Room room = new Room("B222");
 		room.setId(2L);
@@ -253,11 +253,11 @@ public class JdbcLessonDaoTest {
 		course2.setId(2L);
 		Teacher teacher1 = new Teacher("Victor", "Doncov");
 		teacher1.setId(1L);
-		teacher1.setBirthdate(LocalDate.parse("1991-01-01"));
+		teacher1.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher1.setGender(Gender.MALE);
 		Teacher teacher2 = new Teacher("Aleksandra", "Ivanova");
 		teacher2.setId(2L);
-		teacher2.setBirthdate(LocalDate.parse("1992-02-02"));
+		teacher2.setBirthDate(LocalDate.parse("1992-02-02"));
 		teacher2.setGender(Gender.FEMALE);
 		Room room1 = new Room("A111");
 		room1.setId(1L);
@@ -298,7 +298,7 @@ public class JdbcLessonDaoTest {
 		course.setId(1L);
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
-		teacher.setBirthdate(LocalDate.parse("1991-01-01"));
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
 		Room room = new Room("A111");
 		room.setId(1L);
@@ -329,7 +329,7 @@ public class JdbcLessonDaoTest {
 		course.setId(1L);
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
-		teacher.setBirthdate(LocalDate.parse("1991-01-01"));
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
 		Room room = new Room("A111");
 		room.setId(1L);
@@ -360,7 +360,7 @@ public class JdbcLessonDaoTest {
 		course.setId(1L);
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
-		teacher.setBirthdate(LocalDate.parse("1991-01-01"));
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
 		Room room = new Room("A111");
 		room.setId(1L);
@@ -391,7 +391,7 @@ public class JdbcLessonDaoTest {
 		course.setId(1L);
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
-		teacher.setBirthdate(LocalDate.parse("1991-01-01"));
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
 		Room room = new Room("A111");
 		room.setId(1L);

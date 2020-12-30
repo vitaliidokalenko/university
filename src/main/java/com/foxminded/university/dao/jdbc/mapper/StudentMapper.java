@@ -19,7 +19,7 @@ public class StudentMapper implements RowMapper<Student> {
 	public static final String STUDENT_PHONE = "phone";
 	public static final String STUDENT_EMAIL = "email";
 	public static final String STUDENT_ADDRESS = "address";
-	public static final String STUDENT_BIRTHDATE = "birthdate";
+	public static final String STUDENT_BIRTH_DATE = "birth_date";
 	public static final String STUDENT_GENDER = "gender";
 
 	private JdbcGroupDao groupDao;
@@ -35,7 +35,7 @@ public class StudentMapper implements RowMapper<Student> {
 		student.setPhone(rs.getString(STUDENT_PHONE));
 		student.setEmail(rs.getString(STUDENT_EMAIL));
 		student.setAddress(rs.getString(STUDENT_ADDRESS));
-		student.setBirthdate(rs.getObject(STUDENT_BIRTHDATE, LocalDate.class));
+		student.setBirthDate(rs.getObject(STUDENT_BIRTH_DATE, LocalDate.class));
 		student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
 		student.setGroup(groupDao.findById(rs.getLong(GROUP_ID)));
 		return student;

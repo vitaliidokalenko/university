@@ -1,7 +1,7 @@
 package com.foxminded.university.dao.jdbc;
 
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_ADDRESS;
-import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_BIRTHDATE;
+import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_BIRTH_DATE;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_EMAIL;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_GENDER;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_ID;
@@ -28,12 +28,12 @@ import com.foxminded.university.model.Student;
 @Component
 public class JdbcStudentDao implements StudentDao {
 
-	private static final String CREATE_STUDENT_QUERY = "INSERT INTO students (group_id, name, surname, phone, email, address, birthdate, gender) "
+	private static final String CREATE_STUDENT_QUERY = "INSERT INTO students (group_id, name, surname, phone, email, address, birth_date, gender) "
 			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 	private static final String FIND_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE id = ?;";
 	private static final String GET_STUDENTS_QUERY = "SELECT * FROM students;";
 	private static final String DELETE_STUDENT_BY_ID_QUERY = "DELETE FROM students WHERE id = ?;";
-	private static final String UPDATE_STUDENT_QUERY = "UPDATE students SET id = ?, name = ?, surname = ?, phone = ?, email = ?, address = ?, birthdate = ?, gender = ? "
+	private static final String UPDATE_STUDENT_QUERY = "UPDATE students SET id = ?, name = ?, surname = ?, phone = ?, email = ?, address = ?, birth_date = ?, gender = ? "
 			+ "WHERE id = ?;";
 	private static final String GET_STUDENTS_BY_GROUP_ID_QUERY = "SELECT * FROM students WHERE group_id = ?;";
 	private static final String CREATE_STUDENT_COURSE_QUERY = "INSERT INTO students_courses (student_id, course_id) VALUES(?, ?);";
@@ -61,7 +61,7 @@ public class JdbcStudentDao implements StudentDao {
 			statement.setString(4, student.getPhone());
 			statement.setString(5, student.getEmail());
 			statement.setString(6, student.getAddress());
-			statement.setObject(7, student.getBirthdate());
+			statement.setObject(7, student.getBirthDate());
 			statement.setString(8, student.getGender().toString());
 			return statement;
 		}, keyHolder);
@@ -88,7 +88,7 @@ public class JdbcStudentDao implements StudentDao {
 				student.getPhone(),
 				student.getEmail(),
 				student.getAddress(),
-				student.getBirthdate(),
+				student.getBirthDate(),
 				student.getGender().toString(),
 				student.getId());
 	}
@@ -106,7 +106,7 @@ public class JdbcStudentDao implements StudentDao {
 			student.setPhone(rs.getString(STUDENT_PHONE));
 			student.setEmail(rs.getString(STUDENT_EMAIL));
 			student.setAddress(rs.getString(STUDENT_ADDRESS));
-			student.setBirthdate(rs.getObject(STUDENT_BIRTHDATE, LocalDate.class));
+			student.setBirthDate(rs.getObject(STUDENT_BIRTH_DATE, LocalDate.class));
 			student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
 			student.setGroup(group);
 			return student;
