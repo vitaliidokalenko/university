@@ -18,9 +18,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.dao.jdbc.mapper.StudentMapper;
+import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
@@ -43,13 +45,16 @@ public class JdbcStudentDao implements StudentDao {
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcGroupDao groupDao;
+	private JdbcCourseDao courseDao;
 
-	public JdbcStudentDao(JdbcTemplate jdbcTemplate, JdbcGroupDao groupDao) {
+	public JdbcStudentDao(JdbcTemplate jdbcTemplate, JdbcGroupDao groupDao, JdbcCourseDao courseDao) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.groupDao = groupDao;
+		this.courseDao = courseDao;
 	}
 
 	@Override
+	@Transactional
 	public void create(Student student) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbcTemplate.update(connection -> {
@@ -66,6 +71,9 @@ public class JdbcStudentDao implements StudentDao {
 			return statement;
 		}, keyHolder);
 		student.setId(keyHolder.getKey().longValue());
+		student.getCourses()
+				.stream()
+				.forEach(c -> jdbcTemplate.update(CREATE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
 	}
 
 	@Override
@@ -80,6 +88,7 @@ public class JdbcStudentDao implements StudentDao {
 	}
 
 	@Override
+	@Transactional
 	public void update(Student student) {
 		jdbcTemplate.update(UPDATE_STUDENT_QUERY,
 				Optional.ofNullable(student).map(Student::getGroup).map(Group::getId).orElse(null),
@@ -91,6 +100,14 @@ public class JdbcStudentDao implements StudentDao {
 				student.getBirthDate(),
 				student.getGender().toString(),
 				student.getId());
+		List<Course> courses = courseDao.getCoursesByStudentId(student.getId());
+		courses.stream()
+				.filter(c -> !student.getCourses().contains(c))
+				.forEach(c -> jdbcTemplate.update(DELETE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
+		student.getCourses()
+				.stream()
+				.filter(c -> !courses.contains(c))
+				.forEach(c -> jdbcTemplate.update(CREATE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
 	}
 
 	@Override
@@ -111,16 +128,6 @@ public class JdbcStudentDao implements StudentDao {
 			student.setGroup(group);
 			return student;
 		});
-	}
-
-	@Override
-	public void createStudentCourse(Long studentId, Long courseId) {
-		jdbcTemplate.update(CREATE_STUDENT_COURSE_QUERY, studentId, courseId);
-	}
-
-	@Override
-	public void deleteStudentCourse(Long studentId, Long courseId) {
-		jdbcTemplate.update(DELETE_STUDENT_COURSE_QUERY, studentId, courseId);
 	}
 
 	@Override

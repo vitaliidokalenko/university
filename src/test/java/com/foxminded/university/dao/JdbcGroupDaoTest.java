@@ -2,6 +2,7 @@ package com.foxminded.university.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
+import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTableWhere;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,12 +46,13 @@ public class JdbcGroupDaoTest {
 	@Test
 	@Sql("/schema.sql")
 	public void givenGroup_whenCreate_thenGroupIsAddedToTable() {
-		Group expected = new Group("AA-22");
+		Group group = new Group("AA-22");
+		int expectedRows = countRowsInTable(jdbcTemplate, GROUPS_TABLE_NAME) + 1;
 
-		groupDao.create(expected);
+		groupDao.create(group);
 
-		Group actual = groupDao.getAll().get(0);
-		assertEquals(expected, actual);
+		int actualRows = countRowsInTable(jdbcTemplate, GROUPS_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
 	}
 
 	@Test
@@ -66,14 +68,15 @@ public class JdbcGroupDaoTest {
 
 	@Test
 	@Sql({ "/schema.sql", "/dataGroups.sql" })
-	public void givenUpdatedFields_whenUpdate_thenGetRightGroup() {
-		Group expected = new Group("DD-44");
-		expected.setId(1L);
+	public void givenUpdatedFields_whenUpdate_thenGroupsTableIsUpdated() {
+		Group group = new Group("DD-44");
+		group.setId(1L);
+		int expectedRows = countRowsInTableWhere(jdbcTemplate, GROUPS_TABLE_NAME, "name = 'DD-44'") + 1;
 
-		groupDao.update(expected);
+		groupDao.update(group);
 
-		Group actual = groupDao.getAll().get(0);
-		assertEquals(expected, actual);
+		int actualRows = countRowsInTableWhere(jdbcTemplate, GROUPS_TABLE_NAME, "name = 'DD-44'");
+		assertEquals(expectedRows, actualRows);
 	}
 
 	@Test

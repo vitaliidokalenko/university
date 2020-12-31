@@ -15,10 +15,6 @@ public interface TeacherDao {
 	public void update(Teacher teacher);
 
 	public void deleteById(Long teacherId);
-	
-	public void createTeacherCourse(Long teacherId, Long courseId);
-	
-	public void deleteTeacherCourse(Long teacherId, Long courseId);
-	
+
 	public List<Teacher> getTeachersByCourseId(Long courseId);
 }

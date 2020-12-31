@@ -15,10 +15,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.jdbc.mapper.LessonMapper;
 import com.foxminded.university.model.Course;
+import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
@@ -48,22 +50,24 @@ public class JdbcLessonDao implements LessonDao {
 	private JdbcCourseDao courseDao;
 	private JdbcTeacherDao teacherDao;
 	private JdbcRoomDao roomDao;
+	private JdbcGroupDao groupDao;
 
 	public JdbcLessonDao(JdbcTemplate jdbcTemplate, JdbcTimeframeDao timeframeDao, JdbcCourseDao courseDao,
-			JdbcTeacherDao teacherDao, JdbcRoomDao roomDao) {
+			JdbcTeacherDao teacherDao, JdbcRoomDao roomDao, JdbcGroupDao groupDao) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.timeframeDao = timeframeDao;
 		this.courseDao = courseDao;
 		this.teacherDao = teacherDao;
 		this.roomDao = roomDao;
+		this.groupDao = groupDao;
 	}
 
 	@Override
+	@Transactional
 	public void create(Lesson lesson) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbcTemplate.update(connection -> {
-			PreparedStatement statement = connection.prepareStatement(CREATE_LESSON_QUERY,
-					new String[] { LESSON_ID });
+			PreparedStatement statement = connection.prepareStatement(CREATE_LESSON_QUERY, new String[] { LESSON_ID });
 			statement.setObject(1, lesson.getDate());
 			statement.setLong(2, lesson.getTimeframe().getId());
 			statement.setLong(3, lesson.getCourse().getId());
@@ -72,6 +76,9 @@ public class JdbcLessonDao implements LessonDao {
 			return statement;
 		}, keyHolder);
 		lesson.setId(keyHolder.getKey().longValue());
+		lesson.getGroups()
+				.stream()
+				.forEach(g -> jdbcTemplate.update(CREATE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
 	}
 
 	@Override
@@ -87,6 +94,7 @@ public class JdbcLessonDao implements LessonDao {
 	}
 
 	@Override
+	@Transactional
 	public void update(Lesson lesson) {
 		jdbcTemplate.update(UPDATE_LESSON_QUERY,
 				lesson.getDate(),
@@ -95,22 +103,19 @@ public class JdbcLessonDao implements LessonDao {
 				lesson.getTeacher().getId(),
 				lesson.getRoom().getId(),
 				lesson.getId());
+		List<Group> groups = groupDao.getGroupsByLessonId(lesson.getId());
+		groups.stream()
+				.filter(g -> !lesson.getGroups().contains(g))
+				.forEach(g -> jdbcTemplate.update(DELETE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
+		lesson.getGroups()
+				.stream()
+				.filter(g -> !groups.contains(g))
+				.forEach(g -> jdbcTemplate.update(CREATE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
 	}
 
 	@Override
 	public void deleteById(Long lessonId) {
 		jdbcTemplate.update(DELETE_LESSON_BY_ID_QUERY, lessonId);
-	}
-
-	@Override
-	public void createLessonsGroups(Long lessonId, Long groupId) {
-		jdbcTemplate.update(CREATE_LESSON_GROUP_QUERY, lessonId, groupId);
-
-	}
-
-	@Override
-	public void deleteLessonsGroups(Long lessonId, Long groupId) {
-		jdbcTemplate.update(DELETE_LESSON_GROUP_QUERY, lessonId, groupId);
 	}
 
 	@Override

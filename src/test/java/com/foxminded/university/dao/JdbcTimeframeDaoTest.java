@@ -2,6 +2,7 @@ package com.foxminded.university.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
+import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTableWhere;
 
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -55,16 +56,17 @@ public class JdbcTimeframeDaoTest {
 	@Test
 	@Sql("/schema.sql")
 	public void givenTimeframe_whenCreate_thenTimeframeIsAddedToTable() {
-		Timeframe expected = new Timeframe();
-		expected.setId(1L);
-		expected.setSequance(1);
-		expected.setStartTime(LocalTime.parse("08:00"));
-		expected.setEndTime(LocalTime.parse("09:20"));
+		Timeframe timaframe = new Timeframe();
+		timaframe.setId(1L);
+		timaframe.setSequance(1);
+		timaframe.setStartTime(LocalTime.parse("08:00"));
+		timaframe.setEndTime(LocalTime.parse("09:20"));
+		int expectedRows = countRowsInTable(jdbcTemplate, TIMEFRAMES_TABLE_NAME) + 1;
 
-		timeframeDao.create(expected);
+		timeframeDao.create(timaframe);
 
-		Timeframe actual = timeframeDao.getAll().get(0);
-		assertEquals(expected, actual);
+		int actualRows = countRowsInTable(jdbcTemplate, TIMEFRAMES_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
 	}
 
 	@Test
@@ -83,17 +85,18 @@ public class JdbcTimeframeDaoTest {
 
 	@Test
 	@Sql({ "/schema.sql", "/dataTimeframes.sql" })
-	public void givenUpdatedFields_whenUpdate_thenGetRightTimeframe() {
-		Timeframe expected = new Timeframe();
-		expected.setId(1L);
-		expected.setSequance(10);
-		expected.setStartTime(LocalTime.parse("17:00"));
-		expected.setEndTime(LocalTime.parse("19:20"));
+	public void givenUpdatedFields_whenUpdate_thenTimeframesTableIsUpdated() {
+		Timeframe timeframe = new Timeframe();
+		timeframe.setId(1L);
+		timeframe.setSequance(10);
+		timeframe.setStartTime(LocalTime.parse("17:00"));
+		timeframe.setEndTime(LocalTime.parse("19:20"));
+		int expectedRows = countRowsInTableWhere(jdbcTemplate, TIMEFRAMES_TABLE_NAME, "start_time = '17:00'") + 1;
 
-		timeframeDao.update(expected);
+		timeframeDao.update(timeframe);
 
-		Timeframe actual = timeframeDao.getAll().get(0);
-		assertEquals(expected, actual);
+		int actualRows = countRowsInTableWhere(jdbcTemplate, TIMEFRAMES_TABLE_NAME, "start_time = '17:00'");
+		assertEquals(expectedRows, actualRows);
 	}
 
 	@Test

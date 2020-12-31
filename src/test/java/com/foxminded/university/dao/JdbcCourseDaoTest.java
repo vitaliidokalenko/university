@@ -2,9 +2,12 @@ package com.foxminded.university.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
+import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTableWhere;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import com.foxminded.university.config.AppConfig;
 import com.foxminded.university.dao.jdbc.JdbcCourseDao;
 import com.foxminded.university.model.Course;
+import com.foxminded.university.model.Room;
 
 @SpringJUnitConfig(AppConfig.class)
 public class JdbcCourseDaoTest {
@@ -46,12 +50,33 @@ public class JdbcCourseDaoTest {
 	@Test
 	@Sql("/schema.sql")
 	public void givenCourse_whenCreate_thenCourseIsAddedToTable() {
-		Course expected = new Course("Law");
+		Course course = new Course("Law");
+		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_TABLE_NAME) + 1;
 
-		courseDao.create(expected);
+		courseDao.create(course);
 
-		Course actual = courseDao.getAll().get(0);
-		assertEquals(expected, actual);
+		int actualRows = countRowsInTable(jdbcTemplate, COURSES_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	@Sql({ "/schema.sql", "/dataRooms.sql" })
+	public void givenCourseWithRooms_whenCreate_thenRightDataAddedToCoursesRoomsTable() {
+		Course course = new Course("Law");
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		Set<Room> rooms = new HashSet<>();
+		rooms.add(room1);
+		rooms.add(room2);
+		course.setRooms(rooms);
+		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME) + 2;
+
+		courseDao.create(course);
+
+		int actualRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
 	}
 
 	@Test
@@ -67,14 +92,33 @@ public class JdbcCourseDaoTest {
 
 	@Test
 	@Sql({ "/schema.sql", "/dataCourses.sql" })
-	public void givenUpdatedFields_whenUpdate_thenGetRightCourse() {
-		Course expected = new Course("Art");
-		expected.setId(1L);
+	public void givenUpdatedFields_whenUpdate_thenCourseTableIsUpdated() {
+		Course course = new Course("Art");
+		course.setId(1L);
+		int expectedRows = countRowsInTableWhere(jdbcTemplate, COURSES_TABLE_NAME, "name = 'Art'") + 1;
 
-		courseDao.update(expected);
+		courseDao.update(course);
 
-		Course actual = courseDao.getAll().get(0);
-		assertEquals(expected, actual);
+		int actualRows = countRowsInTableWhere(jdbcTemplate, COURSES_TABLE_NAME, "name = 'Art'");
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	@Sql({ "/schema.sql", "/dataCoursesRooms.sql" })
+	public void givenUpdatedRooms_whenUpdate_thenCoursesRoomsTableIsUpdated() {
+		Course course = new Course("Art");
+		course.setId(1L);
+		Room room = new Room("D444");
+		room.setId(4L);
+		Set<Room> rooms = new HashSet<>();
+		rooms.add(room);
+		course.setRooms(rooms);
+		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME) - 2;
+
+		courseDao.update(course);
+
+		int actualRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
 	}
 
 	@Test
@@ -85,29 +129,6 @@ public class JdbcCourseDaoTest {
 		courseDao.deleteById(1L);
 
 		int actualRows = countRowsInTable(jdbcTemplate, COURSES_TABLE_NAME);
-		assertEquals(expectedRows, actualRows);
-	}
-
-	@Test
-	@Sql({ "/schema.sql", "/dataCoursesRooms.sql" })
-	public void givenCourseIdAndRoomId_whenCreateCourseRoom_thenRightDataAddedToTable() {
-		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME) + 2;
-
-		courseDao.createCourseRoom(1L, 1L);
-		courseDao.createCourseRoom(1L, 2L);
-
-		int actualRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME);
-		assertEquals(expectedRows, actualRows);
-	}
-
-	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
-	public void givenCourseIdAndRoomId_whenDeleteCourseRoom_thenRightDataDeletedFromTable() {
-		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME) - 1;
-
-		courseDao.deleteCourseRoom(1L, 1L);
-
-		int actualRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME);
 		assertEquals(expectedRows, actualRows);
 	}
 

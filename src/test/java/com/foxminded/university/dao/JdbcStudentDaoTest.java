@@ -2,10 +2,13 @@ package com.foxminded.university.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
+import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTableWhere;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.AppConfig;
 import com.foxminded.university.dao.jdbc.JdbcStudentDao;
+import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
@@ -29,6 +33,66 @@ public class JdbcStudentDaoTest {
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private JdbcStudentDao studentDao;
+
+	@Test
+	@Sql({ "/schema.sql", "/dataGroups.sql" })
+	public void givenStudent_whenCreate_thenStudentIsAddedToTable() {
+		Group group = new Group("AA-11");
+		group.setId(1L);
+		Student student = new Student("Anna", "Dvorecka");
+		student.setGroup(group);
+		student.setBirthDate(LocalDate.parse("2001-01-01"));
+		student.setGender(Gender.FEMALE);
+		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_TABLE_NAME) + 1;
+
+		studentDao.create(student);
+
+		int actualRows = countRowsInTable(jdbcTemplate, STUDENTS_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	@Sql({ "/schema.sql", "/dataGroupsCourses.sql" })
+	public void givenStudentWithCourses_whenCreate_thenRightDataIsAddedToStudentsCoursesTable() {
+		Group group = new Group("AA-11");
+		group.setId(1L);
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
+		Set<Course> courses = new HashSet<>();
+		courses.add(course1);
+		courses.add(course2);
+		courses.add(course3);
+		Student student = new Student("Anna", "Dvorecka");
+		student.setGroup(group);
+		student.setBirthDate(LocalDate.parse("2001-01-01"));
+		student.setGender(Gender.FEMALE);
+		student.setCourses(courses);
+		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME) + 3;
+
+		studentDao.create(student);
+
+		int actualRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	@Sql("/schema.sql")
+	public void givenStudentGroupIsNull_whenCreate_thenStudentIsAddedToTable() {
+		Student student = new Student("Anna", "Dvorecka");
+		student.setGroup(null);
+		student.setBirthDate(LocalDate.parse("2001-01-01"));
+		student.setGender(Gender.FEMALE);
+		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_TABLE_NAME) + 1;
+
+		studentDao.create(student);
+
+		int actualRows = countRowsInTable(jdbcTemplate, STUDENTS_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
+	}
 
 	@Test
 	@Sql({ "/schema.sql", "/dataStudents.sql" })
@@ -59,36 +123,6 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataGroups.sql" })
-	public void givenStudent_whenCreate_thenStudentIsAddedToTable() {
-		Group group = new Group("AA-11");
-		group.setId(1L);
-		Student expected = new Student("Anna", "Dvorecka");
-		expected.setGroup(group);
-		expected.setBirthDate(LocalDate.parse("2001-01-01"));
-		expected.setGender(Gender.FEMALE);
-
-		studentDao.create(expected);
-
-		Student actual = studentDao.getAll().get(0);
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	@Sql("/schema.sql")
-	public void givenStudentGroupIsNull_whenCreate_thenStudentIsAddedToTable() {
-		Student expected = new Student("Anna", "Dvorecka");
-		expected.setGroup(null);
-		expected.setBirthDate(LocalDate.parse("2001-01-01"));
-		expected.setGender(Gender.FEMALE);
-
-		studentDao.create(expected);
-
-		Student actual = studentDao.getAll().get(0);
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	@Sql({ "/schema.sql", "/dataStudents.sql" })
 	public void givenId_whenFindById_thenGetRightStudent() {
 		Group group = new Group("AA-11");
@@ -100,24 +134,60 @@ public class JdbcStudentDaoTest {
 		expected.setGender(Gender.FEMALE);
 
 		Student actual = studentDao.findById(1L);
+
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	@Sql({ "/schema.sql", "/dataStudents.sql" })
-	public void givenUpdatedFields_whenUpdate_thenGetRightStudent() {
+	public void givenUpdatedFields_whenUpdate_thenStudentsTableIsUpdated() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
-		Student expected = new Student("Andrey", "Skorochod");
-		expected.setId(1L);
-		expected.setGroup(group);
-		expected.setBirthDate(LocalDate.parse("2011-01-01"));
-		expected.setGender(Gender.MALE);
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
+		Set<Course> courses = new HashSet<>();
+		courses.add(course1);
+		courses.add(course2);
+		courses.add(course3);
+		Student student = new Student("Andrey", "Skorochod");
+		student.setId(1L);
+		student.setGroup(group);
+		student.setBirthDate(LocalDate.parse("2011-01-01"));
+		student.setGender(Gender.MALE);
+		student.setCourses(courses);
+		int expectedRows = countRowsInTableWhere(jdbcTemplate, STUDENTS_TABLE_NAME, "birth_date = '2011-01-01'") + 1;
 
-		studentDao.update(expected);
+		studentDao.update(student);
 
-		Student actual = studentDao.getAll().get(0);
-		assertEquals(expected, actual);
+		int actualRows = countRowsInTableWhere(jdbcTemplate, STUDENTS_TABLE_NAME, "birth_date = '2011-01-01'");
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	@Sql({ "/schema.sql", "/dataStudentsCourses.sql" })
+	public void givenUpdatedCourses_whenUpdate_thenStudentsCoursesTableIsUpdated() {
+		Group group = new Group("AA-11");
+		group.setId(1L);
+		Course course1 = new Course("Art");
+		course1.setId(4L);
+		Set<Course> courses = new HashSet<>();
+		courses.add(course1);
+		Student student = new Student("Andrey", "Skorochod");
+		student.setId(1L);
+		student.setGroup(group);
+		student.setBirthDate(LocalDate.parse("2011-01-01"));
+		student.setGender(Gender.MALE);
+		student.setCourses(courses);
+		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME) - 2;
+
+		studentDao.update(student);
+
+		int actualRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
 	}
 
 	@Test
@@ -149,30 +219,6 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataStudentsCourses.sql" })
-	public void givenStudentIdAndCourseId_whenCreateStudentCourse_thenRightDataAddedToTable() {
-		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME) + 2;
-
-		studentDao.createStudentCourse(1L, 1L);
-		studentDao.createStudentCourse(1L, 2L);
-
-		int actualRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME);
-
-		assertEquals(expectedRows, actualRows);
-	}
-
-	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
-	public void givenStudentIdAndCourseId_whenDeleteStudentCourse_thenRightDataDeletedFromTable() {
-		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME) - 1;
-
-		studentDao.deleteStudentCourse(1L, 1L);
-
-		int actualRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME);
-		assertEquals(expectedRows, actualRows);
-	}
-
-	@Test
 	@Sql({ "/schema.sql", "/data.sql" })
 	public void givenCourseId_whenGetStudentsByCourseId_thenGetRightListOfStudents() {
 		Group group1 = new Group("AA-11");
@@ -195,5 +241,4 @@ public class JdbcStudentDaoTest {
 
 		assertEquals(expected, actual);
 	}
-
 }

@@ -2,10 +2,13 @@ package com.foxminded.university.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
+import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTableWhere;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.AppConfig;
 import com.foxminded.university.dao.jdbc.JdbcTeacherDao;
+import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Teacher;
 
@@ -28,6 +32,58 @@ public class JdbcTeacherDaoTest {
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private JdbcTeacherDao teacherDao;
+
+	@Test
+	@Sql({ "/schema.sql", "/dataCourses.sql" })
+	public void givenTeacher_whenCreate_thenTeacherIsAddedToTable() {
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
+		Set<Course> courses = new HashSet<>();
+		courses.add(course1);
+		courses.add(course2);
+		courses.add(course3);
+		Teacher teacher = new Teacher("Victor", "Doncov");
+		teacher.setId(1L);
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
+		teacher.setGender(Gender.MALE);
+		teacher.setCourses(courses);
+		int expectedRows = countRowsInTable(jdbcTemplate, TEACHERS_TABLE_NAME) + 1;
+
+		teacherDao.create(teacher);
+
+		int actualRows = countRowsInTable(jdbcTemplate, TEACHERS_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	@Sql({ "/schema.sql", "/dataCourses.sql" })
+	public void givenTeacherWithCourses_whenCreate_thenRightDataIsAddedToTeachersCoursesTable() {
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
+		Set<Course> courses = new HashSet<>();
+		courses.add(course1);
+		courses.add(course2);
+		courses.add(course3);
+		Teacher teacher = new Teacher("Victor", "Doncov");
+		teacher.setId(1L);
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
+		teacher.setGender(Gender.MALE);
+		teacher.setCourses(courses);
+		int expectedRows = countRowsInTable(jdbcTemplate, TEACHERS_COURSES_TABLE_NAME) + 3;
+
+		teacherDao.create(teacher);
+
+		int actualRows = countRowsInTable(jdbcTemplate, TEACHERS_COURSES_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
+	}
 
 	@Test
 	@Sql({ "/schema.sql", "/dataTeachers.sql" })
@@ -52,20 +108,6 @@ public class JdbcTeacherDaoTest {
 	}
 
 	@Test
-	@Sql("/schema.sql")
-	public void givenTeacher_whenCreate_thenTeacherIsAddedToTable() {
-		Teacher expected = new Teacher("Victor", "Doncov");
-		expected.setId(1L);
-		expected.setBirthDate(LocalDate.parse("1991-01-01"));
-		expected.setGender(Gender.MALE);
-
-		teacherDao.create(expected);
-
-		Teacher actual = teacherDao.getAll().get(0);
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	@Sql({ "/schema.sql", "/dataTeachers.sql" })
 	public void givenId_whenFindById_thenGetRightTeacher() {
 		Teacher expected = new Teacher("Victor", "Doncov");
@@ -80,16 +122,37 @@ public class JdbcTeacherDaoTest {
 
 	@Test
 	@Sql({ "/schema.sql", "/dataTeachers.sql" })
-	public void givenUpdatedFields_whenUpdate_thenGetRightTeacher() {
-		Teacher expected = new Teacher("Oleg", "Gricina");
-		expected.setId(1L);
-		expected.setBirthDate(LocalDate.parse("1994-04-04"));
-		expected.setGender(Gender.MALE);
+	public void givenUpdatedFields_whenUpdate_thenTeachersTableIsUpdated() {
+		Teacher teacher = new Teacher("Oleg", "Gricina");
+		teacher.setId(1L);
+		teacher.setBirthDate(LocalDate.parse("1994-04-04"));
+		teacher.setGender(Gender.MALE);
+		int expectedRows = countRowsInTableWhere(jdbcTemplate, TEACHERS_TABLE_NAME, "surname = 'Gricina'") + 1;
 
-		teacherDao.update(expected);
+		teacherDao.update(teacher);
 
-		Teacher actual = teacherDao.getAll().get(0);
-		assertEquals(expected, actual);
+		int actualRows = countRowsInTableWhere(jdbcTemplate, TEACHERS_TABLE_NAME, "surname = 'Gricina'");
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	@Sql({ "/schema.sql", "/dataTeachersCourses.sql" })
+	public void givenUpdatedCourses_whenUpdate_thenTeachersCoursesTableIsUpdated() {
+		Course course = new Course("Art");
+		course.setId(4L);
+		Set<Course> courses = new HashSet<>();
+		courses.add(course);
+		Teacher teacher = new Teacher("Oleg", "Gricina");
+		teacher.setId(1L);
+		teacher.setBirthDate(LocalDate.parse("1994-04-04"));
+		teacher.setGender(Gender.MALE);
+		teacher.setCourses(courses);
+		int expectedRows = countRowsInTable(jdbcTemplate, TEACHERS_COURSES_TABLE_NAME) - 2;
+
+		teacherDao.update(teacher);
+
+		int actualRows = countRowsInTable(jdbcTemplate, TEACHERS_COURSES_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
 	}
 
 	@Test
@@ -100,29 +163,6 @@ public class JdbcTeacherDaoTest {
 		teacherDao.deleteById(1L);
 
 		int actualRows = countRowsInTable(jdbcTemplate, TEACHERS_TABLE_NAME);
-		assertEquals(expectedRows, actualRows);
-	}
-
-	@Test
-	@Sql({ "/schema.sql", "/dataTeachersCourses.sql" })
-	public void givenTeacherIdAndCourseId_whenCreateTeacherCourse_thenRightDataAddedToTable() {
-		int expectedRows = countRowsInTable(jdbcTemplate, TEACHERS_COURSES_TABLE_NAME) + 2;
-
-		teacherDao.createTeacherCourse(1L, 1L);
-		teacherDao.createTeacherCourse(1L, 2L);
-
-		int actualRows = countRowsInTable(jdbcTemplate, TEACHERS_COURSES_TABLE_NAME);
-		assertEquals(expectedRows, actualRows);
-	}
-
-	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
-	public void givenTeacherIdAndCourseId_whenDeleteTeacherCourse_thenRightDataDeletedFromTable() {
-		int expectedRows = countRowsInTable(jdbcTemplate, TEACHERS_COURSES_TABLE_NAME) - 1;
-
-		teacherDao.deleteTeacherCourse(1L, 1L);
-
-		int actualRows = countRowsInTable(jdbcTemplate, TEACHERS_COURSES_TABLE_NAME);
 		assertEquals(expectedRows, actualRows);
 	}
 

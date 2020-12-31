@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.dao.jdbc.mapper.TeacherMapper;
+import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Teacher;
 
 @Component
@@ -24,15 +25,17 @@ public class JdbcTeacherDao implements TeacherDao {
 	private static final String DELETE_TEACHER_BY_ID_QUERY = "DELETE FROM teachers WHERE id = ?;";
 	private static final String UPDATE_TEACHER_QUERY = "UPDATE teachers SET name = ?, surname = ?, rank = ?, phone = ?, email = ?, address = ?, birth_date = ?, gender = ? "
 			+ "WHERE id = ?;";
-	private static final String CREATE_TEACHERS_COURSE_QUERY = "INSERT INTO teachers_courses (teacher_id, course_id) VALUES(?, ?);";
-	private static final String DELETE_TEACHERS_COURSE_QUERY = "DELETE FROM teachers_courses WHERE teacher_id = ? AND course_id =?;";
+	private static final String CREATE_TEACHER_COURSE_QUERY = "INSERT INTO teachers_courses (teacher_id, course_id) VALUES(?, ?);";
+	private static final String DELETE_TEACHER_COURSE_QUERY = "DELETE FROM teachers_courses WHERE teacher_id = ? AND course_id =?;";
 	private static final String GET_TEACHERS_BY_COURSE_ID_QUERY = "SELECT * FROM teachers "
 			+ "JOIN teachers_courses ON teachers_courses.teacher_id = teachers.id WHERE course_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
+	private JdbcCourseDao courseDao;
 
-	public JdbcTeacherDao(JdbcTemplate jdbcTemplate) {
+	public JdbcTeacherDao(JdbcTemplate jdbcTemplate, JdbcCourseDao courseDao) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.courseDao = courseDao;
 	}
 
 	@Override
@@ -52,6 +55,9 @@ public class JdbcTeacherDao implements TeacherDao {
 			return statement;
 		}, keyHolder);
 		teacher.setId(keyHolder.getKey().longValue());
+		teacher.getCourses()
+				.stream()
+				.forEach(c -> jdbcTemplate.update(CREATE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
 	}
 
 	@Override
@@ -76,21 +82,19 @@ public class JdbcTeacherDao implements TeacherDao {
 				teacher.getBirthDate(),
 				teacher.getGender().toString(),
 				teacher.getId());
+		List<Course> courses = courseDao.getCoursesByTeacherId(teacher.getId());
+		courses.stream()
+				.filter(c -> !teacher.getCourses().contains(c))
+				.forEach(c -> jdbcTemplate.update(DELETE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
+		teacher.getCourses()
+				.stream()
+				.filter(c -> !courses.contains(c))
+				.forEach(c -> jdbcTemplate.update(CREATE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
 	}
 
 	@Override
 	public void deleteById(Long teacherId) {
 		jdbcTemplate.update(DELETE_TEACHER_BY_ID_QUERY, teacherId);
-	}
-
-	@Override
-	public void createTeacherCourse(Long teacherId, Long courseId) {
-		jdbcTemplate.update(CREATE_TEACHERS_COURSE_QUERY, teacherId, courseId);
-	}
-
-	@Override
-	public void deleteTeacherCourse(Long teacherId, Long courseId) {
-		jdbcTemplate.update(DELETE_TEACHERS_COURSE_QUERY, teacherId, courseId);
 	}
 
 	@Override

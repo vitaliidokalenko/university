@@ -2,11 +2,14 @@ package com.foxminded.university.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTable;
+import static org.springframework.test.jdbc.JdbcTestUtils.countRowsInTableWhere;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import com.foxminded.university.config.AppConfig;
 import com.foxminded.university.dao.jdbc.JdbcLessonDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
+import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
@@ -124,18 +128,65 @@ public class JdbcLessonDaoTest {
 		Room room = new Room("A111");
 		room.setId(1L);
 		room.setCapacity(30);
-		Lesson expected = new Lesson();
-		expected.setId(1L);
-		expected.setDate(LocalDate.parse("2020-12-12"));
-		expected.setTimeframe(timeframe);
-		expected.setCourse(course);
-		expected.setTeacher(teacher);
-		expected.setRoom(room);
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Set<Group> groups = new HashSet<>();
+		Lesson lesson = new Lesson();
+		lesson.setId(1L);
+		lesson.setDate(LocalDate.parse("2020-12-12"));
+		lesson.setTimeframe(timeframe);
+		lesson.setCourse(course);
+		lesson.setTeacher(teacher);
+		lesson.setRoom(room);
+		lesson.setGroups(groups);
+		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_TABLE_NAME) + 1;
 
-		lessonDao.create(expected);
+		lessonDao.create(lesson);
 
-		Lesson actual = lessonDao.getAll().get(0);
-		assertEquals(expected, actual);
+		int actualRows = countRowsInTable(jdbcTemplate, LESSONS_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	@Sql({ "/schema.sql", "/dataForLessons.sql" })
+	public void givenLessonWithGroups_whenCreate_thenRightDataIsAddedToLessonsGroupsTable() {
+		Timeframe timeframe = new Timeframe();
+		timeframe.setId(1L);
+		timeframe.setSequance(1);
+		timeframe.setStartTime(LocalTime.parse("08:00"));
+		timeframe.setEndTime(LocalTime.parse("09:20"));
+		Course course = new Course("Law");
+		course.setId(1L);
+		Teacher teacher = new Teacher("Victor", "Doncov");
+		teacher.setId(1L);
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
+		teacher.setGender(Gender.MALE);
+		Room room = new Room("A111");
+		room.setId(1L);
+		room.setCapacity(30);
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Set<Group> groups = new HashSet<>();
+		groups.add(group1);
+		groups.add(group2);
+		Lesson lesson = new Lesson();
+		lesson.setId(1L);
+		lesson.setDate(LocalDate.parse("2020-12-12"));
+		lesson.setTimeframe(timeframe);
+		lesson.setCourse(course);
+		lesson.setTeacher(teacher);
+		lesson.setRoom(room);
+		lesson.setGroups(groups);
+		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME) + 2;
+
+		lessonDao.create(lesson);
+
+		int actualRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
 	}
 
 	@Test
@@ -170,7 +221,7 @@ public class JdbcLessonDaoTest {
 
 	@Test
 	@Sql({ "/schema.sql", "/dataLessons.sql" })
-	public void givenUpdatedFields_whenUpdate_thenGetRightLesson() {
+	public void givenUpdatedFields_whenUpdate_thenLessonTableIsUdated() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(2L);
 		timeframe.setSequance(2);
@@ -185,18 +236,60 @@ public class JdbcLessonDaoTest {
 		Room room = new Room("B222");
 		room.setId(2L);
 		room.setCapacity(30);
-		Lesson expected = new Lesson();
-		expected.setId(1L);
-		expected.setDate(LocalDate.parse("2021-01-05"));
-		expected.setTimeframe(timeframe);
-		expected.setCourse(course);
-		expected.setTeacher(teacher);
-		expected.setRoom(room);
+		Group group1 = new Group("DD-44");
+		group1.setId(4L);
+		Set<Group> groups = new HashSet<>();
+		Lesson lesson = new Lesson();
+		lesson.setId(1L);
+		lesson.setDate(LocalDate.parse("2021-01-05"));
+		lesson.setTimeframe(timeframe);
+		lesson.setCourse(course);
+		lesson.setTeacher(teacher);
+		lesson.setRoom(room);
+		lesson.setGroups(groups);
+		int expectedRows = countRowsInTableWhere(jdbcTemplate, LESSONS_TABLE_NAME, "date = '2021-01-05'") + 1;
 
-		lessonDao.update(expected);
+		lessonDao.update(lesson);
 
-		Lesson actual = lessonDao.getAll().get(0);
-		assertEquals(expected, actual);
+		int actualRows = countRowsInTableWhere(jdbcTemplate, LESSONS_TABLE_NAME, "date = '2021-01-05'");
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	@Sql({ "/schema.sql", "/dataLessonsGroups.sql" })
+	public void givenUpdatedGroups_whenUpdate_thenLessonsGroupsTableIsUdated() {
+		Timeframe timeframe = new Timeframe();
+		timeframe.setId(2L);
+		timeframe.setSequance(2);
+		timeframe.setStartTime(LocalTime.parse("09:40"));
+		timeframe.setEndTime(LocalTime.parse("11:00"));
+		Course course = new Course("Music");
+		course.setId(3L);
+		Teacher teacher = new Teacher("Anatoly", "Sviridov");
+		teacher.setId(3L);
+		teacher.setBirthDate(LocalDate.parse("1993-03-03"));
+		teacher.setGender(Gender.MALE);
+		Room room = new Room("B222");
+		room.setId(2L);
+		room.setCapacity(30);
+		Group group = new Group("DD-44");
+		group.setId(4L);
+		Set<Group> groups = new HashSet<>();
+		groups.add(group);
+		Lesson lesson = new Lesson();
+		lesson.setId(1L);
+		lesson.setDate(LocalDate.parse("2021-01-05"));
+		lesson.setTimeframe(timeframe);
+		lesson.setCourse(course);
+		lesson.setTeacher(teacher);
+		lesson.setRoom(room);
+		lesson.setGroups(groups);
+		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME) - 2;
+
+		lessonDao.update(lesson);
+
+		int actualRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME);
+		assertEquals(expectedRows, actualRows);
 	}
 
 	@Test
@@ -207,30 +300,6 @@ public class JdbcLessonDaoTest {
 		lessonDao.deleteById(1L);
 
 		int actualRows = countRowsInTable(jdbcTemplate, LESSONS_TABLE_NAME);
-		assertEquals(expectedRows, actualRows);
-	}
-
-	@Test
-	@Sql({ "/schema.sql", "/dataLessons.sql" })
-	public void givenLessonIdAndGroupId_whenCreateLessonGroup_thenRightDataAddedToTable() {
-		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME) + 3;
-
-		lessonDao.createLessonsGroups(1L, 1L);
-		lessonDao.createLessonsGroups(1L, 2L);
-		lessonDao.createLessonsGroups(2L, 1L);
-
-		int actualRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME);
-		assertEquals(expectedRows, actualRows);
-	}
-
-	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
-	public void givenLessonIdAndGroupId_whenDeleteLessonGroup_thenRightDataDeletedFromTable() {
-		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME) - 1;
-
-		lessonDao.deleteLessonsGroups(1L, 1L);
-
-		int actualRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME);
 		assertEquals(expectedRows, actualRows);
 	}
 

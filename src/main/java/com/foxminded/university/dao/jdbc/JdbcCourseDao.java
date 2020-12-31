@@ -9,10 +9,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.dao.jdbc.mapper.CourseMapper;
 import com.foxminded.university.model.Course;
+import com.foxminded.university.model.Room;
 
 @Component
 public class JdbcCourseDao implements CourseDao {
@@ -29,12 +31,15 @@ public class JdbcCourseDao implements CourseDao {
 	private static final String GET_COURSES_BY_TEACHER_ID_QUERY = "SELECT * FROM courses JOIN teachers_courses ON teachers_courses.course_id = courses.id WHERE teacher_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
+	private JdbcRoomDao roomDao;
 
-	public JdbcCourseDao(JdbcTemplate jdbcTemplate) {
+	public JdbcCourseDao(JdbcTemplate jdbcTemplate, JdbcRoomDao roomDao) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.roomDao = roomDao;
 	}
 
 	@Override
+	@Transactional
 	public void create(Course course) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbcTemplate.update(connection -> {
@@ -44,6 +49,10 @@ public class JdbcCourseDao implements CourseDao {
 			return statement;
 		}, keyHolder);
 		course.setId(keyHolder.getKey().longValue());
+		course.getRooms()
+				.stream()
+				.forEach(r -> jdbcTemplate.update(CREATE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
+
 	}
 
 	@Override
@@ -57,23 +66,22 @@ public class JdbcCourseDao implements CourseDao {
 	}
 
 	@Override
+	@Transactional
 	public void update(Course course) {
 		jdbcTemplate.update(UPDATE_COURSE_QUERY, course.getName(), course.getDescription(), course.getId());
+		List<Room> rooms = roomDao.getRoomsByCourseId(course.getId());
+		rooms.stream()
+				.filter(r -> !course.getRooms().contains(r))
+				.forEach(r -> jdbcTemplate.update(DELETE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
+		course.getRooms()
+				.stream()
+				.filter(r -> !rooms.contains(r))
+				.forEach(r -> jdbcTemplate.update(CREATE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
 	}
 
 	@Override
 	public void deleteById(Long courseId) {
 		jdbcTemplate.update(DELETE_COURSE_BY_ID_QUERY, courseId);
-	}
-
-	@Override
-	public void createCourseRoom(Long courseId, Long roomId) {
-		jdbcTemplate.update(CREATE_COURSE_ROOM_QUERY, courseId, roomId);
-	}
-
-	@Override
-	public void deleteCourseRoom(Long courseId, Long roomId) {
-		jdbcTemplate.update(DELETE_COURSE_ROOM_QUERY, courseId, roomId);
 	}
 
 	@Override

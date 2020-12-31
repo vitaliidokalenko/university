@@ -19,9 +19,5 @@ public interface StudentDao {
 
 	public List<Student> getStudentsByGroup(Group group);
 
-	public void createStudentCourse(Long studentId, Long courseId);
-
-	public void deleteStudentCourse(Long studentId, Long courseId);
-
 	public List<Student> getStudentsByCourseId(Long courseId);
 }

@@ -20,10 +20,6 @@ public interface LessonDao {
 
 	public void deleteById(Long lessonId);
 
-	public void createLessonsGroups(Long lessonId, Long groupId);
-
-	public void deleteLessonsGroups(Long lessonId, Long groupId);
-
 	public List<Lesson> getLessonsByGroupId(Long groupId);
 
 	public List<Lesson> getLessonsByTimeframe(Timeframe timeframe);

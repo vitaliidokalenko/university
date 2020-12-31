@@ -17,3 +17,6 @@ INSERT INTO rooms (name, capacity) VALUES ('C333', 30);
 INSERT INTO lessons (date, timeframe_id, course_id, teacher_id, room_id) VALUES ('2020-12-12', 1, 1, 1, 1);
 INSERT INTO lessons (date, timeframe_id, course_id, teacher_id, room_id) VALUES ('2020-12-12', 2, 2, 2, 2);
 INSERT INTO lessons (date, timeframe_id, course_id, teacher_id, room_id) VALUES ('2020-12-12', 3, 3, 3, 3);
+INSERT INTO lessons_groups (lesson_id, group_id) VALUES (1, 1);
+INSERT INTO lessons_groups (lesson_id, group_id) VALUES (1, 2);
+INSERT INTO lessons_groups (lesson_id, group_id) VALUES (1, 3);
