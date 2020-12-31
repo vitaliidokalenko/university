@@ -2,9 +2,12 @@ package com.foxminded.university.ui;
 
 import java.util.Scanner;
 
+import org.springframework.stereotype.Component;
+
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.model.Group;
 
+@Component
 public class GroupMenu {
 
 	private static final String CHOICE_MESSAGE_FORMAT = "%nPlease, input 'a'-'c' to select operation "
@@ -16,8 +19,8 @@ public class GroupMenu {
 	private static final String ID_INQUIRY = "Please, insert group`s id:";
 	private static final String PRINT_GROUPS_FORMAT = "id %d. %s%n";
 
-	private final Scanner scanner;
-	private final GroupDao groupDao;
+	private Scanner scanner;
+	private GroupDao groupDao;
 
 	public GroupMenu(Scanner scanner, GroupDao groupDao) {
 		this.scanner = scanner;

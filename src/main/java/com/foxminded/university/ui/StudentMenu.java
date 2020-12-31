@@ -2,10 +2,13 @@ package com.foxminded.university.ui;
 
 import java.util.Scanner;
 
+import org.springframework.stereotype.Component;
+
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Student;
 
+@Component
 public class StudentMenu {
 
 	private static final String CHOICE_MESSAGE_FORMAT = "%nPlease, input 'a'-'c' to select operation "
@@ -21,8 +24,8 @@ public class StudentMenu {
 	private static final String ID_INQUIRY = "Please, insert student's id:";
 	private static final String PRINT_STUDENTS_FORMAT = "id %d. %s %s%n";
 
-	private final Scanner scanner;
-	private final StudentDao studentDao;
+	private Scanner scanner;
+	private StudentDao studentDao;
 
 	public StudentMenu(Scanner scanner, StudentDao studentDao) {
 		this.scanner = scanner;

@@ -2,9 +2,12 @@ package com.foxminded.university.ui;
 
 import java.util.Scanner;
 
+import org.springframework.stereotype.Component;
+
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Room;
 
+@Component
 public class RoomMenu {
 
 	private static final String CHOICE_MESSAGE_FORMAT = "%nPlease, input 'a'-'c' to select operation "
@@ -16,8 +19,8 @@ public class RoomMenu {
 	private static final String ID_INQUIRY = "Please, insert room`s id:";
 	private static final String PRINT_ROOMS_FORMAT = "id %d. %s%n";
 
-	private final Scanner scanner;
-	private final RoomDao roomDao;
+	private Scanner scanner;
+	private RoomDao roomDao;
 
 	public RoomMenu(Scanner scanner, RoomDao roomDao) {
 		this.scanner = scanner;

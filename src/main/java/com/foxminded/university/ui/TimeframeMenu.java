@@ -4,9 +4,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
+import org.springframework.stereotype.Component;
+
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
 
+@Component
 public class TimeframeMenu {
 
 	private static final String CHOICE_MESSAGE_FORMAT = "%nPlease, input 'a'-'c' to select operation "
@@ -21,8 +24,8 @@ public class TimeframeMenu {
 	private static final String ID_INQUIRY = "Please, insert timeframe`s id:";
 	private static final String PRINT_TIMEFRAMES_FORMAT = "id %d. %s - %s%n";
 
-	private final Scanner scanner;
-	private final TimeframeDao timeframeDao;
+	private Scanner scanner;
+	private TimeframeDao timeframeDao;
 
 	public TimeframeMenu(Scanner scanner, TimeframeDao timeframeDao) {
 		this.scanner = scanner;

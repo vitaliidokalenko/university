@@ -15,7 +15,7 @@ public class Main {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		ScriptRunner scriptRunner = context.getBean(ScriptRunner.class);
 		scriptRunner.runScript(schema);
-		MainMenu menu = new MainMenu(context);
+		MainMenu menu = context.getBean(MainMenu.class);
 		menu.runMenu();
 		context.close();
 	}

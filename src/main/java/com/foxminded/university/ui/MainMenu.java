@@ -2,15 +2,9 @@ package com.foxminded.university.ui;
 
 import java.util.Scanner;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
 
-import com.foxminded.university.dao.CourseDao;
-import com.foxminded.university.dao.GroupDao;
-import com.foxminded.university.dao.RoomDao;
-import com.foxminded.university.dao.StudentDao;
-import com.foxminded.university.dao.TeacherDao;
-import com.foxminded.university.dao.TimeframeDao;
-
+@Component
 public class MainMenu {
 
 	private static final String CHOICE_MESSAGE_FORMAT = "Please, choose the entity you want to interaction with "
@@ -22,22 +16,23 @@ public class MainMenu {
 	private static final String ROOM = "e. Room";
 	private static final String TIMEFRAME = "f. Timeframe";
 
-	private final Scanner scanner;
-	private final StudentMenu studentMenu;
-	private final TeacherMenu teacherMenu;
-	private final GroupMenu groupMenu;
-	private final CourseMenu courseMenu;
-	private final RoomMenu roomMenu;
-	private final TimeframeMenu timeframeMenu;
+	private Scanner scanner;
+	private StudentMenu studentMenu;
+	private TeacherMenu teacherMenu;
+	private GroupMenu groupMenu;
+	private CourseMenu courseMenu;
+	private RoomMenu roomMenu;
+	private TimeframeMenu timeframeMenu;
 
-	public MainMenu(AnnotationConfigApplicationContext context) {
-		scanner = new Scanner(System.in);
-		studentMenu = new StudentMenu(scanner, context.getBean(StudentDao.class));
-		teacherMenu = new TeacherMenu(scanner, context.getBean(TeacherDao.class));
-		groupMenu = new GroupMenu(scanner, context.getBean(GroupDao.class));
-		courseMenu = new CourseMenu(scanner, context.getBean(CourseDao.class));
-		roomMenu = new RoomMenu(scanner, context.getBean(RoomDao.class));
-		timeframeMenu = new TimeframeMenu(scanner, context.getBean(TimeframeDao.class));
+	public MainMenu(Scanner scanner, StudentMenu studentMenu, TeacherMenu teacherMenu, GroupMenu groupMenu,
+			CourseMenu courseMenu, RoomMenu roomMenu, TimeframeMenu timeframeMenu) {
+		this.scanner = scanner;
+		this.studentMenu = studentMenu;
+		this.teacherMenu = teacherMenu;
+		this.groupMenu = groupMenu;
+		this.courseMenu = courseMenu;
+		this.roomMenu = roomMenu;
+		this.timeframeMenu = timeframeMenu;
 	}
 
 	public void runMenu() {
