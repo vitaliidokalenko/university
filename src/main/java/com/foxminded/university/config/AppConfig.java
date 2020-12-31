@@ -1,5 +1,7 @@
 package com.foxminded.university.config;
 
+import java.util.Scanner;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -37,5 +39,9 @@ public class AppConfig {
 	@Bean
 	public JdbcTemplate jdbcTemplate() {
 		return new JdbcTemplate(dataSource());
+	}
+	
+	@Bean Scanner scanner() {
+		return new Scanner(System.in);
 	}
 }
