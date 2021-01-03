@@ -63,7 +63,6 @@ public class JdbcLessonDao implements LessonDao {
 	}
 
 	@Override
-	@Transactional
 	public void create(Lesson lesson) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbcTemplate.update(connection -> {

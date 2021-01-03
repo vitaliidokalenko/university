@@ -54,7 +54,6 @@ public class JdbcStudentDao implements StudentDao {
 	}
 
 	@Override
-	@Transactional
 	public void create(Student student) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbcTemplate.update(connection -> {
@@ -88,7 +87,6 @@ public class JdbcStudentDao implements StudentDao {
 	}
 
 	@Override
-	@Transactional
 	public void update(Student student) {
 		jdbcTemplate.update(UPDATE_STUDENT_QUERY,
 				Optional.ofNullable(student).map(Student::getGroup).map(Group::getId).orElse(null),

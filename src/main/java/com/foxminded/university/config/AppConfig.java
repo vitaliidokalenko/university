@@ -20,6 +20,8 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 @PropertySource("database.properties")
 public class AppConfig {
 
+	private final static String SCHEMA = "schema.sql";
+
 	@Value("${driver}")
 	private String driver;
 	@Value("${url}")
@@ -28,32 +30,30 @@ public class AppConfig {
 	private String username;
 	@Value("${password}")
 	private String password;
-	@Value("${schema}")
-	private String schema;
 
 	@Bean
 	public DataSource dataSource() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(driver);
-		dataSource.setUrl(url);
-		dataSource.setUsername(username);
-		dataSource.setPassword(password);
-		return dataSource;
+		DriverManagerDataSource manager = new DriverManagerDataSource();
+		manager.setDriverClassName(driver);
+		manager.setUrl(url);
+		manager.setUsername(username);
+		manager.setPassword(password);
+		return manager;
 	}
 
 	@Bean
-	public DataSourceInitializer dataSourceInitializer(DataSource dataSource) {
+	public DataSourceInitializer dataSourceInitializer() {
 		ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-		databasePopulator.addScript(new ClassPathResource(schema));
+		databasePopulator.addScript(new ClassPathResource(SCHEMA));
 		DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
-		dataSourceInitializer.setDataSource(dataSource);
+		dataSourceInitializer.setDataSource(dataSource());
 		dataSourceInitializer.setDatabasePopulator(databasePopulator);
 		return dataSourceInitializer;
 	}
 
 	@Bean
-	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-		return new JdbcTemplate(dataSource);
+	public JdbcTemplate jdbcTemplate() {
+		return new JdbcTemplate(dataSource());
 	}
 
 	@Bean

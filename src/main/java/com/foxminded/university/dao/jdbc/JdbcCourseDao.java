@@ -39,7 +39,6 @@ public class JdbcCourseDao implements CourseDao {
 	}
 
 	@Override
-	@Transactional
 	public void create(Course course) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbcTemplate.update(connection -> {
@@ -66,7 +65,6 @@ public class JdbcCourseDao implements CourseDao {
 	}
 
 	@Override
-	@Transactional
 	public void update(Course course) {
 		jdbcTemplate.update(UPDATE_COURSE_QUERY, course.getName(), course.getDescription(), course.getId());
 		List<Room> rooms = roomDao.getRoomsByCourseId(course.getId());
