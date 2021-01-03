@@ -12,15 +12,18 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.AppConfig;
+import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.jdbc.JdbcCourseDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
 
-@SpringJUnitConfig(AppConfig.class)
+@SpringJUnitConfig(TestAppConfig.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JdbcCourseDaoTest {
 
 	private static final String COURSES_ROOMS_TABLE_NAME = "courses_rooms";
@@ -32,7 +35,7 @@ public class JdbcCourseDaoTest {
 	private JdbcCourseDao courseDao;
 
 	@Test
-	@Sql({ "/schema.sql", "/dataCourses.sql" })
+	@Sql("/dataCourses.sql")
 	public void givenCourses_whenGetAll_thenGetRightListOfCourses() {
 		Course course1 = new Course("Law");
 		course1.setId(1L);
@@ -48,7 +51,6 @@ public class JdbcCourseDaoTest {
 	}
 
 	@Test
-	@Sql("/schema.sql")
 	public void givenCourse_whenCreate_thenCourseIsAddedToTable() {
 		Course course = new Course("Law");
 		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_TABLE_NAME) + 1;
@@ -60,7 +62,7 @@ public class JdbcCourseDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataRooms.sql" })
+	@Sql("/dataRooms.sql")
 	public void givenCourseWithRooms_whenCreate_thenRightDataAddedToCoursesRoomsTable() {
 		Course course = new Course("Law");
 		Room room1 = new Room("A111");
@@ -80,7 +82,7 @@ public class JdbcCourseDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataCourses.sql" })
+	@Sql("/dataCourses.sql")
 	public void givenId_whenFindById_thenGetRightCourse() {
 		Course expected = new Course("Law");
 		expected.setId(1L);
@@ -91,7 +93,7 @@ public class JdbcCourseDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataCourses.sql" })
+	@Sql("/dataCourses.sql")
 	public void givenUpdatedFields_whenUpdate_thenCourseTableIsUpdated() {
 		Course course = new Course("Art");
 		course.setId(1L);
@@ -104,7 +106,7 @@ public class JdbcCourseDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataCoursesRooms.sql" })
+	@Sql("/dataCoursesRooms.sql")
 	public void givenUpdatedRooms_whenUpdate_thenCoursesRoomsTableIsUpdated() {
 		Course course = new Course("Art");
 		course.setId(1L);
@@ -122,7 +124,7 @@ public class JdbcCourseDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataCourses.sql" })
+	@Sql("/dataCourses.sql")
 	public void givenCourseId_whenDeleteById_thenCourseIsDeleted() {
 		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_TABLE_NAME) - 1;
 
@@ -133,7 +135,7 @@ public class JdbcCourseDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenRoomId_whenGetCoursesByRoomId_thenGetRightListOfCourses() {
 		Course course1 = new Course("Law");
 		course1.setId(1L);
@@ -147,7 +149,7 @@ public class JdbcCourseDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenStudentId_whenGetCoursesByStudentId_thenGetRightListOfCourses() {
 		Course course1 = new Course("Law");
 		course1.setId(1L);
@@ -161,7 +163,7 @@ public class JdbcCourseDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenTeacherId_whenGetCoursesByTeacherId_thenGetRightListOfCourses() {
 		Course course1 = new Course("Law");
 		course1.setId(1L);

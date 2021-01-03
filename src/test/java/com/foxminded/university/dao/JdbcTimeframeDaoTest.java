@@ -11,14 +11,17 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.AppConfig;
+import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.jdbc.JdbcTimeframeDao;
 import com.foxminded.university.model.Timeframe;
 
-@SpringJUnitConfig(AppConfig.class)
+@SpringJUnitConfig(TestAppConfig.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JdbcTimeframeDaoTest {
 
 	private static final String TIMEFRAMES_TABLE_NAME = "timeframes";
@@ -29,7 +32,7 @@ public class JdbcTimeframeDaoTest {
 	private JdbcTimeframeDao timeframeDao;
 
 	@Test
-	@Sql({ "/schema.sql", "/dataTimeframes.sql" })
+	@Sql("/dataTimeframes.sql")
 	public void givenCourses_whenGetAll_thenGetRightListOfCourses() {
 		Timeframe timeframe1 = new Timeframe();
 		timeframe1.setId(1L);
@@ -54,7 +57,6 @@ public class JdbcTimeframeDaoTest {
 	}
 
 	@Test
-	@Sql("/schema.sql")
 	public void givenTimeframe_whenCreate_thenTimeframeIsAddedToTable() {
 		Timeframe timaframe = new Timeframe();
 		timaframe.setId(1L);
@@ -70,7 +72,7 @@ public class JdbcTimeframeDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataTimeframes.sql" })
+	@Sql("/dataTimeframes.sql")
 	public void givenId_whenFindById_thenGetRightTimeframe() {
 		Timeframe expected = new Timeframe();
 		expected.setId(1L);
@@ -84,7 +86,7 @@ public class JdbcTimeframeDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataTimeframes.sql" })
+	@Sql("/dataTimeframes.sql")
 	public void givenUpdatedFields_whenUpdate_thenTimeframesTableIsUpdated() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
@@ -100,7 +102,7 @@ public class JdbcTimeframeDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataTimeframes.sql" })
+	@Sql("/dataTimeframes.sql")
 	public void givenTimeframeId_whenDelete_thenTimeframeIsDeleted() {
 		int expectedRows = countRowsInTable(jdbcTemplate, TIMEFRAMES_TABLE_NAME) - 1;
 

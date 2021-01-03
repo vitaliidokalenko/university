@@ -13,17 +13,20 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.AppConfig;
+import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.jdbc.JdbcStudentDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
 
-@SpringJUnitConfig(AppConfig.class)
+@SpringJUnitConfig(TestAppConfig.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JdbcStudentDaoTest {
 
 	private static final String STUDENTS_COURSES_TABLE_NAME = "students_courses";
@@ -35,7 +38,7 @@ public class JdbcStudentDaoTest {
 	private JdbcStudentDao studentDao;
 
 	@Test
-	@Sql({ "/schema.sql", "/dataGroups.sql" })
+	@Sql("/dataGroups.sql")
 	public void givenStudent_whenCreate_thenStudentIsAddedToTable() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
@@ -52,7 +55,7 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataGroupsCourses.sql" })
+	@Sql("/dataGroupsCourses.sql")
 	public void givenStudentWithCourses_whenCreate_thenRightDataIsAddedToStudentsCoursesTable() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
@@ -80,7 +83,6 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql("/schema.sql")
 	public void givenStudentGroupIsNull_whenCreate_thenStudentIsAddedToTable() {
 		Student student = new Student("Anna", "Dvorecka");
 		student.setGroup(null);
@@ -95,7 +97,7 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataStudents.sql" })
+	@Sql("/dataStudents.sql")
 	public void givenStudents_whenGetAll_thenGetRightListOfStudents() {
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
@@ -123,7 +125,7 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataStudents.sql" })
+	@Sql("/dataStudents.sql")
 	public void givenId_whenFindById_thenGetRightStudent() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
@@ -139,7 +141,7 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataStudents.sql" })
+	@Sql("/dataStudents.sql")
 	public void givenUpdatedFields_whenUpdate_thenStudentsTableIsUpdated() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
@@ -168,7 +170,7 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataStudentsCourses.sql" })
+	@Sql("/dataStudentsCourses.sql")
 	public void givenUpdatedCourses_whenUpdate_thenStudentsCoursesTableIsUpdated() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
@@ -191,7 +193,7 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataStudents.sql" })
+	@Sql("/dataStudents.sql")
 	public void givenStudentId_whenDeleteById_thenStudentIsDeleted() {
 		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_TABLE_NAME) - 1;
 
@@ -202,7 +204,7 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataStudents.sql" })
+	@Sql("/dataStudents.sql")
 	public void givenGroup_whenGetStudentsByGroup_thenGetRightListOfStudents() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
@@ -219,7 +221,7 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenCourseId_whenGetStudentsByCourseId_thenGetRightListOfStudents() {
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);

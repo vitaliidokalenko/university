@@ -14,6 +14,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -28,6 +30,7 @@ import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
 
 @SpringJUnitConfig(AppConfig.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JdbcLessonDaoTest {
 
 	private static final String LESSONS_TABLE_NAME = "lessons";
@@ -39,7 +42,7 @@ public class JdbcLessonDaoTest {
 	private JdbcLessonDao lessonDao;
 
 	@Test
-	@Sql({ "/schema.sql", "/dataLessons.sql" })
+	@Sql("/dataLessons.sql")
 	public void givenLessons_whenGetAll_thenGetRightListOfLessons() {
 		Timeframe timeframe1 = new Timeframe();
 		timeframe1.setId(1L);
@@ -112,7 +115,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataForLessons.sql" })
+	@Sql("/dataForLessons.sql")
 	public void givenLesson_whenCreate_thenLessonIsAddedToTable() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
@@ -150,7 +153,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataForLessons.sql" })
+	@Sql("/dataForLessons.sql")
 	public void givenLessonWithGroups_whenCreate_thenRightDataIsAddedToLessonsGroupsTable() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
@@ -190,7 +193,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataLessons.sql" })
+	@Sql("/dataLessons.sql")
 	public void givenId_whenFindById_thenGetRightLesson() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
@@ -220,7 +223,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataLessons.sql" })
+	@Sql("/dataLessons.sql")
 	public void givenUpdatedFields_whenUpdate_thenLessonTableIsUdated() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(2L);
@@ -256,7 +259,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataLessonsGroups.sql" })
+	@Sql("/dataLessonsGroups.sql")
 	public void givenUpdatedGroups_whenUpdate_thenLessonsGroupsTableIsUdated() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(2L);
@@ -293,7 +296,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataLessons.sql" })
+	@Sql("/dataLessons.sql")
 	public void givenLessonId_whenDeleteById_thenLessonIsDeleted() {
 		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_TABLE_NAME) - 1;
 
@@ -304,7 +307,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenGroupId_whenGetLessonsByGroupId_thenGetRightListOfLessons() {
 		Timeframe timeframe1 = new Timeframe();
 		timeframe1.setId(1L);
@@ -356,7 +359,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenTimeframe_whenGetLessonsByTimeframe_thenGetRightListOfLessons() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
@@ -387,7 +390,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenCourse_whenGetLessonsByCourse_thenGetRightListOfLessons() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
@@ -418,7 +421,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenTeacher_whenGetLessonsByTeacher_thenGetRightListOfLessons() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
@@ -449,7 +452,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenRoom_whenGetLessonsByRoom_thenGetRightListOfLessons() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);

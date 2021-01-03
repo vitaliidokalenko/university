@@ -13,16 +13,19 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.AppConfig;
+import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.jdbc.JdbcTeacherDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Teacher;
 
-@SpringJUnitConfig(AppConfig.class)
+@SpringJUnitConfig(TestAppConfig.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JdbcTeacherDaoTest {
 
 	private static final String TEACHERS_TABLE_NAME = "teachers";
@@ -34,7 +37,7 @@ public class JdbcTeacherDaoTest {
 	private JdbcTeacherDao teacherDao;
 
 	@Test
-	@Sql({ "/schema.sql", "/dataCourses.sql" })
+	@Sql("/dataCourses.sql")
 	public void givenTeacher_whenCreate_thenTeacherIsAddedToTable() {
 		Course course1 = new Course("Law");
 		course1.setId(1L);
@@ -60,7 +63,7 @@ public class JdbcTeacherDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataCourses.sql" })
+	@Sql("/dataCourses.sql")
 	public void givenTeacherWithCourses_whenCreate_thenRightDataIsAddedToTeachersCoursesTable() {
 		Course course1 = new Course("Law");
 		course1.setId(1L);
@@ -86,7 +89,7 @@ public class JdbcTeacherDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataTeachers.sql" })
+	@Sql("/dataTeachers.sql")
 	public void givenTeachers_whenGetAll_thenGetRightListOfTeachers() {
 		Teacher teacher1 = new Teacher("Victor", "Doncov");
 		teacher1.setId(1L);
@@ -108,7 +111,7 @@ public class JdbcTeacherDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataTeachers.sql" })
+	@Sql("/dataTeachers.sql")
 	public void givenId_whenFindById_thenGetRightTeacher() {
 		Teacher expected = new Teacher("Victor", "Doncov");
 		expected.setId(1L);
@@ -121,7 +124,7 @@ public class JdbcTeacherDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataTeachers.sql" })
+	@Sql("/dataTeachers.sql")
 	public void givenUpdatedFields_whenUpdate_thenTeachersTableIsUpdated() {
 		Teacher teacher = new Teacher("Oleg", "Gricina");
 		teacher.setId(1L);
@@ -136,7 +139,7 @@ public class JdbcTeacherDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataTeachersCourses.sql" })
+	@Sql("/dataTeachersCourses.sql")
 	public void givenUpdatedCourses_whenUpdate_thenTeachersCoursesTableIsUpdated() {
 		Course course = new Course("Art");
 		course.setId(4L);
@@ -156,7 +159,7 @@ public class JdbcTeacherDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataTeachers.sql" })
+	@Sql("/dataTeachers.sql")
 	public void givenTeacherId_whenDeleteById_thenTeacherIsDeleted() {
 		int expectedRows = countRowsInTable(jdbcTemplate, TEACHERS_TABLE_NAME) - 1;
 
@@ -167,7 +170,7 @@ public class JdbcTeacherDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenCourseId_whenGetTeachersByCourseId_thenGetRightListOfTeachers() {
 		Teacher teacher1 = new Teacher("Victor", "Doncov");
 		teacher1.setId(1L);

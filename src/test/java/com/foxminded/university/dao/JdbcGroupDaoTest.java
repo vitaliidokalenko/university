@@ -10,14 +10,17 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.AppConfig;
+import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.jdbc.JdbcGroupDao;
 import com.foxminded.university.model.Group;
 
-@SpringJUnitConfig(AppConfig.class)
+@SpringJUnitConfig(TestAppConfig.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JdbcGroupDaoTest {
 
 	private static final String GROUPS_TABLE_NAME = "groups";
@@ -28,7 +31,7 @@ public class JdbcGroupDaoTest {
 	private JdbcGroupDao groupDao;
 
 	@Test
-	@Sql({ "/schema.sql", "/dataGroups.sql" })
+	@Sql("/dataGroups.sql")
 	public void givenGroups_whenGetAll_thenGetRightListOfGroups() {
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
@@ -44,7 +47,6 @@ public class JdbcGroupDaoTest {
 	}
 
 	@Test
-	@Sql("/schema.sql")
 	public void givenGroup_whenCreate_thenGroupIsAddedToTable() {
 		Group group = new Group("AA-22");
 		int expectedRows = countRowsInTable(jdbcTemplate, GROUPS_TABLE_NAME) + 1;
@@ -56,7 +58,7 @@ public class JdbcGroupDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataGroups.sql" })
+	@Sql("/dataGroups.sql")
 	public void givenId_whenFindById_thenGetRightGroup() {
 		Group expected = new Group("AA-11");
 		expected.setId(1L);
@@ -67,7 +69,7 @@ public class JdbcGroupDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataGroups.sql" })
+	@Sql("/dataGroups.sql")
 	public void givenUpdatedFields_whenUpdate_thenGroupsTableIsUpdated() {
 		Group group = new Group("DD-44");
 		group.setId(1L);
@@ -80,7 +82,7 @@ public class JdbcGroupDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataGroups.sql" })
+	@Sql("/dataGroups.sql")
 	public void givenGroupId_whenDeleteById_thenGroupIsDeleted() {
 		int expectedRows = countRowsInTable(jdbcTemplate, GROUPS_TABLE_NAME) - 1;
 
@@ -91,7 +93,7 @@ public class JdbcGroupDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenLessonId_whenGetGroupsByLessonId_thenGetRightListOfGroups() {
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);

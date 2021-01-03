@@ -10,14 +10,17 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.AppConfig;
+import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.jdbc.JdbcRoomDao;
 import com.foxminded.university.model.Room;
 
-@SpringJUnitConfig(AppConfig.class)
+@SpringJUnitConfig(TestAppConfig.class)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JdbcRoomDaoTest {
 
 	private static final String ROOMS_TABLE_NAME = "rooms";
@@ -28,7 +31,7 @@ public class JdbcRoomDaoTest {
 	private JdbcRoomDao roomDao;
 
 	@Test
-	@Sql({ "/schema.sql", "/dataRooms.sql" })
+	@Sql("/dataRooms.sql")
 	public void givenRooms_whenGetAll_thenGetRightListOfRooms() {
 		Room room1 = new Room("A111");
 		room1.setId(1L);
@@ -47,7 +50,6 @@ public class JdbcRoomDaoTest {
 	}
 
 	@Test
-	@Sql("/schema.sql")
 	public void givenRoom_whenCreate_thenRoomIsAddedToTable() {
 		Room room = new Room("A111");
 		room.setCapacity(30);
@@ -60,7 +62,7 @@ public class JdbcRoomDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataRooms.sql" })
+	@Sql("/dataRooms.sql")
 	public void givenId_whenFindById_thenGetRightRoom() {
 		Room expected = new Room("A111");
 		expected.setId(1L);
@@ -72,7 +74,7 @@ public class JdbcRoomDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataRooms.sql" })
+	@Sql("/dataRooms.sql")
 	public void givenUpdatedFields_whenUpdate_thenRoomsTableIsUpdated() {
 		Room room = new Room("D444");
 		room.setId(1L);
@@ -86,7 +88,7 @@ public class JdbcRoomDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/dataRooms.sql" })
+	@Sql("/dataRooms.sql")
 	public void givenRoomId_whenDeleteById_thenRoomIsDeleted() {
 		int expectedRows = countRowsInTable(jdbcTemplate, ROOMS_TABLE_NAME) - 1;
 
@@ -97,7 +99,7 @@ public class JdbcRoomDaoTest {
 	}
 
 	@Test
-	@Sql({ "/schema.sql", "/data.sql" })
+	@Sql("/data.sql")
 	public void givenCourseId_whenGetRoomsByCourseId_thenGetRightListOfRooms() {
 		Room room1 = new Room("A111");
 		room1.setId(1L);
