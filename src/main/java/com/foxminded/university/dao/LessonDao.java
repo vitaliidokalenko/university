@@ -8,17 +8,7 @@ import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
 
-public interface LessonDao {
-
-	public void create(Lesson lesson);
-
-	public Lesson findById(Long lessonId);
-
-	public List<Lesson> getAll();
-
-	public void update(Lesson lesson);
-
-	public void deleteById(Long lessonId);
+public interface LessonDao extends GenericDao<Lesson> {
 
 	public List<Lesson> getLessonsByGroupId(Long groupId);
 
