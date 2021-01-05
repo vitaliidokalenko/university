@@ -19,7 +19,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.AppConfig;
+import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.jdbc.JdbcLessonDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
@@ -29,7 +29,7 @@ import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
 
-@SpringJUnitConfig(AppConfig.class)
+@SpringJUnitConfig(TestAppConfig.class)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public class JdbcLessonDaoTest {
 
