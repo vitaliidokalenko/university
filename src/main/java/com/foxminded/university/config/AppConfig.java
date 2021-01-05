@@ -20,7 +20,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 @PropertySource("database.properties")
 public class AppConfig {
 
-	private final static String SCHEMA = "schema.sql";
+	private static final String SCHEMA = "schema.sql";
 
 	@Value("${driver}")
 	private String driver;
