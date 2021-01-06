@@ -15,7 +15,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.jdbc.mapper.LessonMapper;
@@ -93,7 +92,6 @@ public class JdbcLessonDao implements LessonDao {
 	}
 
 	@Override
-	@Transactional
 	public void update(Lesson lesson) {
 		jdbcTemplate.update(UPDATE_LESSON_QUERY,
 				lesson.getDate(),
