@@ -31,10 +31,12 @@ public class JdbcCourseDao implements CourseDao {
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcRoomDao roomDao;
+	private CourseMapper courseMapper;
 
-	public JdbcCourseDao(JdbcTemplate jdbcTemplate, JdbcRoomDao roomDao) {
+	public JdbcCourseDao(JdbcTemplate jdbcTemplate, JdbcRoomDao roomDao, CourseMapper courseMapper) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.roomDao = roomDao;
+		this.courseMapper = courseMapper;
 	}
 
 	@Override
@@ -83,16 +85,16 @@ public class JdbcCourseDao implements CourseDao {
 
 	@Override
 	public List<Course> getCoursesByRoomId(Long roomId) {
-		return jdbcTemplate.query(GET_COURSES_BY_ROOM_ID_QUERY, new Object[] { roomId }, new CourseMapper());
+		return jdbcTemplate.query(GET_COURSES_BY_ROOM_ID_QUERY, new Object[] { roomId }, courseMapper);
 	}
 
 	@Override
 	public List<Course> getCoursesByStudentId(Long studentId) {
-		return jdbcTemplate.query(GET_COURSES_BY_STUDENT_ID_QUERY, new Object[] { studentId }, new CourseMapper());
+		return jdbcTemplate.query(GET_COURSES_BY_STUDENT_ID_QUERY, new Object[] { studentId }, courseMapper);
 	}
 
 	@Override
 	public List<Course> getCoursesByTeacherId(Long teacherId) {
-		return jdbcTemplate.query(GET_COURSES_BY_TEACHER_ID_QUERY, new Object[] { teacherId }, new CourseMapper());
+		return jdbcTemplate.query(GET_COURSES_BY_TEACHER_ID_QUERY, new Object[] { teacherId }, courseMapper);
 	}
 }

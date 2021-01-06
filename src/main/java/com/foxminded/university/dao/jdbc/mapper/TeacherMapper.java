@@ -5,10 +5,12 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Teacher;
 
+@Component
 public class TeacherMapper implements RowMapper<Teacher> {
 
 	public static final String TEACHER_ID = "id";

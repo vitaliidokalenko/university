@@ -27,9 +27,11 @@ public class JdbcTimeframeDao implements TimeframeDao {
 	private static final String UPDATE_TIMEFRAME_QUERY = "UPDATE timeframes SET sequance = ?, start_time = ?, end_time = ? WHERE id = ?";
 
 	private JdbcTemplate jdbcTemplate;
+	private TimeframeMapper timeframeMapper;
 
-	public JdbcTimeframeDao(JdbcTemplate jdbcTemplate) {
+	public JdbcTimeframeDao(JdbcTemplate jdbcTemplate, TimeframeMapper timeframeMapper) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.timeframeMapper = timeframeMapper;
 	}
 
 	@Override
@@ -48,13 +50,12 @@ public class JdbcTimeframeDao implements TimeframeDao {
 
 	@Override
 	public Timeframe findById(Long timeframeId) {
-		return jdbcTemplate
-				.queryForObject(FIND_TIMEFRAME_BY_ID_QUERY, new Object[] { timeframeId }, new TimeframeMapper());
+		return jdbcTemplate.queryForObject(FIND_TIMEFRAME_BY_ID_QUERY, new Object[] { timeframeId }, timeframeMapper);
 	}
 
 	@Override
 	public List<Timeframe> getAll() {
-		return jdbcTemplate.query(GET_TIMEFRAMES_QUERY, new TimeframeMapper());
+		return jdbcTemplate.query(GET_TIMEFRAMES_QUERY, timeframeMapper);
 	}
 
 	@Override

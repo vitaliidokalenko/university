@@ -46,20 +46,22 @@ public class JdbcLessonDao implements LessonDao {
 	private static final String GET_LESSONS_BY_ROOM_ID_QUERY = "SELECT * FROM lessons WHERE room_id = ?";
 
 	private JdbcTemplate jdbcTemplate;
-	private JdbcTimeframeDao timeframeDao;
-	private JdbcCourseDao courseDao;
-	private JdbcTeacherDao teacherDao;
-	private JdbcRoomDao roomDao;
 	private JdbcGroupDao groupDao;
+	private JdbcTimeframeDao timeframeDao;
+	private JdbcTeacherDao teacherDao;
+	private JdbcCourseDao courseDao;
+	private JdbcRoomDao roomDao;
+	private LessonMapper lessonMapper;
 
-	public JdbcLessonDao(JdbcTemplate jdbcTemplate, JdbcTimeframeDao timeframeDao, JdbcCourseDao courseDao,
-			JdbcTeacherDao teacherDao, JdbcRoomDao roomDao, JdbcGroupDao groupDao) {
+	public JdbcLessonDao(JdbcTemplate jdbcTemplate, JdbcGroupDao groupDao, JdbcTimeframeDao timeframeDao,
+			JdbcTeacherDao teacherDao, JdbcCourseDao courseDao, JdbcRoomDao roomDao, LessonMapper lessonMapper) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.timeframeDao = timeframeDao;
-		this.courseDao = courseDao;
-		this.teacherDao = teacherDao;
-		this.roomDao = roomDao;
 		this.groupDao = groupDao;
+		this.timeframeDao = timeframeDao;
+		this.teacherDao = teacherDao;
+		this.courseDao = courseDao;
+		this.roomDao = roomDao;
+		this.lessonMapper = lessonMapper;
 	}
 
 	@Override
@@ -82,14 +84,12 @@ public class JdbcLessonDao implements LessonDao {
 
 	@Override
 	public Lesson findById(Long lessonId) {
-		return jdbcTemplate.queryForObject(FIND_LESSON_BY_ID_QUERY,
-				new Object[] { lessonId },
-				new LessonMapper(timeframeDao, courseDao, teacherDao, roomDao));
+		return jdbcTemplate.queryForObject(FIND_LESSON_BY_ID_QUERY, new Object[] { lessonId }, lessonMapper);
 	}
 
 	@Override
 	public List<Lesson> getAll() {
-		return jdbcTemplate.query(GET_LESSONS_QUERY, new LessonMapper(timeframeDao, courseDao, teacherDao, roomDao));
+		return jdbcTemplate.query(GET_LESSONS_QUERY, lessonMapper);
 	}
 
 	@Override
@@ -119,9 +119,7 @@ public class JdbcLessonDao implements LessonDao {
 
 	@Override
 	public List<Lesson> getLessonsByGroupId(Long groupId) {
-		return jdbcTemplate.query(GET_LESSONS_BY_GROUP_ID_QUERY,
-				new Object[] { groupId },
-				new LessonMapper(timeframeDao, courseDao, teacherDao, roomDao));
+		return jdbcTemplate.query(GET_LESSONS_BY_GROUP_ID_QUERY, new Object[] { groupId }, lessonMapper);
 	}
 
 	@Override

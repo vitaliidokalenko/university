@@ -26,9 +26,11 @@ public class JdbcGroupDao implements GroupDao {
 			+ "JOIN lessons_groups ON lessons_groups.group_id = groups.id WHERE lesson_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
+	private GroupMapper groupMapper;
 
-	public JdbcGroupDao(JdbcTemplate jdbcTemplate) {
+	public JdbcGroupDao(JdbcTemplate jdbcTemplate, GroupMapper groupMapper) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.groupMapper = groupMapper;
 	}
 
 	@Override
@@ -47,12 +49,12 @@ public class JdbcGroupDao implements GroupDao {
 		if (groupId == 0) {
 			return null;
 		}
-		return jdbcTemplate.queryForObject(FIND_GROUP_BY_ID_QUERY, new Object[] { groupId }, new GroupMapper());
+		return jdbcTemplate.queryForObject(FIND_GROUP_BY_ID_QUERY, new Object[] { groupId }, groupMapper);
 	}
 
 	@Override
 	public List<Group> getAll() {
-		return jdbcTemplate.query(GET_GROUPS_QUERY, new GroupMapper());
+		return jdbcTemplate.query(GET_GROUPS_QUERY, groupMapper);
 	}
 
 	@Override
@@ -67,6 +69,6 @@ public class JdbcGroupDao implements GroupDao {
 
 	@Override
 	public List<Group> getGroupsByLessonId(Long lessonId) {
-		return jdbcTemplate.query(GET_GROUPS_BY_LESSON_ID_QUERY, new Object[] { lessonId }, new GroupMapper());
+		return jdbcTemplate.query(GET_GROUPS_BY_LESSON_ID_QUERY, new Object[] { lessonId }, groupMapper);
 	}
 }

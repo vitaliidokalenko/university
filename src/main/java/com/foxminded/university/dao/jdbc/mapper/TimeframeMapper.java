@@ -5,9 +5,11 @@ import java.sql.SQLException;
 import java.time.LocalTime;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import com.foxminded.university.model.Timeframe;
 
+@Component
 public class TimeframeMapper implements RowMapper<Timeframe> {
 
 	public static final String TIMEFRAME_ID = "id";

@@ -43,13 +43,13 @@ public class JdbcStudentDao implements StudentDao {
 			+ "JOIN students_courses ON students_courses.student_id = students.id WHERE course_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
-	private JdbcGroupDao groupDao;
 	private JdbcCourseDao courseDao;
+	private StudentMapper studentMapper;
 
-	public JdbcStudentDao(JdbcTemplate jdbcTemplate, JdbcGroupDao groupDao, JdbcCourseDao courseDao) {
+	public JdbcStudentDao(JdbcTemplate jdbcTemplate, JdbcCourseDao courseDao, StudentMapper studentMapper) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.groupDao = groupDao;
 		this.courseDao = courseDao;
+		this.studentMapper = studentMapper;
 	}
 
 	@Override
@@ -76,13 +76,12 @@ public class JdbcStudentDao implements StudentDao {
 
 	@Override
 	public Student findById(Long studentId) {
-		return jdbcTemplate
-				.queryForObject(FIND_STUDENT_BY_ID_QUERY, new Object[] { studentId }, new StudentMapper(groupDao));
+		return jdbcTemplate.queryForObject(FIND_STUDENT_BY_ID_QUERY, new Object[] { studentId }, studentMapper);
 	}
 
 	@Override
 	public List<Student> getAll() {
-		return jdbcTemplate.query(GET_STUDENTS_QUERY, new StudentMapper(groupDao));
+		return jdbcTemplate.query(GET_STUDENTS_QUERY, studentMapper);
 	}
 
 	@Override
@@ -129,7 +128,6 @@ public class JdbcStudentDao implements StudentDao {
 
 	@Override
 	public List<Student> getStudentsByCourseId(Long courseId) {
-		return jdbcTemplate
-				.query(GET_STUDENTS_BY_COURSE_ID_QUERY, new Object[] { courseId }, new StudentMapper(groupDao));
+		return jdbcTemplate.query(GET_STUDENTS_BY_COURSE_ID_QUERY, new Object[] { courseId }, studentMapper);
 	}
 }

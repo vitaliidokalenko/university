@@ -26,9 +26,11 @@ public class JdbcRoomDao implements RoomDao {
 			+ "JOIN courses_rooms ON courses_rooms.room_id = rooms.id WHERE course_id = ?;";
 
 	private JdbcTemplate jdbcTemplate;
+	private RoomMapper roomMapper;
 
-	public JdbcRoomDao(JdbcTemplate jdbcTemplate) {
+	public JdbcRoomDao(JdbcTemplate jdbcTemplate, RoomMapper roomMapper) {
 		this.jdbcTemplate = jdbcTemplate;
+		this.roomMapper = roomMapper;
 	}
 
 	@Override
@@ -45,12 +47,12 @@ public class JdbcRoomDao implements RoomDao {
 
 	@Override
 	public Room findById(Long roomId) {
-		return jdbcTemplate.queryForObject(FIND_ROOM_BY_ID_QUERY, new Object[] { roomId }, new RoomMapper());
+		return jdbcTemplate.queryForObject(FIND_ROOM_BY_ID_QUERY, new Object[] { roomId }, roomMapper);
 	}
 
 	@Override
 	public List<Room> getAll() {
-		return jdbcTemplate.query(GET_ROOMS_QUERY, new RoomMapper());
+		return jdbcTemplate.query(GET_ROOMS_QUERY, roomMapper);
 	}
 
 	@Override
@@ -65,6 +67,6 @@ public class JdbcRoomDao implements RoomDao {
 
 	@Override
 	public List<Room> getRoomsByCourseId(Long courseId) {
-		return jdbcTemplate.query(GET_ROOMS_BY_COURSE_ID_QUERY, new Object[] { courseId }, new RoomMapper());
+		return jdbcTemplate.query(GET_ROOMS_BY_COURSE_ID_QUERY, new Object[] { courseId }, roomMapper);
 	}
 }

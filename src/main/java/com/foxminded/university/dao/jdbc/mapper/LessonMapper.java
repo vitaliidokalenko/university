@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.jdbc.JdbcCourseDao;
 import com.foxminded.university.dao.jdbc.JdbcRoomDao;
@@ -12,6 +13,7 @@ import com.foxminded.university.dao.jdbc.JdbcTeacherDao;
 import com.foxminded.university.dao.jdbc.JdbcTimeframeDao;
 import com.foxminded.university.model.Lesson;
 
+@Component
 public class LessonMapper implements RowMapper<Lesson> {
 
 	public static final String LESSON_ID = "id";

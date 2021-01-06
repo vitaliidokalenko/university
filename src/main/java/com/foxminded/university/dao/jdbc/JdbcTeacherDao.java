@@ -32,10 +32,12 @@ public class JdbcTeacherDao implements TeacherDao {
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcCourseDao courseDao;
+	private TeacherMapper teacherMapper;
 
-	public JdbcTeacherDao(JdbcTemplate jdbcTemplate, JdbcCourseDao courseDao) {
+	public JdbcTeacherDao(JdbcTemplate jdbcTemplate, JdbcCourseDao courseDao, TeacherMapper teacherMapper) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.courseDao = courseDao;
+		this.teacherMapper = teacherMapper;
 	}
 
 	@Override
@@ -62,12 +64,12 @@ public class JdbcTeacherDao implements TeacherDao {
 
 	@Override
 	public Teacher findById(Long teacherId) {
-		return jdbcTemplate.queryForObject(FIND_TEACHER_BY_ID_QUERY, new Object[] { teacherId }, new TeacherMapper());
+		return jdbcTemplate.queryForObject(FIND_TEACHER_BY_ID_QUERY, new Object[] { teacherId }, teacherMapper);
 	}
 
 	@Override
 	public List<Teacher> getAll() {
-		return jdbcTemplate.query(GET_TEACHERS_QUERY, new TeacherMapper());
+		return jdbcTemplate.query(GET_TEACHERS_QUERY, teacherMapper);
 	}
 
 	@Override
@@ -99,6 +101,6 @@ public class JdbcTeacherDao implements TeacherDao {
 
 	@Override
 	public List<Teacher> getTeachersByCourseId(Long courseId) {
-		return jdbcTemplate.query(GET_TEACHERS_BY_COURSE_ID_QUERY, new Object[] { courseId }, new TeacherMapper());
+		return jdbcTemplate.query(GET_TEACHERS_BY_COURSE_ID_QUERY, new Object[] { courseId }, teacherMapper);
 	}
 }

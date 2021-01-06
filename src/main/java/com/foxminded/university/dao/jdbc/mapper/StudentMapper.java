@@ -5,11 +5,13 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.jdbc.JdbcGroupDao;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Student;
 
+@Component
 public class StudentMapper implements RowMapper<Student> {
 
 	public static final String STUDENT_ID = "id";
