@@ -2,9 +2,12 @@ package com.foxminded.university.ui;
 
 import java.util.Scanner;
 
-import com.foxminded.university.model.Room;
-import com.foxminded.university.repository.RoomRepository;
+import org.springframework.stereotype.Component;
 
+import com.foxminded.university.dao.RoomDao;
+import com.foxminded.university.model.Room;
+
+@Component
 public class RoomMenu {
 
 	private static final String CHOICE_MESSAGE_FORMAT = "%nPlease, input 'a'-'c' to select operation "
@@ -16,12 +19,12 @@ public class RoomMenu {
 	private static final String ID_INQUIRY = "Please, insert room`s id:";
 	private static final String PRINT_ROOMS_FORMAT = "id %d. %s%n";
 
-	private final Scanner scanner;
-	private final RoomRepository repository;
+	private Scanner scanner;
+	private RoomDao roomDao;
 
-	public RoomMenu(Scanner scanner) {
+	public RoomMenu(Scanner scanner, RoomDao roomDao) {
 		this.scanner = scanner;
-		this.repository = new RoomRepository();
+		this.roomDao = roomDao;
 	}
 
 	public void runMenu() {
@@ -60,17 +63,16 @@ public class RoomMenu {
 	private void addRoom() {
 		System.out.println(NAME_INQUIRY);
 		String name = scanner.nextLine();
-		repository.create(new Room(name));
+		roomDao.create(new Room(name));
 	}
 
 	private void removeRoom() {
 		System.out.println(ID_INQUIRY);
-		int id = scanner.nextInt();
-		repository.deleteById(id);
+		long id = scanner.nextInt();
+		roomDao.deleteById(id);
 	}
 
 	private void printRooms() {
-		repository.getRooms()
-				.forEach(r -> System.out.printf(PRINT_ROOMS_FORMAT, r.getId(), r.getName()));
+		roomDao.getAll().forEach(r -> System.out.printf(PRINT_ROOMS_FORMAT, r.getId(), r.getName()));
 	}
 }

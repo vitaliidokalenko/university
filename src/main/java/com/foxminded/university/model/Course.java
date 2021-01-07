@@ -1,11 +1,12 @@
 package com.foxminded.university.model;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Course {
 
-	private int id;
+	private Long id;
 	private String name;
 	private String description;
 	private Set<Room> rooms = new HashSet<>();
@@ -14,11 +15,11 @@ public class Course {
 		this.name = name;
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -44,5 +45,26 @@ public class Course {
 
 	public void setRooms(Set<Room> rooms) {
 		this.rooms = rooms;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(description, id, name);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Course other = (Course) obj;
+		return Objects.equals(description, other.description) && Objects.equals(id, other.id)
+				&& Objects.equals(name, other.name);
 	}
 }

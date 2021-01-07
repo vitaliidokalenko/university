@@ -2,9 +2,12 @@ package com.foxminded.university.ui;
 
 import java.util.Scanner;
 
-import com.foxminded.university.model.Teacher;
-import com.foxminded.university.repository.TeacherRepository;
+import org.springframework.stereotype.Component;
 
+import com.foxminded.university.dao.TeacherDao;
+import com.foxminded.university.model.Teacher;
+
+@Component
 public class TeacherMenu {
 
 	private static final String CHOICE_MESSAGE_FORMAT = "%nPlease, input 'a'-'c' to select operation "
@@ -17,12 +20,12 @@ public class TeacherMenu {
 	private static final String ID_INQUIRY = "Please, insert teacher`s id:";
 	private static final String PRINT_TEACHERS_FORMAT = "id %d. %s %s%n";
 
-	Scanner scanner;
-	TeacherRepository repository;
+	private Scanner scanner;
+	private TeacherDao teacherDao;
 
-	public TeacherMenu(Scanner scanner) {
+	public TeacherMenu(Scanner scanner, TeacherDao teacherDao) {
 		this.scanner = scanner;
-		this.repository = new TeacherRepository();
+		this.teacherDao = teacherDao;
 	}
 
 	public void runMenu() {
@@ -63,17 +66,17 @@ public class TeacherMenu {
 		String name = scanner.nextLine();
 		System.out.println(SURNAME_INQUIRY);
 		String surname = scanner.nextLine();
-		repository.create(new Teacher(name, surname));
+		teacherDao.create(new Teacher(name, surname));
 	}
 
 	private void removeTeacher() {
 		System.out.println(ID_INQUIRY);
-		int id = scanner.nextInt();
-		repository.deleteById(id);
+		long id = scanner.nextInt();
+		teacherDao.deleteById(id);
 	}
 
 	private void printTeachers() {
-		repository.getTeachers()
+		teacherDao.getAll()
 				.forEach(t -> System.out.printf(PRINT_TEACHERS_FORMAT, t.getId(), t.getName(), t.getSurname()));
 	}
 }

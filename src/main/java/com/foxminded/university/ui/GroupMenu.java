@@ -2,9 +2,12 @@ package com.foxminded.university.ui;
 
 import java.util.Scanner;
 
-import com.foxminded.university.model.Group;
-import com.foxminded.university.repository.GroupRepository;
+import org.springframework.stereotype.Component;
 
+import com.foxminded.university.dao.GroupDao;
+import com.foxminded.university.model.Group;
+
+@Component
 public class GroupMenu {
 
 	private static final String CHOICE_MESSAGE_FORMAT = "%nPlease, input 'a'-'c' to select operation "
@@ -16,12 +19,12 @@ public class GroupMenu {
 	private static final String ID_INQUIRY = "Please, insert group`s id:";
 	private static final String PRINT_GROUPS_FORMAT = "id %d. %s%n";
 
-	private final Scanner scanner;
-	private final GroupRepository repository;
+	private Scanner scanner;
+	private GroupDao groupDao;
 
-	public GroupMenu(Scanner scanner) {
+	public GroupMenu(Scanner scanner, GroupDao groupDao) {
 		this.scanner = scanner;
-		this.repository = new GroupRepository();
+		this.groupDao = groupDao;
 	}
 
 	public void runMenu() {
@@ -60,17 +63,16 @@ public class GroupMenu {
 	private void addGroup() {
 		System.out.println(NAME_INQUIRY);
 		String name = scanner.nextLine();
-		repository.create(new Group(name));
+		groupDao.create(new Group(name));
 	}
 
 	private void removeGroup() {
 		System.out.println(ID_INQUIRY);
-		int id = scanner.nextInt();
-		repository.deleteById(id);
+		long id = scanner.nextInt();
+		groupDao.deleteById(id);
 	}
 
 	private void printGroups() {
-		repository.getGroups()
-				.forEach(g -> System.out.printf(PRINT_GROUPS_FORMAT, g.getId(), g.getName()));
+		groupDao.getAll().forEach(g -> System.out.printf(PRINT_GROUPS_FORMAT, g.getId(), g.getName()));
 	}
 }

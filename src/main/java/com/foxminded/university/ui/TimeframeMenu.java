@@ -4,9 +4,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-import com.foxminded.university.model.Timeframe;
-import com.foxminded.university.repository.TimeframeRepository;
+import org.springframework.stereotype.Component;
 
+import com.foxminded.university.dao.TimeframeDao;
+import com.foxminded.university.model.Timeframe;
+
+@Component
 public class TimeframeMenu {
 
 	private static final String CHOICE_MESSAGE_FORMAT = "%nPlease, input 'a'-'c' to select operation "
@@ -15,17 +18,18 @@ public class TimeframeMenu {
 	private static final String B_COMMAND = "b. Remove timeframe from repository";
 	private static final String C_COMMAND = "c. Show list of timeframes";
 	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ISO_LOCAL_TIME;
-	private static final String START_TIME_INQUIRY = "Please, insert timeframe`s start time in 'hh:mm' format:";
-	private static final String END_TIME_INQUIRY = "Please, insert timeframe`s end time in 'hh:mm' format:";
+	private static final String START_TIME_INQUIRY = "Please, insert timefram's start time in 'hh:mm' format:";
+	private static final String END_TIME_INQUIRY = "Please, insert timeframe's end time in 'hh:mm' format:";
+	private static final String SEQUANCE_INQUIRY = "Please, insert timeframe's sequance:";
 	private static final String ID_INQUIRY = "Please, insert timeframe`s id:";
 	private static final String PRINT_TIMEFRAMES_FORMAT = "id %d. %s - %s%n";
 
-	private final Scanner scanner;
-	private final TimeframeRepository repository;
+	private Scanner scanner;
+	private TimeframeDao timeframeDao;
 
-	public TimeframeMenu(Scanner scanner) {
+	public TimeframeMenu(Scanner scanner, TimeframeDao timeframeDao) {
 		this.scanner = scanner;
-		this.repository = new TimeframeRepository();
+		this.timeframeDao = timeframeDao;
 	}
 
 	public void runMenu() {
@@ -68,20 +72,23 @@ public class TimeframeMenu {
 		System.out.println(END_TIME_INQUIRY);
 		String end = scanner.nextLine();
 		LocalTime endTime = LocalTime.parse(end, TIME_FORMAT);
+		System.out.println(SEQUANCE_INQUIRY);
+		int sequance = scanner.nextInt();
 		Timeframe timeframe = new Timeframe();
 		timeframe.setStartTime(startTime);
 		timeframe.setEndTime(endTime);
-		repository.create(timeframe);
+		timeframe.setSequance(sequance);
+		timeframeDao.create(timeframe);
 	}
 
 	private void removeTimeframe() {
 		System.out.println(ID_INQUIRY);
-		int id = scanner.nextInt();
-		repository.deleteById(id);
+		long id = scanner.nextInt();
+		timeframeDao.deleteById(id);
 	}
 
 	private void printTimeframes() {
-		repository.getTimeframes()
+		timeframeDao.getAll()
 				.forEach(t -> System.out.printf(PRINT_TIMEFRAMES_FORMAT, t.getId(), t.getStartTime(), t.getEndTime()));
 	}
 }
