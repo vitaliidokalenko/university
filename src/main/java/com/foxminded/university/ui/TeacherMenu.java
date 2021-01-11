@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 import org.springframework.stereotype.Component;
 
-import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.model.Teacher;
+import com.foxminded.university.service.TeacherService;
 
 @Component
 public class TeacherMenu {
@@ -21,11 +21,11 @@ public class TeacherMenu {
 	private static final String PRINT_TEACHERS_FORMAT = "id %d. %s %s%n";
 
 	private Scanner scanner;
-	private TeacherDao teacherDao;
+	private TeacherService teacherService;
 
-	public TeacherMenu(Scanner scanner, TeacherDao teacherDao) {
+	public TeacherMenu(Scanner scanner, TeacherService teacherService) {
 		this.scanner = scanner;
-		this.teacherDao = teacherDao;
+		this.teacherService = teacherService;
 	}
 
 	public void runMenu() {
@@ -66,17 +66,17 @@ public class TeacherMenu {
 		String name = scanner.nextLine();
 		System.out.println(SURNAME_INQUIRY);
 		String surname = scanner.nextLine();
-		teacherDao.create(new Teacher(name, surname));
+		teacherService.create(new Teacher(name, surname));
 	}
 
 	private void removeTeacher() {
 		System.out.println(ID_INQUIRY);
 		long id = scanner.nextInt();
-		teacherDao.deleteById(id);
+		teacherService.deleteById(id);
 	}
 
 	private void printTeachers() {
-		teacherDao.getAll()
+		teacherService.getAll()
 				.forEach(t -> System.out.printf(PRINT_TEACHERS_FORMAT, t.getId(), t.getName(), t.getSurname()));
 	}
 }

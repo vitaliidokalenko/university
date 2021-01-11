@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 import org.springframework.stereotype.Component;
 
-import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Room;
+import com.foxminded.university.service.RoomService;
 
 @Component
 public class RoomMenu {
@@ -20,11 +20,11 @@ public class RoomMenu {
 	private static final String PRINT_ROOMS_FORMAT = "id %d. %s%n";
 
 	private Scanner scanner;
-	private RoomDao roomDao;
+	private RoomService roomService;
 
-	public RoomMenu(Scanner scanner, RoomDao roomDao) {
+	public RoomMenu(Scanner scanner, RoomService roomService) {
 		this.scanner = scanner;
-		this.roomDao = roomDao;
+		this.roomService = roomService;
 	}
 
 	public void runMenu() {
@@ -63,16 +63,16 @@ public class RoomMenu {
 	private void addRoom() {
 		System.out.println(NAME_INQUIRY);
 		String name = scanner.nextLine();
-		roomDao.create(new Room(name));
+		roomService.create(new Room(name));
 	}
 
 	private void removeRoom() {
 		System.out.println(ID_INQUIRY);
 		long id = scanner.nextInt();
-		roomDao.deleteById(id);
+		roomService.deleteById(id);
 	}
 
 	private void printRooms() {
-		roomDao.getAll().forEach(r -> System.out.printf(PRINT_ROOMS_FORMAT, r.getId(), r.getName()));
+		roomService.getAll().forEach(r -> System.out.printf(PRINT_ROOMS_FORMAT, r.getId(), r.getName()));
 	}
 }

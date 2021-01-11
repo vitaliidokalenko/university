@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 import org.springframework.stereotype.Component;
 
-import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.model.Group;
+import com.foxminded.university.service.GroupService;
 
 @Component
 public class GroupMenu {
@@ -20,11 +20,11 @@ public class GroupMenu {
 	private static final String PRINT_GROUPS_FORMAT = "id %d. %s%n";
 
 	private Scanner scanner;
-	private GroupDao groupDao;
+	private GroupService groupService;
 
-	public GroupMenu(Scanner scanner, GroupDao groupDao) {
+	public GroupMenu(Scanner scanner, GroupService groupService) {
 		this.scanner = scanner;
-		this.groupDao = groupDao;
+		this.groupService = groupService;
 	}
 
 	public void runMenu() {
@@ -63,16 +63,16 @@ public class GroupMenu {
 	private void addGroup() {
 		System.out.println(NAME_INQUIRY);
 		String name = scanner.nextLine();
-		groupDao.create(new Group(name));
+		groupService.create(new Group(name));
 	}
 
 	private void removeGroup() {
 		System.out.println(ID_INQUIRY);
 		long id = scanner.nextInt();
-		groupDao.deleteById(id);
+		groupService.deleteById(id);
 	}
 
 	private void printGroups() {
-		groupDao.getAll().forEach(g -> System.out.printf(PRINT_GROUPS_FORMAT, g.getId(), g.getName()));
+		groupService.getAll().forEach(g -> System.out.printf(PRINT_GROUPS_FORMAT, g.getId(), g.getName()));
 	}
 }
