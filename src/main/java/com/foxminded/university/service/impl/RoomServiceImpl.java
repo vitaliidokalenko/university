@@ -1,7 +1,6 @@
 package com.foxminded.university.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,11 +52,5 @@ public class RoomServiceImpl implements RoomService {
 	@Transactional
 	public List<Room> getRoomsByCourseId(Long courseId) {
 		return roomDao.getRoomsByCourseId(courseId);
-	}
-
-	@Override
-	@Transactional
-	public boolean existsById(Long id) {
-		return Optional.of(roomDao.findById(id)).isPresent();
 	}
 }

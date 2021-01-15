@@ -3,7 +3,6 @@ package com.foxminded.university.service.impl;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -13,6 +12,7 @@ import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Course;
+import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.service.StudentService;
 
@@ -100,19 +100,13 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	@Transactional
-	public List<Student> getStudentsByGroupId(Long groupId) {
-		return studentDao.getStudentsByGroup(groupDao.findById(groupId));
+	public List<Student> getStudentsByGroup(Group group) {
+		return studentDao.getStudentsByGroup(group);
 	}
 
 	@Override
 	@Transactional
 	public List<Student> getStudentsByCourseId(Long courseId) {
 		return studentDao.getStudentsByCourseId(courseId);
-	}
-
-	@Override
-	@Transactional
-	public boolean existsById(Long id) {
-		return Optional.of(studentDao.findById(id)).isPresent();
 	}
 }

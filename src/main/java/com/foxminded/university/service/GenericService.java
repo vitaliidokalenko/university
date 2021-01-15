@@ -13,6 +13,4 @@ public interface GenericService<T> {
 	public void update(T entity);
 
 	public void deleteById(Long id);
-	
-	public boolean existsById(Long id);
 }

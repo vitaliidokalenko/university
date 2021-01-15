@@ -2,6 +2,7 @@ package com.foxminded.university.service;
 
 import java.util.List;
 
+import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
 
 public interface StudentService extends GenericService<Student> {
@@ -14,7 +15,7 @@ public interface StudentService extends GenericService<Student> {
 
 	public void removeCourseById(Long studentId, Long courseId);
 
-	public List<Student> getStudentsByGroupId(Long groupId);
+	public List<Student> getStudentsByGroup(Group group);
 
 	public List<Student> getStudentsByCourseId(Long courseId);
 }

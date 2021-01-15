@@ -1,7 +1,6 @@
 package com.foxminded.university.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,11 +78,5 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional
 	public List<Group> getGroupsByLessonId(Long lessonId) {
 		return groupDao.getGroupsByLessonId(lessonId);
-	}
-
-	@Override
-	@Transactional
-	public boolean existsById(Long id) {
-		return Optional.of(groupDao.findById(id)).isPresent();
 	}
 }

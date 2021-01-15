@@ -3,7 +3,6 @@ package com.foxminded.university.service.impl;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -15,8 +14,12 @@ import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.dao.TimeframeDao;
+import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
+import com.foxminded.university.model.Room;
+import com.foxminded.university.model.Teacher;
+import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.LessonService;
 
 @Service
@@ -27,7 +30,7 @@ public class LessonServiceImpl implements LessonService {
 	private TeacherDao teacherDao;
 	private CourseDao courseDao;
 	private RoomDao roomDao;
-	private TimeframeDao timaframeDao;
+	private TimeframeDao timeframeDao;
 
 	public LessonServiceImpl(LessonDao lessonDao, GroupDao groupDao, TeacherDao teacherDao, CourseDao courseDao,
 			RoomDao roomDao, TimeframeDao timeframeDao) {
@@ -36,7 +39,7 @@ public class LessonServiceImpl implements LessonService {
 		this.teacherDao = teacherDao;
 		this.courseDao = courseDao;
 		this.roomDao = roomDao;
-		this.timaframeDao = timeframeDao;
+		this.timeframeDao = timeframeDao;
 	}
 
 	@Override
@@ -119,7 +122,7 @@ public class LessonServiceImpl implements LessonService {
 	@Transactional
 	public void setTimeframeById(Long lessonId, Long timaframeId) {
 		Lesson lesson = lessonDao.findById(lessonId);
-		lesson.setTimeframe(timaframeDao.findById(timaframeId));
+		lesson.setTimeframe(timeframeDao.findById(timaframeId));
 		lessonDao.update(lesson);
 	}
 
@@ -131,31 +134,25 @@ public class LessonServiceImpl implements LessonService {
 
 	@Override
 	@Transactional
-	public List<Lesson> getLessonsByTimeframeId(Long timeframeId) {
-		return lessonDao.getLessonsByTimeframe(timaframeDao.findById(timeframeId));
+	public List<Lesson> getLessonsByTimeframe(Timeframe timeframe) {
+		return lessonDao.getLessonsByTimeframe(timeframe);
 	}
 
 	@Override
 	@Transactional
-	public List<Lesson> getLessonsByCourseId(Long courseId) {
-		return lessonDao.getLessonsByCourse(courseDao.findById(courseId));
+	public List<Lesson> getLessonsByCourse(Course course) {
+		return lessonDao.getLessonsByCourse(course);
 	}
 
 	@Override
 	@Transactional
-	public List<Lesson> getLessonsByTeacherId(Long teacherId) {
-		return lessonDao.getLessonsByTeacher(teacherDao.findById(teacherId));
+	public List<Lesson> getLessonsByTeacher(Teacher teacher) {
+		return lessonDao.getLessonsByTeacher(teacher);
 	}
 
 	@Override
 	@Transactional
-	public List<Lesson> getLessonsByRoomId(Long roomId) {
-		return lessonDao.getLessonsByRoom(roomDao.findById(roomId));
-	}
-
-	@Override
-	@Transactional
-	public boolean existsById(Long id) {
-		return Optional.of(lessonDao.findById(id)).isPresent();
+	public List<Lesson> getLessonsByRoom(Room room) {
+		return lessonDao.getLessonsByRoom(room);
 	}
 }

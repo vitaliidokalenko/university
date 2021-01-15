@@ -3,7 +3,6 @@ package com.foxminded.university.service.impl;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -94,11 +93,5 @@ public class CourseServiceImpl implements CourseService {
 	@Transactional
 	public List<Course> getCoursesByTeacherId(Long teacherId) {
 		return courseDao.getCoursesByTeacherId(teacherId);
-	}
-
-	@Override
-	@Transactional
-	public boolean existsById(Long id) {
-		return Optional.of(courseDao.findById(id)).isPresent();
 	}
 }
