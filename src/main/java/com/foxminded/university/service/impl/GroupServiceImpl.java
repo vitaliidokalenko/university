@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Group;
-import com.foxminded.university.model.Student;
 import com.foxminded.university.service.GroupService;
 
 @Service
@@ -52,26 +51,6 @@ public class GroupServiceImpl implements GroupService {
 	@Transactional
 	public void deleteById(Long id) {
 		groupDao.deleteById(id);
-	}
-
-	@Override
-	@Transactional
-	public void addStudentById(Long groupId, Long studentId) {
-		Group group = groupDao.findById(groupId);
-		List<Student> students = studentDao.getStudentsByGroup(group);
-		students.add(studentDao.findById(studentId));
-		group.setStudents(students);
-		groupDao.update(group);
-	}
-
-	@Override
-	@Transactional
-	public void removeStudentById(Long groupId, Long studentId) {
-		Group group = groupDao.findById(groupId);
-		List<Student> students = studentDao.getStudentsByGroup(group);
-		students.remove(studentDao.findById(studentId));
-		group.setStudents(students);
-		groupDao.update(group);
 	}
 
 	@Override
