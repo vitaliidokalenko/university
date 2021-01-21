@@ -62,7 +62,7 @@ public class JdbcCourseDao implements CourseDao {
 
 	@Override
 	public List<Course> getAll() {
-		return jdbcTemplate.query(GET_COURSES_QUERY, new CourseMapper());
+		return jdbcTemplate.query(GET_COURSES_QUERY, courseMapper);
 	}
 
 	@Override
