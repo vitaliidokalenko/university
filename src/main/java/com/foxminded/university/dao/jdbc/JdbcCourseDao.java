@@ -57,7 +57,7 @@ public class JdbcCourseDao implements CourseDao {
 
 	@Override
 	public Course findById(Long courseId) {
-		return jdbcTemplate.queryForObject(FIND_COURSE_BY_ID_QUERY, new Object[] { courseId }, new CourseMapper());
+		return jdbcTemplate.queryForObject(FIND_COURSE_BY_ID_QUERY, new Object[] { courseId }, courseMapper);
 	}
 
 	@Override
