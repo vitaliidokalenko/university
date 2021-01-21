@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -47,9 +48,7 @@ public class CourseServiceTest {
 		Course expected = new Course("Art");
 		Long id = 1L;
 		expected.setId(id);
-		List<Room> rooms = Arrays.asList(new Room("111"), new Room("222"));
 		when(courseDao.findById(id)).thenReturn(expected);
-		when(roomDao.getRoomsByCourseId(id)).thenReturn(rooms);
 
 		Course actual = courseService.findById(id);
 
@@ -86,10 +85,8 @@ public class CourseServiceTest {
 	public void givenRoom_whenAddRoomById_thenDataIsUpdating() {
 		Course course = new Course("Art");
 		Long id = 1L;
-		List<Room> rooms = Arrays.asList(new Room("111"));
 		Room room = new Room("222");
 		when(courseDao.findById(id)).thenReturn(course);
-		when(roomDao.getRoomsByCourseId(id)).thenReturn(rooms);
 		when(roomDao.findById(id)).thenReturn(room);
 
 		courseService.addRoomById(id, id);
@@ -103,8 +100,8 @@ public class CourseServiceTest {
 		Long id = 1L;
 		Room room = new Room("222");
 		List<Room> rooms = Arrays.asList(room);
+		course.setRooms(new HashSet<>(rooms));
 		when(courseDao.findById(id)).thenReturn(course);
-		when(roomDao.getRoomsByCourseId(id)).thenReturn(rooms);
 		when(roomDao.findById(id)).thenReturn(room);
 
 		courseService.removeRoomById(id, id);

@@ -1,9 +1,6 @@
 package com.foxminded.university.service;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Course;
-import com.foxminded.university.model.Room;
 
 @Service
 public class CourseService {
@@ -31,9 +27,7 @@ public class CourseService {
 
 	@Transactional
 	public Course findById(Long id) {
-		Course course = courseDao.findById(id);
-		course.setRooms(roomDao.getRoomsByCourseId(id).stream().collect(toSet()));
-		return course;
+		return courseDao.findById(id);
 	}
 
 	@Transactional
@@ -54,18 +48,14 @@ public class CourseService {
 	@Transactional
 	public void addRoomById(Long courseId, Long roomId) {
 		Course course = courseDao.findById(courseId);
-		Set<Room> rooms = roomDao.getRoomsByCourseId(courseId).stream().collect(toSet());
-		rooms.add(roomDao.findById(roomId));
-		course.setRooms(rooms);
+		course.getRooms().add(roomDao.findById(roomId));
 		courseDao.update(course);
 	}
 
 	@Transactional
 	public void removeRoomById(Long courseId, Long roomId) {
 		Course course = courseDao.findById(courseId);
-		Set<Room> rooms = roomDao.getRoomsByCourseId(courseId).stream().collect(toSet());
-		rooms.remove(roomDao.findById(roomId));
-		course.setRooms(rooms);
+		course.getRooms().remove(roomDao.findById(roomId));
 		courseDao.update(course);
 	}
 

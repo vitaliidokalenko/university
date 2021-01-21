@@ -339,10 +339,21 @@ public class JdbcLessonDaoTest {
 		timeframe2.setSequance(2);
 		timeframe2.setStartTime(LocalTime.parse("09:40"));
 		timeframe2.setEndTime(LocalTime.parse("11:00"));
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Room room3 = new Room("C333");
+		room3.setId(3L);
+		room3.setCapacity(30);
 		Course course1 = new Course("Law");
 		course1.setId(1L);
+		course1.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 		Course course2 = new Course("Biology");
 		course2.setId(2L);
+		course2.setRooms(new HashSet<>(Arrays.asList(room2, room3)));
 		Teacher teacher1 = new Teacher("Victor", "Doncov");
 		teacher1.setId(1L);
 		teacher1.setBirthDate(LocalDate.parse("1991-01-01"));
@@ -351,12 +362,6 @@ public class JdbcLessonDaoTest {
 		teacher2.setId(2L);
 		teacher2.setBirthDate(LocalDate.parse("1992-02-02"));
 		teacher2.setGender(Gender.FEMALE);
-		Room room1 = new Room("A111");
-		room1.setId(1L);
-		room1.setCapacity(30);
-		Room room2 = new Room("B222");
-		room2.setId(2L);
-		room2.setCapacity(30);
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
@@ -395,15 +400,19 @@ public class JdbcLessonDaoTest {
 		timeframe.setSequance(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
 		Course course = new Course("Law");
 		course.setId(1L);
+		course.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
 		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
-		Room room = new Room("A111");
-		room.setId(1L);
-		room.setCapacity(30);
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
@@ -417,7 +426,7 @@ public class JdbcLessonDaoTest {
 		lesson.setTimeframe(timeframe);
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
-		lesson.setRoom(room);
+		lesson.setRoom(room1);
 		lesson.setGroups(groups);
 		List<Lesson> expected = Arrays.asList(lesson);
 
@@ -475,6 +484,13 @@ public class JdbcLessonDaoTest {
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Course course = new Course("Law");
 		course.setId(1L);
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		course.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
 		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
@@ -512,15 +528,19 @@ public class JdbcLessonDaoTest {
 		timeframe.setSequance(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
 		Course course = new Course("Law");
 		course.setId(1L);
+		course.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
 		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
-		Room room = new Room("A111");
-		room.setId(1L);
-		room.setCapacity(30);
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
@@ -534,11 +554,11 @@ public class JdbcLessonDaoTest {
 		lesson.setTimeframe(timeframe);
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
-		lesson.setRoom(room);
+		lesson.setRoom(room1);
 		lesson.setGroups(groups);
 		List<Lesson> expected = Arrays.asList(lesson);
 
-		List<Lesson> actual = lessonDao.getLessonsByRoom(room);
+		List<Lesson> actual = lessonDao.getLessonsByRoom(room1);
 
 		assertEquals(expected, actual);
 	}

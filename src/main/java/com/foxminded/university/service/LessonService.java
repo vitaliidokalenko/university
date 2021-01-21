@@ -39,7 +39,9 @@ public class LessonService {
 
 	@Transactional
 	public void create(Lesson lesson) {
-		lessonDao.create(lesson);
+		if (isLessonProper(lesson)) {
+			lessonDao.create(lesson);
+		}
 	}
 
 	@Transactional
@@ -54,7 +56,9 @@ public class LessonService {
 
 	@Transactional
 	public void update(Lesson lesson) {
-		lessonDao.update(lesson);
+		if (isLessonProper(lesson)) {
+			lessonDao.update(lesson);
+		}
 	}
 
 	@Transactional
@@ -127,5 +131,9 @@ public class LessonService {
 	@Transactional
 	public List<Lesson> getLessonsByRoom(Room room) {
 		return lessonDao.getLessonsByRoom(room);
+	}
+	
+	private boolean isLessonProper (Lesson lesson) {
+		return true;
 	}
 }
