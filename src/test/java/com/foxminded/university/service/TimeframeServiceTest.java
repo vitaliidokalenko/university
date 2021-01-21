@@ -17,17 +17,16 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
-import com.foxminded.university.service.impl.TimeframeServiceImpl;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
-public class TimeframeServiceImplTest {
+public class TimeframeServiceTest {
 
 	@Mock
 	private TimeframeDao timeframeDao;
 
 	@InjectMocks
-	private TimeframeServiceImpl timeframeService;
+	private TimeframeService timeframeService;
 
 	@Test
 	public void givenTimeframe_whenCreate_thenTimeframeIsCreating() {

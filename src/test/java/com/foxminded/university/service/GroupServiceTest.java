@@ -20,11 +20,10 @@ import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
-import com.foxminded.university.service.impl.GroupServiceImpl;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
-public class GroupServiceImplTest {
+public class GroupServiceTest {
 
 	@Mock
 	private GroupDao groupDao;
@@ -32,7 +31,7 @@ public class GroupServiceImplTest {
 	private StudentDao studentDao;
 
 	@InjectMocks
-	private GroupServiceImpl groupService;
+	private GroupService groupService;
 
 	@Test
 	public void givenGroup_whenCreate_thenGroupIsCreating() {

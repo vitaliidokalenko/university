@@ -30,11 +30,10 @@ import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
-import com.foxminded.university.service.impl.LessonServiceImpl;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
-public class LessonServiceImplTest {
+public class LessonServiceTest {
 
 	@Mock
 	private LessonDao lessonDao;
@@ -50,7 +49,7 @@ public class LessonServiceImplTest {
 	private TimeframeDao timeframeDao;
 
 	@InjectMocks
-	private LessonServiceImpl lessonService;
+	private LessonService lessonService;
 
 	@Test
 	public void givenLesson_whenCreate_thenLessonIsCreating() {

@@ -22,11 +22,10 @@ import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
-import com.foxminded.university.service.impl.StudentServiceImpl;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
-public class StudentServiceImplTest {
+public class StudentServiceTest {
 
 	@Mock
 	private StudentDao studentDao;
@@ -36,7 +35,7 @@ public class StudentServiceImplTest {
 	private CourseDao courseDao;
 
 	@InjectMocks
-	private StudentServiceImpl studentService;
+	private StudentService studentService;
 
 	@Test
 	public void givenStudent_whenCreate_thenStudentIsCreating() {

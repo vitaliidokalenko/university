@@ -17,17 +17,16 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Room;
-import com.foxminded.university.service.impl.RoomServiceImpl;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
-public class RoomServiceImplTest {
+public class RoomServiceTest {
 
 	@Mock
 	private RoomDao roomDao;
 
 	@InjectMocks
-	private RoomServiceImpl roomService;
+	private RoomService roomService;
 
 	@Test
 	public void givenRoom_whenCreate_thenRoomIsCreating() {

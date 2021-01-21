@@ -20,11 +20,10 @@ import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
-import com.foxminded.university.service.impl.CourseServiceImpl;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
-public class CourseServiceIpmlTest {
+public class CourseServiceTest {
 
 	@Mock
 	private CourseDao courseDao;
@@ -32,7 +31,7 @@ public class CourseServiceIpmlTest {
 	private RoomDao roomDao;
 
 	@InjectMocks
-	private CourseServiceImpl courseService;
+	private CourseService courseService;
 
 	@Test
 	public void givenCourse_whenCreate_thenCourseIsCreating() {
