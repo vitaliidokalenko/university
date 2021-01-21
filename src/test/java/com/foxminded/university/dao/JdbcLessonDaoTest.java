@@ -86,6 +86,13 @@ public class JdbcLessonDaoTest {
 		Room room3 = new Room("C333");
 		room3.setId(3L);
 		room3.setCapacity(30);
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Set<Group> groups = new HashSet<>();
+		groups.add(group1);
+		groups.add(group2);
 		Lesson lesson1 = new Lesson();
 		lesson1.setId(1L);
 		lesson1.setDate(LocalDate.parse("2020-12-12"));
@@ -93,6 +100,7 @@ public class JdbcLessonDaoTest {
 		lesson1.setCourse(course1);
 		lesson1.setTeacher(teacher1);
 		lesson1.setRoom(room1);
+		lesson1.setGroups(groups);
 		Lesson lesson2 = new Lesson();
 		lesson2.setId(2L);
 		lesson2.setDate(LocalDate.parse("2020-12-12"));
@@ -100,6 +108,7 @@ public class JdbcLessonDaoTest {
 		lesson2.setCourse(course2);
 		lesson2.setTeacher(teacher2);
 		lesson2.setRoom(room2);
+		lesson2.setGroups(groups);
 		Lesson lesson3 = new Lesson();
 		lesson3.setId(3L);
 		lesson3.setDate(LocalDate.parse("2020-12-12"));
@@ -107,6 +116,7 @@ public class JdbcLessonDaoTest {
 		lesson3.setCourse(course3);
 		lesson3.setTeacher(teacher3);
 		lesson3.setRoom(room3);
+		lesson3.setGroups(groups);
 		List<Lesson> expected = Arrays.asList(lesson1, lesson2, lesson3);
 
 		List<Lesson> actual = lessonDao.getAll();
@@ -136,6 +146,8 @@ public class JdbcLessonDaoTest {
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
 		Set<Group> groups = new HashSet<>();
+		groups.add(group1);
+		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -209,11 +221,19 @@ public class JdbcLessonDaoTest {
 		Room room = new Room("A111");
 		room.setId(1L);
 		room.setCapacity(30);
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Set<Group> groups = new HashSet<>();
+		groups.add(group1);
+		groups.add(group2);
 		Lesson expected = new Lesson();
 		expected.setId(1L);
 		expected.setDate(LocalDate.parse("2020-12-12"));
 		expected.setTimeframe(timeframe);
 		expected.setCourse(course);
+		expected.setGroups(groups);
 		expected.setTeacher(teacher);
 		expected.setRoom(room);
 
@@ -337,6 +357,13 @@ public class JdbcLessonDaoTest {
 		Room room2 = new Room("B222");
 		room2.setId(2L);
 		room2.setCapacity(30);
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Set<Group> groups = new HashSet<>();
+		groups.add(group1);
+		groups.add(group2);
 		Lesson lesson1 = new Lesson();
 		lesson1.setId(1L);
 		lesson1.setDate(LocalDate.parse("2020-12-12"));
@@ -344,6 +371,7 @@ public class JdbcLessonDaoTest {
 		lesson1.setCourse(course1);
 		lesson1.setTeacher(teacher1);
 		lesson1.setRoom(room1);
+		lesson1.setGroups(groups);
 		Lesson lesson2 = new Lesson();
 		lesson2.setId(2L);
 		lesson2.setDate(LocalDate.parse("2020-12-12"));
@@ -351,6 +379,7 @@ public class JdbcLessonDaoTest {
 		lesson2.setCourse(course2);
 		lesson2.setTeacher(teacher2);
 		lesson2.setRoom(room2);
+		lesson2.setGroups(groups);
 		List<Lesson> expected = Arrays.asList(lesson1, lesson2);
 
 		List<Lesson> actual = lessonDao.getLessonsByGroupId(2L);
@@ -375,6 +404,13 @@ public class JdbcLessonDaoTest {
 		Room room = new Room("A111");
 		room.setId(1L);
 		room.setCapacity(30);
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Set<Group> groups = new HashSet<>();
+		groups.add(group1);
+		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -382,6 +418,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room);
+		lesson.setGroups(groups);
 		List<Lesson> expected = Arrays.asList(lesson);
 
 		List<Lesson> actual = lessonDao.getLessonsByTimeframe(timeframe);
@@ -406,6 +443,13 @@ public class JdbcLessonDaoTest {
 		Room room = new Room("A111");
 		room.setId(1L);
 		room.setCapacity(30);
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Set<Group> groups = new HashSet<>();
+		groups.add(group1);
+		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -413,6 +457,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room);
+		lesson.setGroups(groups);
 		List<Lesson> expected = Arrays.asList(lesson);
 
 		List<Lesson> actual = lessonDao.getLessonsByCourse(course);
@@ -437,6 +482,13 @@ public class JdbcLessonDaoTest {
 		Room room = new Room("A111");
 		room.setId(1L);
 		room.setCapacity(30);
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Set<Group> groups = new HashSet<>();
+		groups.add(group1);
+		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -444,6 +496,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room);
+		lesson.setGroups(groups);
 		List<Lesson> expected = Arrays.asList(lesson);
 
 		List<Lesson> actual = lessonDao.getLessonsByTeacher(teacher);
@@ -468,6 +521,13 @@ public class JdbcLessonDaoTest {
 		Room room = new Room("A111");
 		room.setId(1L);
 		room.setCapacity(30);
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Set<Group> groups = new HashSet<>();
+		groups.add(group1);
+		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -475,6 +535,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room);
+		lesson.setGroups(groups);
 		List<Lesson> expected = Arrays.asList(lesson);
 
 		List<Lesson> actual = lessonDao.getLessonsByRoom(room);

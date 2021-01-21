@@ -1,5 +1,7 @@
 package com.foxminded.university.dao.jdbc.mapper;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -8,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.jdbc.JdbcCourseDao;
+import com.foxminded.university.dao.jdbc.JdbcGroupDao;
 import com.foxminded.university.dao.jdbc.JdbcRoomDao;
 import com.foxminded.university.dao.jdbc.JdbcTeacherDao;
 import com.foxminded.university.dao.jdbc.JdbcTimeframeDao;
@@ -27,13 +30,15 @@ public class LessonMapper implements RowMapper<Lesson> {
 	private JdbcCourseDao courseDao;
 	private JdbcTeacherDao teacherDao;
 	private JdbcRoomDao roomDao;
+	private JdbcGroupDao groupDao;
 
 	public LessonMapper(JdbcTimeframeDao timeframeDao, JdbcCourseDao courseDao, JdbcTeacherDao teacherDao,
-			JdbcRoomDao roomDao) {
+			JdbcRoomDao roomDao, JdbcGroupDao groupDao) {
 		this.timeframeDao = timeframeDao;
 		this.courseDao = courseDao;
 		this.teacherDao = teacherDao;
 		this.roomDao = roomDao;
+		this.groupDao = groupDao;
 	}
 
 	@Override
@@ -45,6 +50,7 @@ public class LessonMapper implements RowMapper<Lesson> {
 		lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
 		lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)));
 		lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)));
+		lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 		return lesson;
 	}
 }

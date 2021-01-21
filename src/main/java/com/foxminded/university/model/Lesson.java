@@ -73,7 +73,7 @@ public class Lesson {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(course, date, id, room, teacher, timeframe);
+		return Objects.hash(course, date, groups, id, room, teacher, timeframe);
 	}
 
 	@Override
@@ -88,7 +88,8 @@ public class Lesson {
 			return false;
 		}
 		Lesson other = (Lesson) obj;
-		return Objects.equals(course, other.course) && Objects.equals(date, other.date) && Objects.equals(id, other.id)
+		return Objects.equals(course, other.course) && Objects.equals(date, other.date)
+				&& Objects.equals(groups, other.groups) && Objects.equals(id, other.id)
 				&& Objects.equals(room, other.room) && Objects.equals(teacher, other.teacher)
 				&& Objects.equals(timeframe, other.timeframe);
 	}

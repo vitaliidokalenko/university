@@ -6,6 +6,7 @@ import static com.foxminded.university.dao.jdbc.mapper.LessonMapper.LESSON_ID;
 import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_ID;
 import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_ID;
 import static com.foxminded.university.dao.jdbc.mapper.TimeframeMapper.TIMEFRAME_ID;
+import static java.util.stream.Collectors.toSet;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -131,6 +132,7 @@ public class JdbcLessonDao implements LessonDao {
 					lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
 					lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)));
 					lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)));
+					lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 					return lesson;
 				});
 	}
@@ -145,6 +147,7 @@ public class JdbcLessonDao implements LessonDao {
 			lesson.setCourse(course);
 			lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)));
 			lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)));
+			lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 			return lesson;
 		});
 	}
@@ -159,6 +162,7 @@ public class JdbcLessonDao implements LessonDao {
 			lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
 			lesson.setTeacher(teacher);
 			lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)));
+			lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 			return lesson;
 		});
 	}
@@ -173,6 +177,7 @@ public class JdbcLessonDao implements LessonDao {
 			lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
 			lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)));
 			lesson.setRoom(room);
+			lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 			return lesson;
 		});
 	}

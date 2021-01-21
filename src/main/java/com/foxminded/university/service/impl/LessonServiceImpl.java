@@ -1,9 +1,6 @@
 package com.foxminded.university.service.impl;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +12,6 @@ import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Course;
-import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
@@ -51,9 +47,7 @@ public class LessonServiceImpl implements LessonService {
 	@Override
 	@Transactional
 	public Lesson findById(Long id) {
-		Lesson lesson = lessonDao.findById(id);
-		lesson.setGroups(groupDao.getGroupsByLessonId(id).stream().collect(toSet()));
-		return lesson;
+		return lessonDao.findById(id);
 	}
 
 	@Override
@@ -78,9 +72,7 @@ public class LessonServiceImpl implements LessonService {
 	@Transactional
 	public void addGroupById(Long lessonId, Long groupId) {
 		Lesson lesson = lessonDao.findById(lessonId);
-		Set<Group> groups = groupDao.getGroupsByLessonId(lessonId).stream().collect(toSet());
-		groups.add(groupDao.findById(groupId));
-		lesson.setGroups(groups);
+		lesson.getGroups().add(groupDao.findById(groupId));
 		lessonDao.update(lesson);
 	}
 
@@ -88,9 +80,7 @@ public class LessonServiceImpl implements LessonService {
 	@Transactional
 	public void removeGroupById(Long lessonId, Long groupId) {
 		Lesson lesson = lessonDao.findById(lessonId);
-		Set<Group> groups = groupDao.getGroupsByLessonId(lessonId).stream().collect(toSet());
-		groups.remove(groupDao.findById(groupId));
-		lesson.setGroups(groups);
+		lesson.getGroups().remove(groupDao.findById(groupId));
 		lessonDao.update(lesson);
 	}
 

@@ -21,8 +21,8 @@ INSERT INTO lessons (date, timeframe_id, course_id, teacher_id, room_id) VALUES 
 INSERT INTO lessons (date, timeframe_id, course_id, teacher_id, room_id) VALUES ('2020-12-12', 3, 3, 3, 3);
 INSERT INTO lessons_groups (lesson_id, group_id) VALUES (1, 1);
 INSERT INTO lessons_groups (lesson_id, group_id) VALUES (1, 2);
+INSERT INTO lessons_groups (lesson_id, group_id) VALUES (2, 1);
 INSERT INTO lessons_groups (lesson_id, group_id) VALUES (2, 2);
-INSERT INTO lessons_groups (lesson_id, group_id) VALUES (2, 3);
 INSERT INTO courses_rooms (course_id, room_id) VALUES (1, 1);
 INSERT INTO courses_rooms (course_id, room_id) VALUES (1, 2);
 INSERT INTO courses_rooms (course_id, room_id) VALUES (2, 2);

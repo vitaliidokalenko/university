@@ -6,7 +6,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,9 +67,7 @@ public class LessonServiceImplTest {
 		Lesson expected = new Lesson();
 		Long id = 1L;
 		expected.setId(id);
-		List<Group> groups = Arrays.asList(new Group("AA-11"));
 		when(lessonDao.findById(id)).thenReturn(expected);
-		when(groupDao.getGroupsByLessonId(id)).thenReturn(groups);
 
 		Lesson actual = lessonService.findById(id);
 
@@ -108,10 +108,10 @@ public class LessonServiceImplTest {
 		Lesson lesson = new Lesson();
 		Long id = 1L;
 		lesson.setId(id);
-		List<Group> groups = Arrays.asList(new Group("AA-11"));
+		Set<Group> groups = new HashSet<>(Arrays.asList(new Group("AA-11")));
+		lesson.setGroups(groups);
 		Group group = new Group("AA-22");
 		when(lessonDao.findById(id)).thenReturn(lesson);
-		when(groupDao.getGroupsByLessonId(id)).thenReturn(groups);
 		when(groupDao.findById(id)).thenReturn(group);
 
 		lessonService.addGroupById(id, id);
@@ -125,9 +125,8 @@ public class LessonServiceImplTest {
 		Long id = 1L;
 		lesson.setId(id);
 		Group group = new Group("AA-22");
-		List<Group> groups = Arrays.asList(group);
+		lesson.setGroups(new HashSet<>(Arrays.asList(group)));
 		when(lessonDao.findById(id)).thenReturn(lesson);
-		when(groupDao.getGroupsByLessonId(id)).thenReturn(groups);
 		when(groupDao.findById(id)).thenReturn(group);
 
 		lessonService.removeGroupById(id, id);
