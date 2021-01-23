@@ -8,6 +8,7 @@ import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_ID;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_NAME;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_PHONE;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_SURNAME;
+import static java.util.stream.Collectors.toSet;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -122,6 +123,7 @@ public class JdbcStudentDao implements StudentDao {
 			student.setBirthDate(rs.getObject(STUDENT_BIRTH_DATE, LocalDate.class));
 			student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
 			student.setGroup(group);
+			student.setCourses(courseDao.getCoursesByStudentId(rs.getLong(STUDENT_ID)).stream().collect(toSet()));
 			return student;
 		});
 	}

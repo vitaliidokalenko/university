@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -51,9 +52,7 @@ public class StudentServiceTest {
 		Student expected = new Student("Homer", "Simpson");
 		Long id = 1L;
 		expected.setId(id);
-		List<Course> courses = Arrays.asList(new Course("Art"));
 		when(studentDao.findById(id)).thenReturn(expected);
-		when(courseDao.getCoursesByStudentId(id)).thenReturn(courses);
 
 		Student actual = studentService.findById(id);
 
@@ -116,10 +115,9 @@ public class StudentServiceTest {
 	public void givenCourse_whenAddCourseById_thenDataIsUpdating() {
 		Student student = new Student("Homer", "Simpson");
 		Long id = 1L;
-		List<Course> courses = Arrays.asList(new Course("Art"));
+		student.setCourses(new HashSet<>(Arrays.asList(new Course("Art"))));
 		Course course = new Course("Law");
 		when(studentDao.findById(id)).thenReturn(student);
-		when(courseDao.getCoursesByStudentId(id)).thenReturn(courses);
 		when(courseDao.findById(id)).thenReturn(course);
 
 		studentService.addCourseById(id, id);
@@ -132,9 +130,8 @@ public class StudentServiceTest {
 		Student student = new Student("Homer", "Simpson");
 		Long id = 1L;
 		Course course = new Course("Art");
-		List<Course> courses = Arrays.asList(course);
+		student.setCourses(new HashSet<>(Arrays.asList(course)));
 		when(studentDao.findById(id)).thenReturn(student);
-		when(courseDao.getCoursesByStudentId(id)).thenReturn(courses);
 		when(courseDao.findById(id)).thenReturn(course);
 
 		studentService.removeCourseById(id, id);

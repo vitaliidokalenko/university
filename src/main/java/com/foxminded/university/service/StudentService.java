@@ -1,9 +1,6 @@
 package com.foxminded.university.service;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.StudentDao;
-import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
 
@@ -35,9 +31,7 @@ public class StudentService {
 
 	@Transactional
 	public Student findById(Long id) {
-		Student student = studentDao.findById(id);
-		student.setCourses(courseDao.getCoursesByStudentId(id).stream().collect(toSet()));
-		return student;
+		return studentDao.findById(id);
 	}
 
 	@Transactional
@@ -73,18 +67,14 @@ public class StudentService {
 	@Transactional
 	public void addCourseById(Long studentId, Long courseId) {
 		Student student = studentDao.findById(studentId);
-		Set<Course> courses = courseDao.getCoursesByStudentId(studentId).stream().collect(toSet());
-		courses.add(courseDao.findById(courseId));
-		student.setCourses(courses);
+		student.getCourses().add(courseDao.findById(courseId));
 		studentDao.update(student);
 	}
 
 	@Transactional
 	public void removeCourseById(Long studentId, Long courseId) {
 		Student student = studentDao.findById(studentId);
-		Set<Course> courses = courseDao.getCoursesByStudentId(studentId).stream().collect(toSet());
-		courses.remove(courseDao.findById(courseId));
-		student.setCourses(courses);
+		student.getCourses().remove(courseDao.findById(courseId));
 		studentDao.update(student);
 	}
 

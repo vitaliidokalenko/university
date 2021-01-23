@@ -1,5 +1,7 @@
 package com.foxminded.university.dao.jdbc.mapper;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -7,6 +9,7 @@ import java.time.LocalDate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.foxminded.university.dao.jdbc.JdbcCourseDao;
 import com.foxminded.university.dao.jdbc.JdbcGroupDao;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Student;
@@ -25,9 +28,11 @@ public class StudentMapper implements RowMapper<Student> {
 	public static final String STUDENT_GENDER = "gender";
 
 	private JdbcGroupDao groupDao;
+	private JdbcCourseDao courseDao;
 
-	public StudentMapper(JdbcGroupDao groupDao) {
+	public StudentMapper(JdbcGroupDao groupDao, JdbcCourseDao courseDao) {
 		this.groupDao = groupDao;
+		this.courseDao = courseDao;
 	}
 
 	@Override
@@ -40,6 +45,7 @@ public class StudentMapper implements RowMapper<Student> {
 		student.setBirthDate(rs.getObject(STUDENT_BIRTH_DATE, LocalDate.class));
 		student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
 		student.setGroup(groupDao.findById(rs.getLong(GROUP_ID)));
+		student.setCourses(courseDao.getCoursesByStudentId(rs.getLong(STUDENT_ID)).stream().collect(toSet()));
 		return student;
 	}
 }
