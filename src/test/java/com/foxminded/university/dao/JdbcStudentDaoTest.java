@@ -37,7 +37,7 @@ public class JdbcStudentDaoTest {
 	private JdbcStudentDao studentDao;
 
 	@Test
-	@Sql("/dataGroups.sql")
+	@Sql("/dataStudentRelations.sql")
 	public void givenStudent_whenCreate_thenStudentIsAddedToTable() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
@@ -54,7 +54,7 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql("/dataGroupsCourses.sql")
+	@Sql("/dataStudentRelations.sql")
 	public void givenStudentWithCourses_whenCreate_thenRightDataIsAddedToStudentsCoursesTable() {
 		Group group = new Group("AA-11");
 		group.setId(1L);

@@ -79,8 +79,7 @@ public class JdbcCourseDaoTest {
 		room1.setId(1L);
 		Room room2 = new Room("B222");
 		room2.setId(2L);
-		Set<Room> rooms = new HashSet<>(Arrays.asList(room1, room2));
-		course.setRooms(rooms);
+		course.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME) + 2;
 
 		courseDao.create(course);
@@ -98,10 +97,9 @@ public class JdbcCourseDaoTest {
 		Room room2 = new Room("B222");
 		room2.setId(2L);
 		room2.setCapacity(30);
-		Set<Room> rooms = new HashSet<>(Arrays.asList(room1, room2));
 		Course expected = new Course("Law");
 		expected.setId(1L);
-		expected.setRooms(rooms);
+		expected.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 
 		Course actual = courseDao.findById(1L);
 
@@ -128,9 +126,7 @@ public class JdbcCourseDaoTest {
 		course.setId(1L);
 		Room room = new Room("D444");
 		room.setId(4L);
-		Set<Room> rooms = new HashSet<>();
-		rooms.add(room);
-		course.setRooms(rooms);
+		course.setRooms(new HashSet<>(Arrays.asList(room)));
 		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME) - 1;
 
 		courseDao.update(course);

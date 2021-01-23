@@ -125,7 +125,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql("/dataForLessons.sql")
+	@Sql("/dataLessonRelations.sql")
 	public void givenLesson_whenCreate_thenLessonIsAddedToTable() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
@@ -145,9 +145,6 @@ public class JdbcLessonDaoTest {
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
-		Set<Group> groups = new HashSet<>();
-		groups.add(group1);
-		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -155,7 +152,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room);
-		lesson.setGroups(groups);
+		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_TABLE_NAME) + 1;
 
 		lessonDao.create(lesson);
@@ -165,7 +162,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql("/dataForLessons.sql")
+	@Sql("/dataLessonRelations.sql")
 	public void givenLessonWithGroups_whenCreate_thenRightDataIsAddedToLessonsGroupsTable() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
@@ -185,9 +182,6 @@ public class JdbcLessonDaoTest {
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
-		Set<Group> groups = new HashSet<>();
-		groups.add(group1);
-		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -195,7 +189,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room);
-		lesson.setGroups(groups);
+		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME) + 2;
 
 		lessonDao.create(lesson);
@@ -225,15 +219,12 @@ public class JdbcLessonDaoTest {
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
-		Set<Group> groups = new HashSet<>();
-		groups.add(group1);
-		groups.add(group2);
 		Lesson expected = new Lesson();
 		expected.setId(1L);
 		expected.setDate(LocalDate.parse("2020-12-12"));
 		expected.setTimeframe(timeframe);
 		expected.setCourse(course);
-		expected.setGroups(groups);
+		expected.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		expected.setTeacher(teacher);
 		expected.setRoom(room);
 
@@ -259,9 +250,8 @@ public class JdbcLessonDaoTest {
 		Room room = new Room("B222");
 		room.setId(2L);
 		room.setCapacity(30);
-		Group group1 = new Group("DD-44");
-		group1.setId(4L);
-		Set<Group> groups = new HashSet<>();
+		Group group = new Group("DD-44");
+		group.setId(4L);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2021-01-05"));
@@ -269,7 +259,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room);
-		lesson.setGroups(groups);
+		lesson.setGroups(new HashSet<>(Arrays.asList(group)));
 		int expectedRows = countRowsInTableWhere(jdbcTemplate, LESSONS_TABLE_NAME, "date = '2021-01-05'") + 1;
 
 		lessonDao.update(lesson);
@@ -279,7 +269,7 @@ public class JdbcLessonDaoTest {
 	}
 
 	@Test
-	@Sql("/dataLessonsGroups.sql")
+	@Sql("/dataLessons.sql")
 	public void givenUpdatedGroups_whenUpdate_thenLessonsGroupsTableIsUdated() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(2L);
@@ -297,8 +287,6 @@ public class JdbcLessonDaoTest {
 		room.setCapacity(30);
 		Group group = new Group("DD-44");
 		group.setId(4L);
-		Set<Group> groups = new HashSet<>();
-		groups.add(group);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2021-01-05"));
@@ -306,8 +294,8 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room);
-		lesson.setGroups(groups);
-		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME) - 2;
+		lesson.setGroups(new HashSet<>(Arrays.asList(group)));
+		int expectedRows = countRowsInTable(jdbcTemplate, LESSONS_GROUPS_TABLE_NAME) - 1;
 
 		lessonDao.update(lesson);
 
@@ -417,9 +405,6 @@ public class JdbcLessonDaoTest {
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
-		Set<Group> groups = new HashSet<>();
-		groups.add(group1);
-		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -427,7 +412,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room1);
-		lesson.setGroups(groups);
+		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		List<Lesson> expected = Arrays.asList(lesson);
 
 		List<Lesson> actual = lessonDao.getLessonsByTimeframe(timeframe);
@@ -456,9 +441,6 @@ public class JdbcLessonDaoTest {
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
-		Set<Group> groups = new HashSet<>();
-		groups.add(group1);
-		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -466,7 +448,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room);
-		lesson.setGroups(groups);
+		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		List<Lesson> expected = Arrays.asList(lesson);
 
 		List<Lesson> actual = lessonDao.getLessonsByCourse(course);
@@ -502,9 +484,6 @@ public class JdbcLessonDaoTest {
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
-		Set<Group> groups = new HashSet<>();
-		groups.add(group1);
-		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -512,7 +491,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room);
-		lesson.setGroups(groups);
+		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		List<Lesson> expected = Arrays.asList(lesson);
 
 		List<Lesson> actual = lessonDao.getLessonsByTeacher(teacher);
@@ -545,9 +524,6 @@ public class JdbcLessonDaoTest {
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
-		Set<Group> groups = new HashSet<>();
-		groups.add(group1);
-		groups.add(group2);
 		Lesson lesson = new Lesson();
 		lesson.setId(1L);
 		lesson.setDate(LocalDate.parse("2020-12-12"));
@@ -555,7 +531,7 @@ public class JdbcLessonDaoTest {
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room1);
-		lesson.setGroups(groups);
+		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		List<Lesson> expected = Arrays.asList(lesson);
 
 		List<Lesson> actual = lessonDao.getLessonsByRoom(room1);
