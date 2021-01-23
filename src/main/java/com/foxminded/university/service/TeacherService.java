@@ -1,16 +1,12 @@
 package com.foxminded.university.service;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.dao.TeacherDao;
-import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Teacher;
 
 @Service
@@ -31,9 +27,7 @@ public class TeacherService {
 
 	@Transactional
 	public Teacher findById(Long id) {
-		Teacher teacher = teacherDao.findById(id);
-		teacher.setCourses(courseDao.getCoursesByTeacherId(id).stream().collect(toSet()));
-		return teacher;
+		return teacherDao.findById(id);
 	}
 
 	@Transactional
@@ -54,18 +48,14 @@ public class TeacherService {
 	@Transactional
 	public void addCourseById(Long teacherId, Long courseId) {
 		Teacher teacher = teacherDao.findById(teacherId);
-		Set<Course> courses = courseDao.getCoursesByTeacherId(teacherId).stream().collect(toSet());
-		courses.add(courseDao.findById(courseId));
-		teacher.setCourses(courses);
+		teacher.getCourses().add(courseDao.findById(courseId));
 		teacherDao.update(teacher);
 	}
 
 	@Transactional
 	public void removeCourseById(Long teacherId, Long courseId) {
 		Teacher teacher = teacherDao.findById(teacherId);
-		Set<Course> courses = courseDao.getCoursesByTeacherId(teacherId).stream().collect(toSet());
-		courses.remove(courseDao.findById(courseId));
-		teacher.setCourses(courses);
+		teacher.getCourses().remove(courseDao.findById(courseId));
 		teacherDao.update(teacher);
 	}
 

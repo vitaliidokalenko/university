@@ -45,15 +45,11 @@ public class JdbcTeacherDaoTest {
 		course2.setId(2L);
 		Course course3 = new Course("Music");
 		course3.setId(3L);
-		Set<Course> courses = new HashSet<>();
-		courses.add(course1);
-		courses.add(course2);
-		courses.add(course3);
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
 		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
-		teacher.setCourses(courses);
+		teacher.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 		int expectedRows = countRowsInTable(jdbcTemplate, TEACHERS_TABLE_NAME) + 1;
 
 		teacherDao.create(teacher);
@@ -71,15 +67,11 @@ public class JdbcTeacherDaoTest {
 		course2.setId(2L);
 		Course course3 = new Course("Music");
 		course3.setId(3L);
-		Set<Course> courses = new HashSet<>();
-		courses.add(course1);
-		courses.add(course2);
-		courses.add(course3);
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
 		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
-		teacher.setCourses(courses);
+		teacher.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 		int expectedRows = countRowsInTable(jdbcTemplate, TEACHERS_COURSES_TABLE_NAME) + 3;
 
 		teacherDao.create(teacher);
@@ -91,8 +83,15 @@ public class JdbcTeacherDaoTest {
 	@Test
 	@Sql("/dataTeachers.sql")
 	public void givenTeachers_whenGetAll_thenGetRightListOfTeachers() {
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
 		Teacher teacher1 = new Teacher("Victor", "Doncov");
 		teacher1.setId(1L);
+		teacher1.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 		teacher1.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher1.setGender(Gender.MALE);
 		Teacher teacher2 = new Teacher("Aleksandra", "Ivanova");
@@ -113,10 +112,17 @@ public class JdbcTeacherDaoTest {
 	@Test
 	@Sql("/dataTeachers.sql")
 	public void givenId_whenFindById_thenGetRightTeacher() {
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
 		Teacher expected = new Teacher("Victor", "Doncov");
 		expected.setId(1L);
 		expected.setBirthDate(LocalDate.parse("1991-01-01"));
 		expected.setGender(Gender.MALE);
+		expected.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 
 		Teacher actual = teacherDao.findById(1L);
 
@@ -139,7 +145,7 @@ public class JdbcTeacherDaoTest {
 	}
 
 	@Test
-	@Sql("/dataTeachersCourses.sql")
+	@Sql("/dataTeachers.sql")
 	public void givenUpdatedCourses_whenUpdate_thenTeachersCoursesTableIsUpdated() {
 		Course course = new Course("Art");
 		course.setId(4L);
@@ -172,14 +178,22 @@ public class JdbcTeacherDaoTest {
 	@Test
 	@Sql("/data.sql")
 	public void givenCourseId_whenGetTeachersByCourseId_thenGetRightListOfTeachers() {
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
 		Teacher teacher1 = new Teacher("Victor", "Doncov");
 		teacher1.setId(1L);
 		teacher1.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher1.setGender(Gender.MALE);
+		teacher1.setCourses(new HashSet<>(Arrays.asList(course1, course2)));
 		Teacher teacher2 = new Teacher("Aleksandra", "Ivanova");
 		teacher2.setId(2L);
 		teacher2.setBirthDate(LocalDate.parse("1992-02-02"));
 		teacher2.setGender(Gender.FEMALE);
+		teacher2.setCourses(new HashSet<>(Arrays.asList(course2, course3)));
 		List<Teacher> expected = Arrays.asList(teacher1, teacher2);
 
 		List<Teacher> actual = teacherDao.getTeachersByCourseId(2L);
