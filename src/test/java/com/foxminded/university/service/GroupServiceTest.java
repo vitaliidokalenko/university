@@ -1,7 +1,6 @@
 package com.foxminded.university.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -81,16 +80,5 @@ public class GroupServiceTest {
 		groupService.deleteById(1L);
 
 		verify(groupDao).deleteById(1L);
-	}
-
-	@Test
-	public void givenId_whenGetGroupsByLessonId_thenGetRightData() {
-		List<Group> expected = Arrays.asList(new Group("AA-11"));
-		when(groupDao.getGroupsByLessonId(anyLong())).thenReturn(expected);
-
-		List<Group> actual = groupService.getGroupsByLessonId(anyLong());
-
-		assertEquals(expected, actual);
-
 	}
 }

@@ -118,24 +118,4 @@ public class CourseServiceTest {
 
 		assertEquals(expected, actual);
 	}
-
-	@Test
-	public void givenId_whenGetCoursesByStudentId_thenGetRightData() {
-		List<Course> expected = Arrays.asList(new Course("Art"));
-		when(courseDao.getCoursesByStudentId(anyLong())).thenReturn(expected);
-
-		List<Course> actual = courseService.getCoursesByStudentId(anyLong());
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenId_whenGetCoursesByTeacherId_thenGetRightData() {
-		List<Course> expected = Arrays.asList(new Course("Art"));
-		when(courseDao.getCoursesByTeacherId(anyLong())).thenReturn(expected);
-
-		List<Course> actual = courseService.getCoursesByTeacherId(anyLong());
-
-		assertEquals(expected, actual);
-	}
 }

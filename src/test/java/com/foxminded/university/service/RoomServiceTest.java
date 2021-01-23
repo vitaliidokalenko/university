@@ -36,51 +36,41 @@ public class RoomServiceTest {
 
 		verify(roomDao).create(room);
 	}
-	
+
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
 		Room expected = new Room("111");
 		Long id = 1L;
 		when(roomDao.findById(id)).thenReturn(expected);
-		
+
 		Room actual = roomService.findById(id);
-		
+
 		assertEquals(expected, actual);
 	}
-	
+
 	@Test
 	public void whenGetAll_thenGetRightData() {
 		List<Room> expected = Arrays.asList(new Room("111"));
 		when(roomDao.getAll()).thenReturn(expected);
-		
+
 		List<Room> actual = roomService.getAll();
-		
+
 		assertEquals(expected, actual);
 	}
-	
+
 	@Test
 	public void givenRoom_whenUpdate_thenGrouRoomIsUpdating() {
 		Room room = new Room("111");
-		
+
 		roomService.update(room);
-		
+
 		verify(roomDao).update(room);
 	}
-	
+
 	@Test
 	public void givenId_whenDeleteById_thenRoomIsDeleting() {
 		roomService.deleteById(1L);
-		
+
 		verify(roomDao).deleteById(1L);
-	}
-	
-	@Test
-	public void givenId_whenGetRoomsByCourseId_thenGetRightData() {
-		List<Room> expected = Arrays.asList(new Room("111"));
-		when(roomDao.getRoomsByCourseId(1L)).thenReturn(expected);
-		
-		List<Room> actual = roomService.getRoomsByCourseId(1L);
-		
-		assertEquals(expected, actual);
 	}
 }

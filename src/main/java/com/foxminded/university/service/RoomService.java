@@ -41,9 +41,4 @@ public class RoomService {
 	public void deleteById(Long id) {
 		roomDao.deleteById(id);
 	}
-
-	@Transactional
-	public List<Room> getRoomsByCourseId(Long courseId) {
-		return roomDao.getRoomsByCourseId(courseId);
-	}
 }

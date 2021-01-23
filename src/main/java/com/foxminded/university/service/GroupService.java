@@ -46,9 +46,4 @@ public class GroupService {
 	public void deleteById(Long id) {
 		groupDao.deleteById(id);
 	}
-
-	@Transactional
-	public List<Group> getGroupsByLessonId(Long lessonId) {
-		return groupDao.getGroupsByLessonId(lessonId);
-	}
 }

@@ -63,14 +63,4 @@ public class CourseService {
 	public List<Course> getCoursesByRoomId(Long roomId) {
 		return courseDao.getCoursesByRoomId(roomId);
 	}
-
-	@Transactional
-	public List<Course> getCoursesByStudentId(Long studentId) {
-		return courseDao.getCoursesByStudentId(studentId);
-	}
-
-	@Transactional
-	public List<Course> getCoursesByTeacherId(Long teacherId) {
-		return courseDao.getCoursesByTeacherId(teacherId);
-	}
 }
