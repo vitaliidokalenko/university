@@ -1,5 +1,6 @@
 package com.foxminded.university.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.RoomDao;
+import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Course;
@@ -26,20 +28,22 @@ public class LessonService {
 	private CourseDao courseDao;
 	private RoomDao roomDao;
 	private TimeframeDao timeframeDao;
+	private StudentDao studentDao;
 
 	public LessonService(LessonDao lessonDao, GroupDao groupDao, TeacherDao teacherDao, CourseDao courseDao,
-			RoomDao roomDao, TimeframeDao timeframeDao) {
+			RoomDao roomDao, TimeframeDao timeframeDao, StudentDao studentDao) {
 		this.lessonDao = lessonDao;
 		this.groupDao = groupDao;
 		this.teacherDao = teacherDao;
 		this.courseDao = courseDao;
 		this.roomDao = roomDao;
 		this.timeframeDao = timeframeDao;
+		this.studentDao = studentDao;
 	}
 
 	@Transactional
 	public void create(Lesson lesson) {
-		if (isLessonProper(lesson)) {
+		if (isLessonValid(lesson)) {
 			lessonDao.create(lesson);
 		}
 	}
@@ -56,14 +60,14 @@ public class LessonService {
 
 	@Transactional
 	public void update(Lesson lesson) {
-		if (isLessonProper(lesson)) {
+		if (isLessonValid(lesson)) {
 			lessonDao.update(lesson);
 		}
 	}
 
 	@Transactional
-	public void deleteById(Long id) {
-		lessonDao.deleteById(id);
+	public void delete(Lesson lesson) {
+		lessonDao.deleteById(lesson.getId());
 	}
 
 	@Transactional
@@ -132,8 +136,65 @@ public class LessonService {
 	public List<Lesson> getLessonsByRoom(Room room) {
 		return lessonDao.getLessonsByRoom(room);
 	}
-	
-	private boolean isLessonProper (Lesson lesson) {
-		return true;
+
+	private boolean isLessonValid(Lesson lesson) {
+		return lesson.getCourse() != null
+				&& lesson.getDate() != null
+				&& !lesson.getGroups().isEmpty()
+				&& lesson.getRoom() != null
+				&& lesson.getTeacher() != null
+				&& lesson.getTimeframe() != null
+				&& isTeacherAvailable(lesson)
+				&& isRoomAvailable(lesson)
+				&& isGroupAvailable(lesson)
+				&& isRoomCapacityCompatible(lesson)
+				&& isTeacherCourseCompatible(lesson)
+				&& isCourseRoomCompatible(lesson);
+	}
+
+	private boolean isTeacherAvailable(Lesson lesson) {
+		return lessonDao.getLessonsByTeacher(lesson.getTeacher())
+				.stream()
+				.filter(l -> l.getDate().isEqual(lesson.getDate()))
+				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
+	}
+
+	private boolean isRoomAvailable(Lesson lesson) {
+		return lessonDao.getLessonsByRoom(lesson.getRoom())
+				.stream()
+				.filter(l -> l.getDate().isEqual(lesson.getDate()))
+				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
+	}
+
+	private boolean isGroupAvailable(Lesson lesson) {
+		return lesson.getGroups()
+				.stream()
+				.map(g -> lessonDao.getLessonsByGroupId(g.getId()))
+				.flatMap(Collection::stream)
+				.filter(l -> l.getDate().isEqual(lesson.getDate()))
+				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
+	}
+
+	private boolean isRoomCapacityCompatible(Lesson lesson) {
+		return lesson.getGroups()
+				.stream()
+				.map(studentDao::getStudentsByGroup)
+				.flatMap(Collection::stream)
+				.count()
+				<= lesson.getRoom().getCapacity();
+	}
+
+	private boolean isTeacherCourseCompatible(Lesson lesson) {
+		return lesson.getTeacher()
+				.getCourses()
+				.stream()
+				.anyMatch(lesson.getCourse()::equals);
+	}
+
+	private boolean isCourseRoomCompatible(Lesson lesson) {
+		return lesson.getCourse()
+				.getRooms()
+				.stream()
+				.anyMatch(lesson.getRoom()::equals);
 	}
 }
