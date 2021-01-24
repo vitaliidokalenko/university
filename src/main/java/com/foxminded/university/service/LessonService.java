@@ -2,7 +2,9 @@ package com.foxminded.university.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,7 +69,9 @@ public class LessonService {
 
 	@Transactional
 	public void deleteById(Long id) {
-		lessonDao.deleteById(id);
+		if (isPresentById(id)) {
+			lessonDao.deleteById(id);
+		}
 	}
 
 	@Transactional
@@ -196,5 +200,13 @@ public class LessonService {
 				.getRooms()
 				.stream()
 				.anyMatch(lesson.getRoom()::equals);
+	}
+
+	private boolean isPresentById(Long id) {
+		try {
+			return Optional.of(lessonDao.findById(id)).isPresent();
+		} catch (EmptyResultDataAccessException exeption) {
+			return false;
+		}
 	}
 }

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
@@ -104,10 +105,21 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenId_whenDeleteById_thenCourseIsDeleting() {
-		courseService.deleteById(anyLong());
+	public void givenEntityIsPresent_whenDeleteById_thenCourseIsDeleting() {
+		when(courseDao.findById(1L)).thenReturn(getStandardCourse());
+		
+		courseService.deleteById(1L);
 
-		verify(courseDao).deleteById(anyLong());
+		verify(courseDao).deleteById(1L);
+	}
+	
+	@Test
+	public void givenEntityIsNotPresent_whenDeleteById_thenCourseIsNotDeleting() {
+		when(courseDao.findById(1L)).thenThrow(EmptyResultDataAccessException.class);
+		
+		courseService.deleteById(1L);
+
+		verify(courseDao, never()).deleteById(1L);
 	}
 
 	@Test

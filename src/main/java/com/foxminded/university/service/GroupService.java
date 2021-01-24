@@ -1,7 +1,9 @@
 package com.foxminded.university.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,11 +50,21 @@ public class GroupService {
 
 	@Transactional
 	public void deleteById(Long id) {
-		groupDao.deleteById(id);
+		if (isPresentById(id)) {
+			groupDao.deleteById(id);
+		}
 	}
 
 	private boolean isGroupValid(Group group) {
 		return group.getName() != null
 				&& !group.getName().isEmpty();
+	}
+
+	private boolean isPresentById(Long id) {
+		try {
+			return Optional.of(groupDao.findById(id)).isPresent();
+		} catch (EmptyResultDataAccessException exeption) {
+			return false;
+		}
 	}
 }

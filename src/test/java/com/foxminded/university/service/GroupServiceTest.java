@@ -1,9 +1,9 @@
 package com.foxminded.university.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
@@ -41,7 +42,7 @@ public class GroupServiceTest {
 
 		verify(groupDao).create(group);
 	}
-	
+
 	@Test
 	public void givenNameIsNull_whenCreate_thenGroupIsCreating() {
 		Group group = getStandardGroup();
@@ -51,7 +52,7 @@ public class GroupServiceTest {
 
 		verify(groupDao, never()).create(group);
 	}
-	
+
 	@Test
 	public void givenNameIsEmpty_whenCreate_thenGroupIsCreating() {
 		Group group = getStandardGroup();
@@ -95,12 +96,23 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenId_whenDeleteById_thenGroupIsDeleting() {
+	public void givenEntityIsPresent_whenDeleteById_thenGroupIsDeleting() {
+		when(groupDao.findById(1L)).thenReturn(getStandardGroup());
+
 		groupService.deleteById(1L);
 
 		verify(groupDao).deleteById(1L);
 	}
-	
+
+	@Test
+	public void givenEntityIsNotPresent_whenDeleteById_thenGroupIsNotDeleting() {
+		when(groupDao.findById(1L)).thenThrow(EmptyResultDataAccessException.class);
+
+		groupService.deleteById(1L);
+
+		verify(groupDao, never()).deleteById(1L);
+	}
+
 	private Group getStandardGroup() {
 		Group group = new Group("AA-11");
 		group.setId(1L);

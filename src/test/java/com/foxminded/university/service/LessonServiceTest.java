@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
@@ -194,12 +195,21 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenId_whenDelete_thenLessonIsDeleting() {
-		Lesson lesson = getStandardLesson();
+	public void givenEntityIsPresent_whenDeleteById_thenLessonIsDeleting() {
+		when(lessonDao.findById(1L)).thenReturn(getStandardLesson());
 
-		lessonService.deleteById(lesson.getId());
+		lessonService.deleteById(1L);
 
-		verify(lessonDao).deleteById(lesson.getId());
+		verify(lessonDao).deleteById(1L);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenDeleteById_thenLessonIsNotDeleting() {
+		when(lessonDao.findById(1L)).thenThrow(EmptyResultDataAccessException.class);
+
+		lessonService.deleteById(1L);
+
+		verify(lessonDao, never()).deleteById(1L);
 	}
 
 	@Test

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
@@ -101,10 +102,21 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenId_whenDeleteById_thenRoomIsDeleting() {
+	public void givenEntityIsPresent_whenDeleteById_thenRoomIsDeleting() {
+		when(roomDao.findById(1L)).thenReturn(getStandardRoom());
+
 		roomService.deleteById(1L);
 
 		verify(roomDao).deleteById(1L);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenDeleteById_thenRoomIsNotDeleting() {
+		when(roomDao.findById(1L)).thenThrow(EmptyResultDataAccessException.class);
+
+		roomService.deleteById(1L);
+
+		verify(roomDao, never()).deleteById(1L);
 	}
 
 	private Room getStandardRoom() {

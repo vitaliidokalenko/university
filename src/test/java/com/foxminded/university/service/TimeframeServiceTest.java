@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
@@ -109,10 +110,21 @@ public class TimeframeServiceTest {
 	}
 
 	@Test
-	public void givenId_whenDeleteById_thenTimefarmeIsDeleting() {
+	public void givenEntityIsPresent_whenDeleteById_thenTimeframeIsDeleting() {
+		when(timeframeDao.findById(1L)).thenReturn(getStandardTimeframe());
+
 		timeframeService.deleteById(1L);
 
 		verify(timeframeDao).deleteById(1L);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenDeleteById_thenTimeframeIsNotDeleting() {
+		when(timeframeDao.findById(1L)).thenThrow(EmptyResultDataAccessException.class);
+
+		timeframeService.deleteById(1L);
+
+		verify(timeframeDao, never()).deleteById(1L);
 	}
 
 	private Timeframe getStandardTimeframe() {

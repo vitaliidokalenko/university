@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -156,10 +157,21 @@ public class StudentServiceTest {
 	}
 
 	@Test
-	public void givenId_whenDeleteById_thenStudentIsDeleting() {
+	public void givenEntityIsPresent_whenDeleteById_thenStudentIsDeleting() {
+		when(studentDao.findById(1L)).thenReturn(getStandardStudent());
+
 		studentService.deleteById(1L);
 
 		verify(studentDao).deleteById(1L);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenDeleteById_thenStudentIsNotDeleting() {
+		when(studentDao.findById(1L)).thenThrow(EmptyResultDataAccessException.class);
+
+		studentService.deleteById(1L);
+
+		verify(studentDao, never()).deleteById(1L);
 	}
 
 	@Test

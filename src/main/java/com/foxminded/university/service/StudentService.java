@@ -1,9 +1,11 @@
 package com.foxminded.university.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +57,9 @@ public class StudentService {
 
 	@Transactional
 	public void deleteById(Long id) {
-		studentDao.deleteById(id);
+		if (isPresentById(id)) {
+			studentDao.deleteById(id);			
+		}
 	}
 
 	@Transactional
@@ -112,5 +116,13 @@ public class StudentService {
 				.stream()
 				.count()
 				< groupSize;
+	}
+	
+	private boolean isPresentById(Long id) {
+		try {
+			return Optional.of(studentDao.findById(id)).isPresent();
+		} catch (EmptyResultDataAccessException exeption) {
+			return false;
+		}
 	}
 }
