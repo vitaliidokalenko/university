@@ -1,6 +1,7 @@
 package com.foxminded.university.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +31,7 @@ public class RoomServiceTest {
 
 	@Test
 	public void givenRoom_whenCreate_thenRoomIsCreating() {
-		Room room = new Room("111");
+		Room room = getStandardRoom();
 
 		roomService.create(room);
 
@@ -38,19 +39,51 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRightData() {
-		Room expected = new Room("111");
-		Long id = 1L;
-		when(roomDao.findById(id)).thenReturn(expected);
+	public void givenCapacityLessThanOne_whenCreate_thenRoomIsNotCreating() {
+		Room room = getStandardRoom();
+		room.setCapacity(0);
 
-		Room actual = roomService.findById(id);
+		roomService.create(room);
+
+		verify(roomDao, never()).create(room);
+
+	}
+	
+	@Test
+	public void givenNameIsEmpty_whenCreate_thenRoomIsNotCreating() {
+		Room room = getStandardRoom();
+		room.setName("");
+
+		roomService.create(room);
+
+		verify(roomDao, never()).create(room);
+
+	}
+	
+	@Test
+	public void givenNameIsNull_whenCreate_thenRoomIsNotCreating() {
+		Room room = getStandardRoom();
+		room.setName(null);
+
+		roomService.create(room);
+
+		verify(roomDao, never()).create(room);
+
+	}
+
+	@Test
+	public void givenId_whenFindById_thenGetRightData() {
+		Room expected = getStandardRoom();
+		when(roomDao.findById(1L)).thenReturn(expected);
+
+		Room actual = roomService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void whenGetAll_thenGetRightData() {
-		List<Room> expected = Arrays.asList(new Room("111"));
+		List<Room> expected = Arrays.asList(getStandardRoom());
 		when(roomDao.getAll()).thenReturn(expected);
 
 		List<Room> actual = roomService.getAll();
@@ -59,8 +92,8 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenRoom_whenUpdate_thenGrouRoomIsUpdating() {
-		Room room = new Room("111");
+	public void givenRoom_whenUpdate_thenRoomIsUpdating() {
+		Room room = getStandardRoom();
 
 		roomService.update(room);
 
@@ -72,5 +105,12 @@ public class RoomServiceTest {
 		roomService.deleteById(1L);
 
 		verify(roomDao).deleteById(1L);
+	}
+
+	private Room getStandardRoom() {
+		Room room = new Room("111");
+		room.setId(1L);
+		room.setCapacity(30);
+		return room;
 	}
 }

@@ -19,7 +19,9 @@ public class RoomService {
 
 	@Transactional
 	public void create(Room room) {
-		roomDao.create(room);
+		if (isRoomValid(room)) {
+			roomDao.create(room);
+		}
 	}
 
 	@Transactional
@@ -34,11 +36,19 @@ public class RoomService {
 
 	@Transactional
 	public void update(Room room) {
-		roomDao.update(room);
+		if (isRoomValid(room)) {
+			roomDao.update(room);
+		}
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		roomDao.deleteById(id);
+	}
+
+	private boolean isRoomValid(Room room) {
+		return room.getName() != null
+				&& !room.getName().isEmpty()
+				&& room.getCapacity() > 0;
 	}
 }

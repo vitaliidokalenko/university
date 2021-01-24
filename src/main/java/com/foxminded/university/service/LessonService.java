@@ -66,8 +66,8 @@ public class LessonService {
 	}
 
 	@Transactional
-	public void delete(Lesson lesson) {
-		lessonDao.deleteById(lesson.getId());
+	public void deleteById(Long id) {
+		lessonDao.deleteById(id);
 	}
 
 	@Transactional

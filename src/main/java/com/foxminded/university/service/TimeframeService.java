@@ -19,7 +19,9 @@ public class TimeframeService {
 
 	@Transactional
 	public void create(Timeframe timeframe) {
-		timeframeDao.create(timeframe);
+		if (isTimeframeValid(timeframe)) {
+			timeframeDao.create(timeframe);
+		}
 	}
 
 	@Transactional
@@ -34,11 +36,20 @@ public class TimeframeService {
 
 	@Transactional
 	public void update(Timeframe timeframe) {
-		timeframeDao.update(timeframe);
+		if (isTimeframeValid(timeframe)) {
+			timeframeDao.update(timeframe);
+		}
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		timeframeDao.deleteById(id);
+	}
+
+	private boolean isTimeframeValid(Timeframe timeframe) {
+		return timeframe.getSequance() > 0
+				&& timeframe.getStartTime() != null
+				&& timeframe.getEndTime() != null
+				&& timeframe.getStartTime().isBefore(timeframe.getEndTime());
 	}
 }

@@ -22,7 +22,9 @@ public class CourseService {
 
 	@Transactional
 	public void create(Course course) {
-		courseDao.create(course);
+		if (isCourseValid(course)) {
+			courseDao.create(course);
+		}
 	}
 
 	@Transactional
@@ -37,7 +39,9 @@ public class CourseService {
 
 	@Transactional
 	public void update(Course course) {
-		courseDao.update(course);
+		if (isCourseValid(course)) {
+			courseDao.update(course);
+		}
 	}
 
 	@Transactional
@@ -62,5 +66,11 @@ public class CourseService {
 	@Transactional
 	public List<Course> getCoursesByRoomId(Long roomId) {
 		return courseDao.getCoursesByRoomId(roomId);
+	}
+
+	private boolean isCourseValid(Course course) {
+		return course.getName() != null
+				&& !course.getName().isEmpty()
+				&& !course.getRooms().isEmpty();
 	}
 }

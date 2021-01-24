@@ -2,6 +2,7 @@ package com.foxminded.university.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +37,7 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenCourse_whenCreate_thenCourseIsCreating() {
-		Course course = new Course("Art");
+		Course course = getStandardCourse();
 
 		courseService.create(course);
 
@@ -44,20 +45,48 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRightData() {
-		Course expected = new Course("Art");
-		Long id = 1L;
-		expected.setId(id);
-		when(courseDao.findById(id)).thenReturn(expected);
+	public void givenNameIsNull_whenCreate_thenCourseIsNotCreating() {
+		Course course = getStandardCourse();
+		course.setName(null);
 
-		Course actual = courseService.findById(id);
+		courseService.create(course);
+
+		verify(courseDao, never()).create(course);
+	}
+
+	@Test
+	public void givenNameIsEmpty_whenCreate_thenCourseIsNotCreating() {
+		Course course = getStandardCourse();
+		course.setName("");
+
+		courseService.create(course);
+
+		verify(courseDao, never()).create(course);
+	}
+
+	@Test
+	public void givenRoomsIsEmpty_whenCreate_thenCourseIsNotCreating() {
+		Course course = getStandardCourse();
+		course.setRooms(new HashSet<>());
+
+		courseService.create(course);
+
+		verify(courseDao, never()).create(course);
+	}
+
+	@Test
+	public void givenId_whenFindById_thenGetRightData() {
+		Course expected = getStandardCourse();
+		when(courseDao.findById(1L)).thenReturn(expected);
+
+		Course actual = courseService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void whenGetAll_thenGetRightData() {
-		List<Course> expected = Arrays.asList(new Course("Art"));
+		List<Course> expected = Arrays.asList(getStandardCourse());
 		when(courseDao.getAll()).thenReturn(expected);
 
 		List<Course> actual = courseService.getAll();
@@ -67,7 +96,7 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenCourse_whenUpdate_thenCourseIsUpdating() {
-		Course course = new Course("Art");
+		Course course = getStandardCourse();
 
 		courseService.update(course);
 
@@ -83,39 +112,47 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenRoom_whenAddRoomById_thenDataIsUpdating() {
-		Course course = new Course("Art");
-		Long id = 1L;
-		Room room = new Room("222");
-		when(courseDao.findById(id)).thenReturn(course);
-		when(roomDao.findById(id)).thenReturn(room);
+		Course course = getStandardCourse();
+		Room room = new Room("333");
+		when(courseDao.findById(1L)).thenReturn(course);
+		when(roomDao.findById(anyLong())).thenReturn(room);
 
-		courseService.addRoomById(id, id);
+		courseService.addRoomById(1L, anyLong());
 
 		verify(courseDao).update(course);
 	}
 
 	@Test
 	public void givenRoom_whenDeleteRoomById_thenDataIsUpdating() {
-		Course course = new Course("Art");
-		Long id = 1L;
-		Room room = new Room("222");
-		List<Room> rooms = Arrays.asList(room);
-		course.setRooms(new HashSet<>(rooms));
-		when(courseDao.findById(id)).thenReturn(course);
-		when(roomDao.findById(id)).thenReturn(room);
+		Course course = getStandardCourse();
+		Room room = new Room("111");
+		room.setId(1L);
+		when(courseDao.findById(1L)).thenReturn(course);
+		when(roomDao.findById(1L)).thenReturn(room);
 
-		courseService.removeRoomById(id, id);
+		courseService.removeRoomById(1L, 1L);
 
 		verify(courseDao).update(course);
 	}
 
 	@Test
 	public void givenId_whenGetCoursesByRoomId_thenGetRightData() {
-		List<Course> expected = Arrays.asList(new Course("Art"));
+		List<Course> expected = Arrays.asList(getStandardCourse());
 		when(courseDao.getCoursesByRoomId(anyLong())).thenReturn(expected);
 
 		List<Course> actual = courseService.getCoursesByRoomId(anyLong());
 
 		assertEquals(expected, actual);
+	}
+
+	private Course getStandardCourse() {
+		Room room1 = new Room("111");
+		room1.setId(1L);
+		Room room2 = new Room("222");
+		room2.setId(2L);
+		Course course = new Course("Art");
+		course.setId(1L);
+		course.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
+		return course;
 	}
 }

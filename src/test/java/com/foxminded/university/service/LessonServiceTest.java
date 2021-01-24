@@ -197,7 +197,7 @@ public class LessonServiceTest {
 	public void givenId_whenDelete_thenLessonIsDeleting() {
 		Lesson lesson = getStandardLesson();
 
-		lessonService.delete(lesson);
+		lessonService.deleteById(lesson.getId());
 
 		verify(lessonDao).deleteById(lesson.getId());
 	}

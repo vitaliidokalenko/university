@@ -1,9 +1,11 @@
 package com.foxminded.university.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,8 +32,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenTimeframe_whenCreate_thenTimeframeIsCreating() {
-		Timeframe timeframe = new Timeframe();
-		timeframe.setId(1L);
+		Timeframe timeframe = getStandardTimeframe();
 
 		timeframeService.create(timeframe);
 
@@ -39,22 +40,58 @@ public class TimeframeServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRightData() {
-		Timeframe expected = new Timeframe();
-		Long id = 1L;
-		expected.setId(id);
-		when(timeframeDao.findById(id)).thenReturn(expected);
+	public void givenSequanceLessThanOne_whenCreate_thenTimeframeIsNotCreating() {
+		Timeframe timeframe = getStandardTimeframe();
+		timeframe.setSequance(-1);
 
-		Timeframe actual = timeframeService.findById(id);
+		timeframeService.create(timeframe);
+
+		verify(timeframeDao, never()).create(timeframe);
+	}
+
+	@Test
+	public void givenStartTimeIsNull_whenCreate_thenTimeframeIsNotCreating() {
+		Timeframe timeframe = getStandardTimeframe();
+		timeframe.setStartTime(null);
+
+		timeframeService.create(timeframe);
+
+		verify(timeframeDao, never()).create(timeframe);
+	}
+
+	@Test
+	public void givenEndTimeIsNull_whenCreate_thenTimeframeIsNotCreating() {
+		Timeframe timeframe = getStandardTimeframe();
+		timeframe.setEndTime(null);
+
+		timeframeService.create(timeframe);
+
+		verify(timeframeDao, never()).create(timeframe);
+	}
+
+	@Test
+	public void givenStartTimeIsAfterEndTime_whenCreate_thenTimeframeIsNotCreating() {
+		Timeframe timeframe = getStandardTimeframe();
+		timeframe.setStartTime(LocalTime.parse("10:00"));
+
+		timeframeService.create(timeframe);
+
+		verify(timeframeDao, never()).create(timeframe);
+	}
+
+	@Test
+	public void givenId_whenFindById_thenGetRightData() {
+		Timeframe expected = getStandardTimeframe();
+		when(timeframeDao.findById(1L)).thenReturn(expected);
+
+		Timeframe actual = timeframeService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void whenGetAll_thenGetRightData() {
-		Timeframe timeframe = new Timeframe();
-		timeframe.setId(1L);
-		List<Timeframe> expected = Arrays.asList(timeframe);
+		List<Timeframe> expected = Arrays.asList(getStandardTimeframe());
 		when(timeframeDao.getAll()).thenReturn(expected);
 
 		List<Timeframe> actual = timeframeService.getAll();
@@ -64,8 +101,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenTimeframe_whenUpdate_thenTimeframeIsUpdating() {
-		Timeframe timeframe = new Timeframe();
-		timeframe.setId(1L);
+		Timeframe timeframe = getStandardTimeframe();
 
 		timeframeService.update(timeframe);
 
@@ -77,5 +113,14 @@ public class TimeframeServiceTest {
 		timeframeService.deleteById(1L);
 
 		verify(timeframeDao).deleteById(1L);
+	}
+
+	private Timeframe getStandardTimeframe() {
+		Timeframe timeframe = new Timeframe();
+		timeframe.setId(1L);
+		timeframe.setSequance(1);
+		timeframe.setStartTime(LocalTime.parse("08:00"));
+		timeframe.setEndTime(LocalTime.parse("09:20"));
+		return timeframe;
 	}
 }

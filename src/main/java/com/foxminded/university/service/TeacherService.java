@@ -22,7 +22,9 @@ public class TeacherService {
 
 	@Transactional
 	public void create(Teacher teacher) {
-		teacherDao.create(teacher);
+		if (isTeacherValid(teacher)) {
+			teacherDao.create(teacher);
+		}
 	}
 
 	@Transactional
@@ -37,7 +39,9 @@ public class TeacherService {
 
 	@Transactional
 	public void update(Teacher teacher) {
-		teacherDao.update(teacher);
+		if (isTeacherValid(teacher)) {
+			teacherDao.update(teacher);
+		}
 	}
 
 	@Transactional
@@ -62,5 +66,13 @@ public class TeacherService {
 	@Transactional
 	public List<Teacher> getTeachersByCourseId(Long courseId) {
 		return teacherDao.getTeachersByCourseId(courseId);
+	}
+
+	private boolean isTeacherValid(Teacher teacher) {
+		return teacher.getGender() != null
+				&& teacher.getName() != null
+				&& teacher.getSurname() != null
+				&& !teacher.getName().isEmpty()
+				&& !teacher.getSurname().isEmpty();
 	}
 }

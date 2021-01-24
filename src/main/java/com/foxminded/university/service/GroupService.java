@@ -22,7 +22,9 @@ public class GroupService {
 
 	@Transactional
 	public void create(Group group) {
-		groupDao.create(group);
+		if (isGroupValid(group)) {
+			groupDao.create(group);
+		}
 	}
 
 	@Transactional
@@ -39,11 +41,18 @@ public class GroupService {
 
 	@Transactional
 	public void update(Group group) {
-		groupDao.update(group);
+		if (isGroupValid(group)) {
+			groupDao.update(group);
+		}
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		groupDao.deleteById(id);
+	}
+
+	private boolean isGroupValid(Group group) {
+		return group.getName() != null
+				&& !group.getName().isEmpty();
 	}
 }
