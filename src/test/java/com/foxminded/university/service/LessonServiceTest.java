@@ -136,6 +136,26 @@ public class LessonServiceTest {
 	}
 
 	@Test
+	public void givenDateIsOnSaturday_whenCreate_thenLessonIsNotCreating() {
+		Lesson lesson = buildLesson();
+		lesson.setDate(LocalDate.parse("2021-01-23"));
+
+		lessonService.create(lesson);
+
+		verify(lessonDao, never()).create(lesson);
+	}
+
+	@Test
+	public void givenDateIsOnSunday_whenCreate_thenLessonIsNotCreating() {
+		Lesson lesson = buildLesson();
+		lesson.setDate(LocalDate.parse("2021-01-24"));
+
+		lessonService.create(lesson);
+
+		verify(lessonDao, never()).create(lesson);
+	}
+
+	@Test
 	public void givenId_whenFindById_thenGetRightData() {
 		Lesson expected = buildLesson();
 		when(lessonDao.findById(1L)).thenReturn(expected);

@@ -1,5 +1,9 @@
 package com.foxminded.university.service;
 
+import static java.time.DayOfWeek.SATURDAY;
+import static java.time.DayOfWeek.SUNDAY;
+
+import java.time.DayOfWeek;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +70,8 @@ public class LessonService {
 				&& isGroupAvailable(lesson)
 				&& isRoomCapacityCompatible(lesson)
 				&& isTeacherCourseCompatible(lesson)
-				&& isCourseRoomCompatible(lesson);
+				&& isCourseRoomCompatible(lesson)
+				&& !isAtWeekend(lesson);
 	}
 
 	private boolean isTeacherAvailable(Lesson lesson) {
@@ -108,6 +113,11 @@ public class LessonService {
 		return lesson.getCourse()
 				.getRooms()
 				.contains(lesson.getRoom());
+	}
+
+	private boolean isAtWeekend(Lesson lesson) {
+		DayOfWeek day = lesson.getDate().getDayOfWeek();
+		return day.equals(SATURDAY) || day.equals(SUNDAY);
 	}
 
 	private boolean isPresentById(Long id) {
