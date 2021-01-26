@@ -23,13 +23,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
-import com.foxminded.university.dao.CourseDao;
-import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.LessonDao;
-import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.dao.StudentDao;
-import com.foxminded.university.dao.TeacherDao;
-import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
@@ -45,16 +40,6 @@ public class LessonServiceTest {
 	@Mock
 	private LessonDao lessonDao;
 	@Mock
-	private GroupDao groupDao;
-	@Mock
-	private TeacherDao teacherDao;
-	@Mock
-	private CourseDao courseDao;
-	@Mock
-	private RoomDao roomDao;
-	@Mock
-	private TimeframeDao timeframeDao;
-	@Mock
 	private StudentDao studentDao;
 
 	@InjectMocks
@@ -62,7 +47,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenLesson_whenCreate_thenLessonIsCreating() {
-		Lesson lesson = getStandardLesson();
+		Lesson lesson = buildLesson();
 
 		lessonService.create(lesson);
 
@@ -71,8 +56,8 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenTeacherIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
-		Lesson lessonByTeacher = getStandardLesson();
-		Lesson actualLesson = getStandardLesson();
+		Lesson lessonByTeacher = buildLesson();
+		Lesson actualLesson = buildLesson();
 		when(lessonDao.getLessonsByTeacher(actualLesson.getTeacher())).thenReturn(Arrays.asList(lessonByTeacher));
 
 		lessonService.create(actualLesson);
@@ -82,8 +67,8 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenRoomIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
-		Lesson lessonByRoom = getStandardLesson();
-		Lesson actualLesson = getStandardLesson();
+		Lesson lessonByRoom = buildLesson();
+		Lesson actualLesson = buildLesson();
 		when(lessonDao.getLessonsByRoom(actualLesson.getRoom())).thenReturn(Arrays.asList(lessonByRoom));
 
 		lessonService.create(actualLesson);
@@ -93,8 +78,8 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenGroupIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
-		Lesson lessonByGroup = getStandardLesson();
-		Lesson actualLesson = getStandardLesson();
+		Lesson lessonByGroup = buildLesson();
+		Lesson actualLesson = buildLesson();
 		when(lessonDao.getLessonsByGroupId(1L)).thenReturn(Arrays.asList(lessonByGroup));
 
 		lessonService.create(actualLesson);
@@ -104,7 +89,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenRoomCapacityIsNotCompatible_whenCreate_thenLessonIsNotCreating() {
-		Lesson lesson = getStandardLesson();
+		Lesson lesson = buildLesson();
 		lesson.getRoom().setCapacity(3);
 		when(studentDao.getStudentsByGroup(Mockito.any(Group.class)))
 				.thenReturn(Arrays.asList(new Student("Anna", "Maria"),
@@ -119,7 +104,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenRoomCapacityIsCompatible_whenCreate_thenLessonIsCreating() {
-		Lesson lesson = getStandardLesson();
+		Lesson lesson = buildLesson();
 		lesson.getRoom().setCapacity(4);
 		when(studentDao.getStudentsByGroup(Mockito.any(Group.class)))
 				.thenReturn(Arrays.asList(new Student("Anna", "Maria"),
@@ -134,7 +119,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenTeacherCourseIsNotCompatible_whenCreate_thenLessonIsNotCreating() {
-		Lesson lesson = getStandardLesson();
+		Lesson lesson = buildLesson();
 		lesson.setCourse(new Course("Law"));
 
 		lessonService.create(lesson);
@@ -144,7 +129,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenCourseRoomIsNotCompatible_whenCreate_thenLessonIsNotCreating() {
-		Lesson lesson = getStandardLesson();
+		Lesson lesson = buildLesson();
 		lesson.setRoom(new Room("333"));
 
 		lessonService.create(lesson);
@@ -155,7 +140,7 @@ public class LessonServiceTest {
 	@Test
 	public void givenCourseRoomIsCompatible_whenCreate_thenLessonIsCreating() {
 		Room room = new Room("333");
-		Lesson lesson = getStandardLesson();
+		Lesson lesson = buildLesson();
 		lesson.setRoom(room);
 		lesson.getCourse().getRooms().add(room);
 
@@ -166,7 +151,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
-		Lesson expected = getStandardLesson();
+		Lesson expected = buildLesson();
 		when(lessonDao.findById(anyLong())).thenReturn(expected);
 
 		Lesson actual = lessonService.findById(anyLong());
@@ -176,7 +161,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightData() {
-		Lesson lesson = getStandardLesson();
+		Lesson lesson = buildLesson();
 		List<Lesson> expected = Arrays.asList(lesson);
 		when(lessonDao.getAll()).thenReturn(expected);
 
@@ -187,7 +172,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenLesson_whenUpdate_thenLessonIsUpdating() {
-		Lesson lesson = getStandardLesson();
+		Lesson lesson = buildLesson();
 
 		lessonService.update(lesson);
 
@@ -196,7 +181,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenLessonIsDeleting() {
-		when(lessonDao.findById(1L)).thenReturn(getStandardLesson());
+		when(lessonDao.findById(1L)).thenReturn(buildLesson());
 
 		lessonService.deleteById(1L);
 
@@ -212,141 +197,7 @@ public class LessonServiceTest {
 		verify(lessonDao, never()).deleteById(1L);
 	}
 
-	@Test
-	public void givenGroup_whenAddGroupById_thenDataIsUpdating() {
-		Lesson lesson = getStandardLesson();
-		Group group = new Group("DD-44");
-		when(lessonDao.findById(1L)).thenReturn(lesson);
-		when(groupDao.findById(anyLong())).thenReturn(group);
-
-		lessonService.addGroupById(1L, anyLong());
-
-		verify(lessonDao).update(lesson);
-	}
-
-	@Test
-	public void givenGroup_whenRemoveGroupById_thenDataIsUpdating() {
-		Lesson lesson = getStandardLesson();
-		Group group2 = new Group("AA-22");
-		group2.setId(2L);
-		lesson.getGroups().add(group2);
-		when(lessonDao.findById(1L)).thenReturn(lesson);
-		when(groupDao.findById(2L)).thenReturn(group2);
-
-		lessonService.removeGroupById(1L, 2L);
-
-		verify(lessonDao).update(lesson);
-	}
-
-	@Test
-	public void givenId_whenSetTeacherById_thenDataIsUpdating() {
-		Lesson lesson = getStandardLesson();
-		Teacher teacher = new Teacher("Anatoly", "Garriga");
-		when(lessonDao.findById(1L)).thenReturn(lesson);
-		when(teacherDao.findById(anyLong())).thenReturn(teacher);
-
-		lessonService.setTeacherById(1L, anyLong());
-
-		verify(lessonDao).update(lesson);
-	}
-
-	@Test
-	public void givenId_whenSetCourseById_thenDataIsUpdating() {
-		Lesson lesson = getStandardLesson();
-		Course course = new Course("Philosophy");
-		when(lessonDao.findById(1L)).thenReturn(lesson);
-		when(courseDao.findById(anyLong())).thenReturn(course);
-
-		lessonService.setCourseById(1L, anyLong());
-
-		verify(lessonDao).update(lesson);
-	}
-
-	@Test
-	public void givenId_whenSetRoomById_thenDataIsUpdating() {
-		Lesson lesson = getStandardLesson();
-		Room room = new Room("555");
-		when(lessonDao.findById(1L)).thenReturn(lesson);
-		when(roomDao.findById(anyLong())).thenReturn(room);
-
-		lessonService.setRoomById(1L, anyLong());
-
-		verify(lessonDao).update(lesson);
-	}
-
-	@Test
-	public void givenId_whenSetTimeframeById_thenDataIsUpdating() {
-		Lesson lesson = getStandardLesson();
-		Timeframe timeframe = new Timeframe();
-		timeframe.setSequance(5);
-		when(lessonDao.findById(1L)).thenReturn(lesson);
-		when(timeframeDao.findById(anyLong())).thenReturn(timeframe);
-
-		lessonService.setTimeframeById(1L, anyLong());
-
-		verify(lessonDao).update(lesson);
-	}
-
-	@Test
-	public void givenId_whenGetLessonsByGroupId_thenGetRightData() {
-		Lesson lesson = getStandardLesson();
-		List<Lesson> expected = Arrays.asList(lesson);
-		when(lessonDao.getLessonsByGroupId(anyLong())).thenReturn(expected);
-
-		List<Lesson> actual = lessonService.getLessonsByGroupId(anyLong());
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenId_whenGetLessonsByTimeframe_thenGetRightData() {
-		Lesson lesson = getStandardLesson();
-		List<Lesson> expected = Arrays.asList(lesson);
-		Timeframe timeframe = new Timeframe();
-		when(lessonDao.getLessonsByTimeframe(timeframe)).thenReturn(expected);
-
-		List<Lesson> actual = lessonService.getLessonsByTimeframe(timeframe);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenId_whenGetLessonsByCourse_thenGetRightData() {
-		Lesson lesson = getStandardLesson();
-		List<Lesson> expected = Arrays.asList(lesson);
-		Course course = new Course("Art");
-		when(lessonDao.getLessonsByCourse(course)).thenReturn(expected);
-
-		List<Lesson> actual = lessonService.getLessonsByCourse(course);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenId_whenGetLessonsByTeacher_thenGetRightData() {
-		Lesson lesson = getStandardLesson();
-		List<Lesson> expected = Arrays.asList(lesson);
-		Teacher teacher = new Teacher("Ivan", "Milevskii");
-		when(lessonDao.getLessonsByTeacher(teacher)).thenReturn(expected);
-
-		List<Lesson> actual = lessonService.getLessonsByTeacher(teacher);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenId_whenGetLessonsByRoom_thenGetRightData() {
-		Lesson lesson = getStandardLesson();
-		List<Lesson> expected = Arrays.asList(lesson);
-		Room room = new Room("111");
-		when(lessonDao.getLessonsByRoom(room)).thenReturn(expected);
-
-		List<Lesson> actual = lessonService.getLessonsByRoom(room);
-
-		assertEquals(expected, actual);
-	}
-
-	private Lesson getStandardLesson() {
+	private Lesson buildLesson() {
 		Room room = new Room("111");
 		room.setId(1L);
 		room.setCapacity(3);

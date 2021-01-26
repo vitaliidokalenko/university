@@ -46,7 +46,7 @@ public class RoomService {
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			roomDao.deleteById(id);			
+			roomDao.deleteById(id);
 		}
 	}
 
@@ -55,7 +55,7 @@ public class RoomService {
 				&& !room.getName().isEmpty()
 				&& room.getCapacity() > 0;
 	}
-	
+
 	private boolean isPresentById(Long id) {
 		try {
 			return Optional.of(roomDao.findById(id)).isPresent();

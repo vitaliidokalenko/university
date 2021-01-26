@@ -7,7 +7,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.model.Teacher;
 
@@ -15,11 +14,9 @@ import com.foxminded.university.model.Teacher;
 public class TeacherService {
 
 	private TeacherDao teacherDao;
-	private CourseDao courseDao;
 
-	public TeacherService(TeacherDao teacherDao, CourseDao courseDao) {
+	public TeacherService(TeacherDao teacherDao) {
 		this.teacherDao = teacherDao;
-		this.courseDao = courseDao;
 	}
 
 	@Transactional
@@ -51,25 +48,6 @@ public class TeacherService {
 		if (isPresentById(id)) {
 			teacherDao.deleteById(id);
 		}
-	}
-
-	@Transactional
-	public void addCourseById(Long teacherId, Long courseId) {
-		Teacher teacher = teacherDao.findById(teacherId);
-		teacher.getCourses().add(courseDao.findById(courseId));
-		teacherDao.update(teacher);
-	}
-
-	@Transactional
-	public void removeCourseById(Long teacherId, Long courseId) {
-		Teacher teacher = teacherDao.findById(teacherId);
-		teacher.getCourses().remove(courseDao.findById(courseId));
-		teacherDao.update(teacher);
-	}
-
-	@Transactional
-	public List<Teacher> getTeachersByCourseId(Long courseId) {
-		return teacherDao.getTeachersByCourseId(courseId);
 	}
 
 	private boolean isTeacherValid(Teacher teacher) {

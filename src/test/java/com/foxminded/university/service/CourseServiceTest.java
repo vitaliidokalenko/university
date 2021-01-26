@@ -1,7 +1,6 @@
 package com.foxminded.university.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,7 +19,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.CourseDao;
-import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
 
@@ -30,15 +28,13 @@ public class CourseServiceTest {
 
 	@Mock
 	private CourseDao courseDao;
-	@Mock
-	private RoomDao roomDao;
 
 	@InjectMocks
 	private CourseService courseService;
 
 	@Test
 	public void givenCourse_whenCreate_thenCourseIsCreating() {
-		Course course = getStandardCourse();
+		Course course = buildCourse();
 
 		courseService.create(course);
 
@@ -47,7 +43,7 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenNameIsNull_whenCreate_thenCourseIsNotCreating() {
-		Course course = getStandardCourse();
+		Course course = buildCourse();
 		course.setName(null);
 
 		courseService.create(course);
@@ -57,7 +53,7 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenNameIsEmpty_whenCreate_thenCourseIsNotCreating() {
-		Course course = getStandardCourse();
+		Course course = buildCourse();
 		course.setName("");
 
 		courseService.create(course);
@@ -67,7 +63,7 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenRoomsIsEmpty_whenCreate_thenCourseIsNotCreating() {
-		Course course = getStandardCourse();
+		Course course = buildCourse();
 		course.setRooms(new HashSet<>());
 
 		courseService.create(course);
@@ -77,7 +73,7 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
-		Course expected = getStandardCourse();
+		Course expected = buildCourse();
 		when(courseDao.findById(1L)).thenReturn(expected);
 
 		Course actual = courseService.findById(1L);
@@ -87,7 +83,7 @@ public class CourseServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightData() {
-		List<Course> expected = Arrays.asList(getStandardCourse());
+		List<Course> expected = Arrays.asList(buildCourse());
 		when(courseDao.getAll()).thenReturn(expected);
 
 		List<Course> actual = courseService.getAll();
@@ -97,7 +93,7 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenCourse_whenUpdate_thenCourseIsUpdating() {
-		Course course = getStandardCourse();
+		Course course = buildCourse();
 
 		courseService.update(course);
 
@@ -106,58 +102,23 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenCourseIsDeleting() {
-		when(courseDao.findById(1L)).thenReturn(getStandardCourse());
-		
+		when(courseDao.findById(1L)).thenReturn(buildCourse());
+
 		courseService.deleteById(1L);
 
 		verify(courseDao).deleteById(1L);
 	}
-	
+
 	@Test
 	public void givenEntityIsNotPresent_whenDeleteById_thenCourseIsNotDeleting() {
 		when(courseDao.findById(1L)).thenThrow(EmptyResultDataAccessException.class);
-		
+
 		courseService.deleteById(1L);
 
 		verify(courseDao, never()).deleteById(1L);
 	}
 
-	@Test
-	public void givenRoom_whenAddRoomById_thenDataIsUpdating() {
-		Course course = getStandardCourse();
-		Room room = new Room("333");
-		when(courseDao.findById(1L)).thenReturn(course);
-		when(roomDao.findById(anyLong())).thenReturn(room);
-
-		courseService.addRoomById(1L, anyLong());
-
-		verify(courseDao).update(course);
-	}
-
-	@Test
-	public void givenRoom_whenDeleteRoomById_thenDataIsUpdating() {
-		Course course = getStandardCourse();
-		Room room = new Room("111");
-		room.setId(1L);
-		when(courseDao.findById(1L)).thenReturn(course);
-		when(roomDao.findById(1L)).thenReturn(room);
-
-		courseService.removeRoomById(1L, 1L);
-
-		verify(courseDao).update(course);
-	}
-
-	@Test
-	public void givenId_whenGetCoursesByRoomId_thenGetRightData() {
-		List<Course> expected = Arrays.asList(getStandardCourse());
-		when(courseDao.getCoursesByRoomId(anyLong())).thenReturn(expected);
-
-		List<Course> actual = courseService.getCoursesByRoomId(anyLong());
-
-		assertEquals(expected, actual);
-	}
-
-	private Course getStandardCourse() {
+	private Course buildCourse() {
 		Room room1 = new Room("111");
 		room1.setId(1L);
 		Room room2 = new Room("222");

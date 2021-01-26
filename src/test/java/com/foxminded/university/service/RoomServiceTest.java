@@ -32,7 +32,7 @@ public class RoomServiceTest {
 
 	@Test
 	public void givenRoom_whenCreate_thenRoomIsCreating() {
-		Room room = getStandardRoom();
+		Room room = buildRoom();
 
 		roomService.create(room);
 
@@ -41,7 +41,7 @@ public class RoomServiceTest {
 
 	@Test
 	public void givenCapacityLessThanOne_whenCreate_thenRoomIsNotCreating() {
-		Room room = getStandardRoom();
+		Room room = buildRoom();
 		room.setCapacity(0);
 
 		roomService.create(room);
@@ -49,10 +49,10 @@ public class RoomServiceTest {
 		verify(roomDao, never()).create(room);
 
 	}
-	
+
 	@Test
 	public void givenNameIsEmpty_whenCreate_thenRoomIsNotCreating() {
-		Room room = getStandardRoom();
+		Room room = buildRoom();
 		room.setName("");
 
 		roomService.create(room);
@@ -60,10 +60,10 @@ public class RoomServiceTest {
 		verify(roomDao, never()).create(room);
 
 	}
-	
+
 	@Test
 	public void givenNameIsNull_whenCreate_thenRoomIsNotCreating() {
-		Room room = getStandardRoom();
+		Room room = buildRoom();
 		room.setName(null);
 
 		roomService.create(room);
@@ -74,7 +74,7 @@ public class RoomServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
-		Room expected = getStandardRoom();
+		Room expected = buildRoom();
 		when(roomDao.findById(1L)).thenReturn(expected);
 
 		Room actual = roomService.findById(1L);
@@ -84,7 +84,7 @@ public class RoomServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightData() {
-		List<Room> expected = Arrays.asList(getStandardRoom());
+		List<Room> expected = Arrays.asList(buildRoom());
 		when(roomDao.getAll()).thenReturn(expected);
 
 		List<Room> actual = roomService.getAll();
@@ -94,7 +94,7 @@ public class RoomServiceTest {
 
 	@Test
 	public void givenRoom_whenUpdate_thenRoomIsUpdating() {
-		Room room = getStandardRoom();
+		Room room = buildRoom();
 
 		roomService.update(room);
 
@@ -103,7 +103,7 @@ public class RoomServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenRoomIsDeleting() {
-		when(roomDao.findById(1L)).thenReturn(getStandardRoom());
+		when(roomDao.findById(1L)).thenReturn(buildRoom());
 
 		roomService.deleteById(1L);
 
@@ -119,7 +119,7 @@ public class RoomServiceTest {
 		verify(roomDao, never()).deleteById(1L);
 	}
 
-	private Room getStandardRoom() {
+	private Room buildRoom() {
 		Room room = new Room("111");
 		room.setId(1L);
 		room.setCapacity(30);

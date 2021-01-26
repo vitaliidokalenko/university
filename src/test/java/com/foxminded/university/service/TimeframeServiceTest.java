@@ -33,7 +33,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenTimeframe_whenCreate_thenTimeframeIsCreating() {
-		Timeframe timeframe = getStandardTimeframe();
+		Timeframe timeframe = buildTimeframe();
 
 		timeframeService.create(timeframe);
 
@@ -42,7 +42,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenSequanceLessThanOne_whenCreate_thenTimeframeIsNotCreating() {
-		Timeframe timeframe = getStandardTimeframe();
+		Timeframe timeframe = buildTimeframe();
 		timeframe.setSequance(-1);
 
 		timeframeService.create(timeframe);
@@ -52,7 +52,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenStartTimeIsNull_whenCreate_thenTimeframeIsNotCreating() {
-		Timeframe timeframe = getStandardTimeframe();
+		Timeframe timeframe = buildTimeframe();
 		timeframe.setStartTime(null);
 
 		timeframeService.create(timeframe);
@@ -62,7 +62,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenEndTimeIsNull_whenCreate_thenTimeframeIsNotCreating() {
-		Timeframe timeframe = getStandardTimeframe();
+		Timeframe timeframe = buildTimeframe();
 		timeframe.setEndTime(null);
 
 		timeframeService.create(timeframe);
@@ -72,7 +72,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenStartTimeIsAfterEndTime_whenCreate_thenTimeframeIsNotCreating() {
-		Timeframe timeframe = getStandardTimeframe();
+		Timeframe timeframe = buildTimeframe();
 		timeframe.setStartTime(LocalTime.parse("10:00"));
 
 		timeframeService.create(timeframe);
@@ -82,7 +82,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
-		Timeframe expected = getStandardTimeframe();
+		Timeframe expected = buildTimeframe();
 		when(timeframeDao.findById(1L)).thenReturn(expected);
 
 		Timeframe actual = timeframeService.findById(1L);
@@ -92,7 +92,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightData() {
-		List<Timeframe> expected = Arrays.asList(getStandardTimeframe());
+		List<Timeframe> expected = Arrays.asList(buildTimeframe());
 		when(timeframeDao.getAll()).thenReturn(expected);
 
 		List<Timeframe> actual = timeframeService.getAll();
@@ -102,7 +102,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenTimeframe_whenUpdate_thenTimeframeIsUpdating() {
-		Timeframe timeframe = getStandardTimeframe();
+		Timeframe timeframe = buildTimeframe();
 
 		timeframeService.update(timeframe);
 
@@ -111,7 +111,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenTimeframeIsDeleting() {
-		when(timeframeDao.findById(1L)).thenReturn(getStandardTimeframe());
+		when(timeframeDao.findById(1L)).thenReturn(buildTimeframe());
 
 		timeframeService.deleteById(1L);
 
@@ -127,7 +127,7 @@ public class TimeframeServiceTest {
 		verify(timeframeDao, never()).deleteById(1L);
 	}
 
-	private Timeframe getStandardTimeframe() {
+	private Timeframe buildTimeframe() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
 		timeframe.setSequance(1);

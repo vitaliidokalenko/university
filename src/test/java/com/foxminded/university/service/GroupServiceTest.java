@@ -36,7 +36,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void givenGroup_whenCreate_thenGroupIsCreating() {
-		Group group = getStandardGroup();
+		Group group = buildGroup();
 
 		groupService.create(group);
 
@@ -45,7 +45,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void givenNameIsNull_whenCreate_thenGroupIsCreating() {
-		Group group = getStandardGroup();
+		Group group = buildGroup();
 		group.setName(null);
 
 		groupService.create(group);
@@ -55,7 +55,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void givenNameIsEmpty_whenCreate_thenGroupIsCreating() {
-		Group group = getStandardGroup();
+		Group group = buildGroup();
 		group.setName("");
 
 		groupService.create(group);
@@ -65,7 +65,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
-		Group expected = getStandardGroup();
+		Group expected = buildGroup();
 		List<Student> students = Arrays.asList(new Student("Avraam", "Melburn"), new Student("Homer", "Mahony"));
 		when(groupDao.findById(1L)).thenReturn(expected);
 		when(studentDao.getStudentsByGroup(expected)).thenReturn(students);
@@ -77,7 +77,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightData() {
-		List<Group> expected = Arrays.asList(getStandardGroup());
+		List<Group> expected = Arrays.asList(buildGroup());
 		when(groupDao.getAll()).thenReturn(expected);
 
 		List<Group> actual = groupService.getAll();
@@ -88,7 +88,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void givenGroup_whenUpdate_thenGroupIsUpdating() {
-		Group group = getStandardGroup();
+		Group group = buildGroup();
 
 		groupService.update(group);
 
@@ -97,7 +97,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenGroupIsDeleting() {
-		when(groupDao.findById(1L)).thenReturn(getStandardGroup());
+		when(groupDao.findById(1L)).thenReturn(buildGroup());
 
 		groupService.deleteById(1L);
 
@@ -113,7 +113,7 @@ public class GroupServiceTest {
 		verify(groupDao, never()).deleteById(1L);
 	}
 
-	private Group getStandardGroup() {
+	private Group buildGroup() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
 		return group;

@@ -1,10 +1,6 @@
 package com.foxminded.university.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,8 +21,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.foxminded.university.config.TestAppConfig;
-import com.foxminded.university.dao.CourseDao;
-import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
@@ -44,10 +38,6 @@ public class StudentServiceTest {
 
 	@Mock
 	private StudentDao studentDao;
-	@Mock
-	private GroupDao groupDao;
-	@Mock
-	private CourseDao courseDao;
 
 	@InjectMocks
 	private StudentService studentService;
@@ -59,7 +49,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenStudent_whenCreate_thenStudentIsCreating() {
-		Student student = getStandardStudent();
+		Student student = buildStudent();
 
 		studentService.create(student);
 
@@ -68,7 +58,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenGenderIsNull_whenCreate_thenStudentIsNotCreating() {
-		Student student = getStandardStudent();
+		Student student = buildStudent();
 		student.setGender(null);
 
 		studentService.create(student);
@@ -78,7 +68,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenNameIsNull_whenCreate_thenStudentIsNotCreating() {
-		Student student = getStandardStudent();
+		Student student = buildStudent();
 		student.setName(null);
 
 		studentService.create(student);
@@ -88,7 +78,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenSurnameIsNull_whenCreate_thenStudentIsNotCreating() {
-		Student student = getStandardStudent();
+		Student student = buildStudent();
 		student.setSurname(null);
 
 		studentService.create(student);
@@ -98,7 +88,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenNameIsEmpty_whenCreate_thenStudentIsNotCreating() {
-		Student student = getStandardStudent();
+		Student student = buildStudent();
 		student.setName("");
 
 		studentService.create(student);
@@ -108,7 +98,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenSurnameIsEmpty_whenCreate_thenStudentIsNotCreating() {
-		Student student = getStandardStudent();
+		Student student = buildStudent();
 		student.setSurname("");
 
 		studentService.create(student);
@@ -118,7 +108,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenGroupSizeIsNotEnuogh_whenCreate_thenStudentIsNotCreating() {
-		Student student = getStandardStudent();
+		Student student = buildStudent();
 		when(studentDao.getStudentsByGroup(student.getGroup()))
 				.thenReturn(Arrays.asList(new Student("Serhii", "Gerega"), new Student("Anatoly", "Soprano")));
 
@@ -129,7 +119,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
-		Student expected = getStandardStudent();
+		Student expected = buildStudent();
 		when(studentDao.findById(1L)).thenReturn(expected);
 
 		Student actual = studentService.findById(1L);
@@ -139,7 +129,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightData() {
-		List<Student> expected = Arrays.asList(getStandardStudent());
+		List<Student> expected = Arrays.asList(buildStudent());
 		when(studentDao.getAll()).thenReturn(expected);
 
 		List<Student> actual = studentService.getAll();
@@ -149,7 +139,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenStudent_whenUpdate_thenStudentIsUpdating() {
-		Student student = getStandardStudent();
+		Student student = buildStudent();
 
 		studentService.update(student);
 
@@ -158,7 +148,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenStudentIsDeleting() {
-		when(studentDao.findById(1L)).thenReturn(getStandardStudent());
+		when(studentDao.findById(1L)).thenReturn(buildStudent());
 
 		studentService.deleteById(1L);
 
@@ -174,79 +164,7 @@ public class StudentServiceTest {
 		verify(studentDao, never()).deleteById(1L);
 	}
 
-	@Test
-	public void givenGroup_whenSetGroupById_thenDataIsUpdating() {
-		Student student = getStandardStudent();
-		Group group = new Group("BB-22");
-		when(studentDao.findById(1L)).thenReturn(student);
-		when(groupDao.findById(anyLong())).thenReturn(group);
-
-		studentService.setGroupById(1L, anyLong());
-
-		verify(studentDao).update(student);
-	}
-
-	@Test
-	public void givenGroup_whenRemoveGroupById_thenDataIsUpdating() {
-		Student student = getStandardStudent();
-		when(studentDao.findById(1L)).thenReturn(student);
-
-		studentService.removeGroupById(1L);
-
-		assertNull(student.getGroup());
-		verify(studentDao).update(student);
-	}
-
-	@Test
-	public void givenCourse_whenAddCourseById_thenDataIsUpdating() {
-		Student student = getStandardStudent();
-		Course course = new Course("Philosophy");
-		when(studentDao.findById(1L)).thenReturn(student);
-		when(courseDao.findById(anyLong())).thenReturn(course);
-
-		studentService.addCourseById(1L, anyLong());
-
-		assertTrue(student.getCourses().contains(course));
-		verify(studentDao).update(student);
-	}
-
-	@Test
-	public void givenCourse_whenRemoveCourseById_thenDataIsUpdating() {
-		Student student = getStandardStudent();
-		Course course = new Course("Art");
-		course.setId(1L);
-		student.setCourses(new HashSet<>(Arrays.asList(course)));
-		when(studentDao.findById(1L)).thenReturn(student);
-		when(courseDao.findById(anyLong())).thenReturn(course);
-
-		studentService.removeCourseById(1L, anyLong());
-
-		assertFalse(student.getCourses().contains(course));
-		verify(studentDao).update(student);
-	}
-
-	@Test
-	public void givenId_whenGetStudentsByGroup_thenGetRightData() {
-		List<Student> expected = Arrays.asList(getStandardStudent());
-		Group group = new Group("AA-11");
-		when(studentDao.getStudentsByGroup(group)).thenReturn(expected);
-
-		List<Student> actual = studentService.getStudentsByGroup(group);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenId_whenGetStudentsByCourseId_thenGetRightData() {
-		List<Student> expected = Arrays.asList(getStandardStudent());
-		when(studentDao.getStudentsByCourseId(anyLong())).thenReturn(expected);
-
-		List<Student> actual = studentService.getStudentsByCourseId(anyLong());
-
-		assertEquals(expected, actual);
-	}
-
-	private Student getStandardStudent() {
+	private Student buildStudent() {
 		Course course1 = new Course("Art");
 		course1.setId(1L);
 		Course course2 = new Course("Law");
