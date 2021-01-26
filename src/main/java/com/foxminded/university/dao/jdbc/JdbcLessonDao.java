@@ -38,12 +38,12 @@ public class JdbcLessonDao implements LessonDao {
 			+ "WHERE id = ?";
 	private static final String CREATE_LESSON_GROUP_QUERY = "INSERT INTO lessons_groups (lesson_id, group_id) VALUES(?, ?);";
 	private static final String DELETE_LESSON_GROUP_QUERY = "DELETE FROM lessons_groups WHERE lesson_id = ? AND group_id = ?;";
-	private static final String GET_LESSONS_BY_GROUP_ID_QUERY = "SELECT * FROM lessons "
-			+ "JOIN lessons_groups ON lessons_groups.lesson_id = lessons.id WHERE group_id = ?;";
+	private static final String GET_LESSONS_BY_GROUP_ID_AND_DATE_QUERY = "SELECT * FROM lessons "
+			+ "JOIN lessons_groups ON lessons_groups.lesson_id = lessons.id WHERE group_id = ? AND date = ?;";
 	private static final String GET_LESSONS_BY_TIMEFRAME_ID_QUERY = "SELECT * FROM lessons WHERE timeframe_id = ?";
 	private static final String GET_LESSONS_BY_COURSE_ID_QUERY = "SELECT * FROM lessons WHERE course_id = ?";
-	private static final String GET_LESSONS_BY_TEACHER_ID_QUERY = "SELECT * FROM lessons WHERE teacher_id = ?";
-	private static final String GET_LESSONS_BY_ROOM_ID_QUERY = "SELECT * FROM lessons WHERE room_id = ?";
+	private static final String GET_LESSONS_BY_TEACHER_ID_AND_DATE_QUERY = "SELECT * FROM lessons WHERE teacher_id = ? AND date = ?";
+	private static final String GET_LESSONS_BY_ROOM_ID_AND_DATE_QUERY = "SELECT * FROM lessons WHERE room_id = ? AND date = ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcGroupDao groupDao;
@@ -117,8 +117,8 @@ public class JdbcLessonDao implements LessonDao {
 	}
 
 	@Override
-	public List<Lesson> getLessonsByGroupId(Long groupId) {
-		return jdbcTemplate.query(GET_LESSONS_BY_GROUP_ID_QUERY, new Object[] { groupId }, lessonMapper);
+	public List<Lesson> getLessonsByGroupIdAndDate(Long groupId, LocalDate date) {
+		return jdbcTemplate.query(GET_LESSONS_BY_GROUP_ID_AND_DATE_QUERY, new Object[] { groupId, date }, lessonMapper);
 	}
 
 	@Override
@@ -153,32 +153,37 @@ public class JdbcLessonDao implements LessonDao {
 	}
 
 	@Override
-	public List<Lesson> getLessonsByTeacher(Teacher teacher) {
-		return jdbcTemplate.query(GET_LESSONS_BY_TEACHER_ID_QUERY, new Object[] { teacher.getId() }, (rs, rowNum) -> {
-			Lesson lesson = new Lesson();
-			lesson.setId(rs.getLong(LESSON_ID));
-			lesson.setDate(rs.getObject(LESSON_DATE, LocalDate.class));
-			lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)));
-			lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
-			lesson.setTeacher(teacher);
-			lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)));
-			lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
-			return lesson;
-		});
+	public List<Lesson> getLessonsByTeacherAndDate(Teacher teacher, LocalDate date) {
+		return jdbcTemplate
+				.query(GET_LESSONS_BY_TEACHER_ID_AND_DATE_QUERY,
+						new Object[] { teacher.getId(), date },
+						(rs, rowNum) -> {
+							Lesson lesson = new Lesson();
+							lesson.setId(rs.getLong(LESSON_ID));
+							lesson.setDate(rs.getObject(LESSON_DATE, LocalDate.class));
+							lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)));
+							lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
+							lesson.setTeacher(teacher);
+							lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)));
+							lesson.setGroups(
+									groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
+							return lesson;
+						});
 	}
 
 	@Override
-	public List<Lesson> getLessonsByRoom(Room room) {
-		return jdbcTemplate.query(GET_LESSONS_BY_ROOM_ID_QUERY, new Object[] { room.getId() }, (rs, rowNum) -> {
-			Lesson lesson = new Lesson();
-			lesson.setId(rs.getLong(LESSON_ID));
-			lesson.setDate(rs.getObject(LESSON_DATE, LocalDate.class));
-			lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)));
-			lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
-			lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)));
-			lesson.setRoom(room);
-			lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
-			return lesson;
-		});
+	public List<Lesson> getLessonsByRoomAndDate(Room room, LocalDate date) {
+		return jdbcTemplate
+				.query(GET_LESSONS_BY_ROOM_ID_AND_DATE_QUERY, new Object[] { room.getId(), date }, (rs, rowNum) -> {
+					Lesson lesson = new Lesson();
+					lesson.setId(rs.getLong(LESSON_ID));
+					lesson.setDate(rs.getObject(LESSON_DATE, LocalDate.class));
+					lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)));
+					lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
+					lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)));
+					lesson.setRoom(room);
+					lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
+					return lesson;
+				});
 	}
 }

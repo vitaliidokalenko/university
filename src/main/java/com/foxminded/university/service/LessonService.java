@@ -70,25 +70,22 @@ public class LessonService {
 	}
 
 	private boolean isTeacherAvailable(Lesson lesson) {
-		return lessonDao.getLessonsByTeacher(lesson.getTeacher())
+		return lessonDao.getLessonsByTeacherAndDate(lesson.getTeacher(), lesson.getDate())
 				.stream()
-				.filter(l -> l.getDate().isEqual(lesson.getDate()))
 				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
 	}
 
 	private boolean isRoomAvailable(Lesson lesson) {
-		return lessonDao.getLessonsByRoom(lesson.getRoom())
+		return lessonDao.getLessonsByRoomAndDate(lesson.getRoom(), lesson.getDate())
 				.stream()
-				.filter(l -> l.getDate().isEqual(lesson.getDate()))
 				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
 	}
 
 	private boolean isGroupAvailable(Lesson lesson) {
 		return lesson.getGroups()
 				.stream()
-				.map(g -> lessonDao.getLessonsByGroupId(g.getId()))
+				.map(g -> lessonDao.getLessonsByGroupIdAndDate(g.getId(), lesson.getDate()))
 				.flatMap(Collection::stream)
-				.filter(l -> l.getDate().isEqual(lesson.getDate()))
 				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
 	}
 
@@ -101,18 +98,16 @@ public class LessonService {
 				<= lesson.getRoom().getCapacity();
 	}
 
-	private boolean isTeacherCourseCompatible(Lesson lesson) {
+	public boolean isTeacherCourseCompatible(Lesson lesson) {
 		return lesson.getTeacher()
 				.getCourses()
-				.stream()
-				.anyMatch(lesson.getCourse()::equals);
+				.contains(lesson.getCourse());
 	}
 
 	private boolean isCourseRoomCompatible(Lesson lesson) {
 		return lesson.getCourse()
 				.getRooms()
-				.stream()
-				.anyMatch(lesson.getRoom()::equals);
+				.contains(lesson.getRoom());
 	}
 
 	private boolean isPresentById(Long id) {
