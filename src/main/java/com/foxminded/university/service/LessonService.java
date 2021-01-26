@@ -98,8 +98,8 @@ public class LessonService {
 		return lesson.getGroups()
 				.stream()
 				.map(studentDao::getStudentsByGroup)
-				.flatMap(Collection::stream)
-				.count()
+				.mapToInt(Collection::size)
+				.sum()
 				<= lesson.getRoom().getCapacity();
 	}
 
