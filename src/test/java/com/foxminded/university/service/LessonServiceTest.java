@@ -1,7 +1,6 @@
 package com.foxminded.university.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -139,9 +138,9 @@ public class LessonServiceTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
 		Lesson expected = buildLesson();
-		when(lessonDao.findById(anyLong())).thenReturn(expected);
+		when(lessonDao.findById(1L)).thenReturn(expected);
 
-		Lesson actual = lessonService.findById(anyLong());
+		Lesson actual = lessonService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
