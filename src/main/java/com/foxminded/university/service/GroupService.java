@@ -3,7 +3,6 @@ package com.foxminded.university.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +29,10 @@ public class GroupService {
 	}
 
 	@Transactional
-	public Group findById(Long id) {
-		Group group = groupDao.findById(id);
+	public Optional<Group> findById(Long id) {
+		Group group = groupDao.findById(id).get();
 		group.setStudents(studentDao.getStudentsByGroup(group));
-		return group;
+		return Optional.of(group);
 	}
 
 	@Transactional
@@ -61,10 +60,6 @@ public class GroupService {
 	}
 
 	private boolean isPresentById(Long id) {
-		try {
-			return Optional.of(groupDao.findById(id)).isPresent();
-		} catch (EmptyResultDataAccessException exeption) {
-			return false;
-		}
+		return groupDao.findById(id).isPresent();
 	}
 }

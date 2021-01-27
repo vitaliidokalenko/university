@@ -11,7 +11,9 @@ import static java.util.stream.Collectors.toSet;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -83,8 +85,13 @@ public class JdbcLessonDao implements LessonDao {
 	}
 
 	@Override
-	public Lesson findById(Long lessonId) {
-		return jdbcTemplate.queryForObject(FIND_LESSON_BY_ID_QUERY, new Object[] { lessonId }, lessonMapper);
+	public Optional<Lesson> findById(Long lessonId) {
+		try {
+			return Optional
+					.of(jdbcTemplate.queryForObject(FIND_LESSON_BY_ID_QUERY, new Object[] { lessonId }, lessonMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override
@@ -129,9 +136,9 @@ public class JdbcLessonDao implements LessonDao {
 					lesson.setId(rs.getLong(LESSON_ID));
 					lesson.setDate(rs.getObject(LESSON_DATE, LocalDate.class));
 					lesson.setTimeframe(timeframe);
-					lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
-					lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)));
-					lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)));
+					lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)).orElse(null));
+					lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)).orElse(null));
+					lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)).orElse(null));
 					lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 					return lesson;
 				});
@@ -143,10 +150,10 @@ public class JdbcLessonDao implements LessonDao {
 			Lesson lesson = new Lesson();
 			lesson.setId(rs.getLong(LESSON_ID));
 			lesson.setDate(rs.getObject(LESSON_DATE, LocalDate.class));
-			lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)));
+			lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)).orElse(null));
 			lesson.setCourse(course);
-			lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)));
-			lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)));
+			lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)).orElse(null));
+			lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)).orElse(null));
 			lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 			return lesson;
 		});
@@ -161,10 +168,10 @@ public class JdbcLessonDao implements LessonDao {
 							Lesson lesson = new Lesson();
 							lesson.setId(rs.getLong(LESSON_ID));
 							lesson.setDate(rs.getObject(LESSON_DATE, LocalDate.class));
-							lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)));
-							lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
+							lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)).orElse(null));
+							lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)).orElse(null));
 							lesson.setTeacher(teacher);
-							lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)));
+							lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)).orElse(null));
 							lesson.setGroups(
 									groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 							return lesson;
@@ -178,9 +185,9 @@ public class JdbcLessonDao implements LessonDao {
 					Lesson lesson = new Lesson();
 					lesson.setId(rs.getLong(LESSON_ID));
 					lesson.setDate(rs.getObject(LESSON_DATE, LocalDate.class));
-					lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)));
-					lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
-					lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)));
+					lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)).orElse(null));
+					lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)).orElse(null));
+					lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)).orElse(null));
 					lesson.setRoom(room);
 					lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 					return lesson;

@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +34,7 @@ public class LessonService {
 	}
 
 	@Transactional
-	public Lesson findById(Long id) {
+	public Optional<Lesson> findById(Long id) {
 		return lessonDao.findById(id);
 	}
 
@@ -121,10 +120,6 @@ public class LessonService {
 	}
 
 	private boolean isPresentById(Long id) {
-		try {
-			return Optional.of(lessonDao.findById(id)).isPresent();
-		} catch (EmptyResultDataAccessException exeption) {
-			return false;
-		}
+		return lessonDao.findById(id).isPresent();
 	}
 }

@@ -6,7 +6,9 @@ import static java.sql.Types.TIME;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -49,8 +51,13 @@ public class JdbcTimeframeDao implements TimeframeDao {
 	}
 
 	@Override
-	public Timeframe findById(Long timeframeId) {
-		return jdbcTemplate.queryForObject(FIND_TIMEFRAME_BY_ID_QUERY, new Object[] { timeframeId }, timeframeMapper);
+	public Optional<Timeframe> findById(Long timeframeId) {
+		try {
+			return Optional.of(jdbcTemplate
+					.queryForObject(FIND_TIMEFRAME_BY_ID_QUERY, new Object[] { timeframeId }, timeframeMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override

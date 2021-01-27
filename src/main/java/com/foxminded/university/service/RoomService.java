@@ -3,7 +3,6 @@ package com.foxminded.university.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,7 @@ public class RoomService {
 	}
 
 	@Transactional
-	public Room findById(Long id) {
+	public Optional<Room> findById(Long id) {
 		return roomDao.findById(id);
 	}
 
@@ -57,10 +56,6 @@ public class RoomService {
 	}
 
 	private boolean isPresentById(Long id) {
-		try {
-			return Optional.of(roomDao.findById(id)).isPresent();
-		} catch (EmptyResultDataAccessException exeption) {
-			return false;
-		}
+		return roomDao.findById(id).isPresent();
 	}
 }

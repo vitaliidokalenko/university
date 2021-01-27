@@ -7,13 +7,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
@@ -65,12 +65,12 @@ public class GroupServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
-		Group expected = buildGroup();
+		Optional<Group> expected = Optional.of(buildGroup());
 		List<Student> students = Arrays.asList(new Student("Avraam", "Melburn"), new Student("Homer", "Mahony"));
 		when(groupDao.findById(1L)).thenReturn(expected);
-		when(studentDao.getStudentsByGroup(expected)).thenReturn(students);
+		when(studentDao.getStudentsByGroup(expected.get())).thenReturn(students);
 
-		Group actual = groupService.findById(1L);
+		Optional<Group> actual = groupService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
@@ -97,7 +97,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenGroupIsDeleting() {
-		when(groupDao.findById(1L)).thenReturn(buildGroup());
+		when(groupDao.findById(1L)).thenReturn(Optional.of(buildGroup()));
 
 		groupService.deleteById(1L);
 
@@ -106,7 +106,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void givenEntityIsNotPresent_whenDeleteById_thenGroupIsNotDeleting() {
-		when(groupDao.findById(1L)).thenThrow(EmptyResultDataAccessException.class);
+		when(groupDao.findById(1L)).thenReturn(Optional.empty());
 
 		groupService.deleteById(1L);
 

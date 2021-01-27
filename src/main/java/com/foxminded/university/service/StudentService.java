@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +31,7 @@ public class StudentService {
 	}
 
 	@Transactional
-	public Student findById(Long id) {
+	public Optional<Student> findById(Long id) {
 		return studentDao.findById(id);
 	}
 
@@ -72,10 +71,6 @@ public class StudentService {
 	}
 
 	private boolean isPresentById(Long id) {
-		try {
-			return Optional.of(studentDao.findById(id)).isPresent();
-		} catch (EmptyResultDataAccessException exeption) {
-			return false;
-		}
+		return studentDao.findById(id).isPresent();
 	}
 }

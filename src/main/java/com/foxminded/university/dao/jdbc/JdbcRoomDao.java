@@ -4,7 +4,9 @@ import static com.foxminded.university.dao.jdbc.mapper.RoomMapper.ROOM_ID;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -46,8 +48,12 @@ public class JdbcRoomDao implements RoomDao {
 	}
 
 	@Override
-	public Room findById(Long roomId) {
-		return jdbcTemplate.queryForObject(FIND_ROOM_BY_ID_QUERY, new Object[] { roomId }, roomMapper);
+	public Optional<Room> findById(Long roomId) {
+		try {
+			return Optional.of(jdbcTemplate.queryForObject(FIND_ROOM_BY_ID_QUERY, new Object[] { roomId }, roomMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override

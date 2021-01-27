@@ -68,7 +68,7 @@ public class JdbcRoomDaoTest {
 		expected.setId(1L);
 		expected.setCapacity(30);
 
-		Room actual = roomDao.findById(1L);
+		Room actual = roomDao.findById(1L).orElse(null);
 
 		assertEquals(expected, actual);
 	}

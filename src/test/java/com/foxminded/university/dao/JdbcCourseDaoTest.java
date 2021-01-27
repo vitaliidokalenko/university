@@ -101,7 +101,7 @@ public class JdbcCourseDaoTest {
 		expected.setId(1L);
 		expected.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 
-		Course actual = courseDao.findById(1L);
+		Course actual = courseDao.findById(1L).orElse(null);
 
 		assertEquals(expected, actual);
 	}

@@ -4,7 +4,9 @@ import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_ID;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -63,8 +65,13 @@ public class JdbcTeacherDao implements TeacherDao {
 	}
 
 	@Override
-	public Teacher findById(Long teacherId) {
-		return jdbcTemplate.queryForObject(FIND_TEACHER_BY_ID_QUERY, new Object[] { teacherId }, teacherMapper);
+	public Optional<Teacher> findById(Long teacherId) {
+		try {
+			return Optional.of(
+					jdbcTemplate.queryForObject(FIND_TEACHER_BY_ID_QUERY, new Object[] { teacherId }, teacherMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override

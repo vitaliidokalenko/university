@@ -4,7 +4,9 @@ import static com.foxminded.university.dao.jdbc.mapper.CourseMapper.COURSE_ID;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -56,8 +58,14 @@ public class JdbcCourseDao implements CourseDao {
 	}
 
 	@Override
-	public Course findById(Long courseId) {
-		return jdbcTemplate.queryForObject(FIND_COURSE_BY_ID_QUERY, new Object[] { courseId }, courseMapper);
+	public Optional<Course> findById(Long courseId) {
+		try {
+			return Optional
+					.of(jdbcTemplate.queryForObject(FIND_COURSE_BY_ID_QUERY, new Object[] { courseId }, courseMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
+
 	}
 
 	@Override

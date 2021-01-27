@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
@@ -157,10 +157,10 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
-		Lesson expected = buildLesson();
+		Optional<Lesson> expected = Optional.of(buildLesson());
 		when(lessonDao.findById(1L)).thenReturn(expected);
 
-		Lesson actual = lessonService.findById(1L);
+		Optional<Lesson> actual = lessonService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
@@ -187,7 +187,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenLessonIsDeleting() {
-		when(lessonDao.findById(1L)).thenReturn(buildLesson());
+		when(lessonDao.findById(1L)).thenReturn(Optional.of(buildLesson()));
 
 		lessonService.deleteById(1L);
 
@@ -196,7 +196,7 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenEntityIsNotPresent_whenDeleteById_thenLessonIsNotDeleting() {
-		when(lessonDao.findById(1L)).thenThrow(EmptyResultDataAccessException.class);
+		when(lessonDao.findById(1L)).thenReturn(Optional.empty());
 
 		lessonService.deleteById(1L);
 

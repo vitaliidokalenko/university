@@ -228,7 +228,7 @@ public class JdbcLessonDaoTest {
 		expected.setTeacher(teacher);
 		expected.setRoom(room);
 
-		Lesson actual = lessonDao.findById(1L);
+		Lesson actual = lessonDao.findById(1L).orElse(null);
 
 		assertEquals(expected, actual);
 	}

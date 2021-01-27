@@ -46,10 +46,10 @@ public class LessonMapper implements RowMapper<Lesson> {
 		Lesson lesson = new Lesson();
 		lesson.setId(rs.getLong(LESSON_ID));
 		lesson.setDate(rs.getObject(LESSON_DATE, LocalDate.class));
-		lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)));
-		lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)));
-		lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)));
-		lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)));
+		lesson.setTimeframe(timeframeDao.findById(rs.getLong(TIMEFRAME_ID)).orElse(null));
+		lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)).orElse(null));
+		lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)).orElse(null));
+		lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)).orElse(null));
 		lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 		return lesson;
 	}

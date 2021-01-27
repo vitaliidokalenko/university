@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -76,8 +77,13 @@ public class JdbcStudentDao implements StudentDao {
 	}
 
 	@Override
-	public Student findById(Long studentId) {
-		return jdbcTemplate.queryForObject(FIND_STUDENT_BY_ID_QUERY, new Object[] { studentId }, studentMapper);
+	public Optional<Student> findById(Long studentId) {
+		try {
+			return Optional.of(
+					jdbcTemplate.queryForObject(FIND_STUDENT_BY_ID_QUERY, new Object[] { studentId }, studentMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override

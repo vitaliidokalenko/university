@@ -63,7 +63,7 @@ public class JdbcGroupDaoTest {
 		Group expected = new Group("AA-11");
 		expected.setId(1L);
 
-		Group actual = groupDao.findById(1L);
+		Group actual = groupDao.findById(1L).orElse(null);
 
 		assertEquals(expected, actual);
 	}

@@ -44,7 +44,7 @@ public class StudentMapper implements RowMapper<Student> {
 		student.setAddress(rs.getString(STUDENT_ADDRESS));
 		student.setBirthDate(rs.getObject(STUDENT_BIRTH_DATE, LocalDate.class));
 		student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
-		student.setGroup(groupDao.findById(rs.getLong(GROUP_ID)));
+		student.setGroup(groupDao.findById(rs.getLong(GROUP_ID)).orElse(null));
 		student.setCourses(courseDao.getCoursesByStudentId(rs.getLong(STUDENT_ID)).stream().collect(toSet()));
 		return student;
 	}

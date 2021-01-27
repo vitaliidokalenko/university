@@ -124,7 +124,7 @@ public class JdbcTeacherDaoTest {
 		expected.setGender(Gender.MALE);
 		expected.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 
-		Teacher actual = teacherDao.findById(1L);
+		Teacher actual = teacherDao.findById(1L).orElse(null);
 
 		assertEquals(expected, actual);
 	}

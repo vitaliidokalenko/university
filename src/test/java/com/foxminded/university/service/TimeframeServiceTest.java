@@ -8,13 +8,13 @@ import static org.mockito.Mockito.when;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
@@ -82,10 +82,10 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightData() {
-		Timeframe expected = buildTimeframe();
+		Optional<Timeframe> expected = Optional.of(buildTimeframe());
 		when(timeframeDao.findById(1L)).thenReturn(expected);
 
-		Timeframe actual = timeframeService.findById(1L);
+		Optional<Timeframe> actual = timeframeService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
@@ -111,7 +111,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenTimeframeIsDeleting() {
-		when(timeframeDao.findById(1L)).thenReturn(buildTimeframe());
+		when(timeframeDao.findById(1L)).thenReturn(Optional.of(buildTimeframe()));
 
 		timeframeService.deleteById(1L);
 
@@ -120,7 +120,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenEntityIsNotPresent_whenDeleteById_thenTimeframeIsNotDeleting() {
-		when(timeframeDao.findById(1L)).thenThrow(EmptyResultDataAccessException.class);
+		when(timeframeDao.findById(1L)).thenReturn(Optional.empty());
 
 		timeframeService.deleteById(1L);
 

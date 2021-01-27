@@ -4,7 +4,9 @@ import static com.foxminded.university.dao.jdbc.mapper.GroupMapper.GROUP_ID;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -45,11 +47,13 @@ public class JdbcGroupDao implements GroupDao {
 	}
 
 	@Override
-	public Group findById(Long groupId) {
-		if (groupId == 0) {
-			return null;
+	public Optional<Group> findById(Long groupId) {
+		try {
+			return Optional
+					.of(jdbcTemplate.queryForObject(FIND_GROUP_BY_ID_QUERY, new Object[] { groupId }, groupMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
 		}
-		return jdbcTemplate.queryForObject(FIND_GROUP_BY_ID_QUERY, new Object[] { groupId }, groupMapper);
 	}
 
 	@Override
