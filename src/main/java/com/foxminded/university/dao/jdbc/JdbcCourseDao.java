@@ -30,6 +30,7 @@ public class JdbcCourseDao implements CourseDao {
 	private static final String GET_COURSES_BY_ROOM_ID_QUERY = "SELECT * FROM courses JOIN courses_rooms ON courses_rooms.course_id = courses.id WHERE room_id = ?;";
 	private static final String GET_COURSES_BY_STUDENT_ID_QUERY = "SELECT * FROM courses JOIN students_courses ON students_courses.course_id = courses.id WHERE student_id = ?;";
 	private static final String GET_COURSES_BY_TEACHER_ID_QUERY = "SELECT * FROM courses JOIN teachers_courses ON teachers_courses.course_id = courses.id WHERE teacher_id = ?;";
+	private static final String FIND_COURSE_BY_NAME_QUERY = "SELECT * FROM courses WHERE name = ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcRoomDao roomDao;
@@ -104,5 +105,15 @@ public class JdbcCourseDao implements CourseDao {
 	@Override
 	public List<Course> getCoursesByTeacherId(Long teacherId) {
 		return jdbcTemplate.query(GET_COURSES_BY_TEACHER_ID_QUERY, new Object[] { teacherId }, courseMapper);
+	}
+
+	@Override
+	public Optional<Course> findByName(String name) {
+		try {
+			return Optional
+					.of(jdbcTemplate.queryForObject(FIND_COURSE_BY_NAME_QUERY, new Object[] { name }, courseMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 }

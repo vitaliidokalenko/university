@@ -220,4 +220,22 @@ public class JdbcCourseDaoTest {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	@Sql("/dataCourses.sql")
+	public void givenId_whenFindByName_thenGetRightCourse() {
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Course expected = new Course("Law");
+		expected.setId(1L);
+		expected.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
+
+		Course actual = courseDao.findByName("Law").orElse(null);
+
+		assertEquals(expected, actual);
+	}
 }

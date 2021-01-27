@@ -113,4 +113,16 @@ public class JdbcRoomDaoTest {
 
 		assertEquals(expected, actual);
 	}
+	
+	@Test
+	@Sql("/dataRooms.sql")
+	public void givenId_whenFindByName_thenGetRightRoom() {
+		Room expected = new Room("A111");
+		expected.setId(1L);
+		expected.setCapacity(30);
+
+		Room actual = roomDao.findByName("A111").orElse(null);
+
+		assertEquals(expected, actual);
+	}
 }

@@ -21,11 +21,12 @@ public class JdbcRoomDao implements RoomDao {
 
 	private static final String CREATE_ROOM_QUERY = "INSERT INTO rooms (name, capacity) VALUES (?, ?);";
 	private static final String DELETE_ROOM_BY_ID_QUERY = "DELETE FROM rooms WHERE id = ?;";
-	private static final String FIND_ROOM_BY_ID_QUERY = "SELECT * FROM rooms WHERE id = ?";
+	private static final String FIND_ROOM_BY_ID_QUERY = "SELECT * FROM rooms WHERE id = ?;";
 	private static final String GET_ROOMS_QUERY = "SELECT * FROM rooms;";
 	private static final String UPDATE_ROOM_QUERY = "UPDATE rooms SET name = ?, capacity = ? WHERE id = ?;";
 	private static final String GET_ROOMS_BY_COURSE_ID_QUERY = "SELECT * FROM rooms "
 			+ "JOIN courses_rooms ON courses_rooms.room_id = rooms.id WHERE course_id = ?;";
+	private static final String FIND_ROOM_BY_NAME_QUERY = "SELECT * FROM rooms WHERE name = ?;";
 
 	private JdbcTemplate jdbcTemplate;
 	private RoomMapper roomMapper;
@@ -74,5 +75,14 @@ public class JdbcRoomDao implements RoomDao {
 	@Override
 	public List<Room> getRoomsByCourseId(Long courseId) {
 		return jdbcTemplate.query(GET_ROOMS_BY_COURSE_ID_QUERY, new Object[] { courseId }, roomMapper);
+	}
+
+	@Override
+	public Optional<Room> findByName(String name) {
+		try {
+			return Optional.of(jdbcTemplate.queryForObject(FIND_ROOM_BY_NAME_QUERY, new Object[] { name }, roomMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 }
