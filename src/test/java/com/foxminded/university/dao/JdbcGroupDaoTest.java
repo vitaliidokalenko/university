@@ -105,4 +105,15 @@ public class JdbcGroupDaoTest {
 
 		assertEquals(expected, actual);
 	}
+
+	@Test
+	@Sql("/dataGroups.sql")
+	public void givenId_whenFindByName_thenGetRightGroup() {
+		Group expected = new Group("AA-11");
+		expected.setId(1L);
+
+		Group actual = groupDao.findByName("AA-11").orElse(null);
+
+		assertEquals(expected, actual);
+	}
 }
