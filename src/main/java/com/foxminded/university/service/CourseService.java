@@ -61,8 +61,11 @@ public class CourseService {
 	}
 
 	private boolean isNameUnique(Course course) {
-		return !courseDao.findByName(course.getName())
-				.filter(c -> !c.getId().equals(course.getId()))
-				.isPresent();
+		Optional<Course> courseByName = courseDao.findByName(course.getName());
+		if (courseByName.isPresent()) {
+			return courseByName.get().getId().equals(course.getId());
+		} else {
+			return true;
+		}
 	}
 }

@@ -61,8 +61,11 @@ public class RoomService {
 	}
 
 	private boolean isNameUnique(Room room) {
-		return !roomDao.findByName(room.getName())
-				.filter(r -> !r.getId().equals(room.getId()))
-				.isPresent();
+		Optional<Room> roomByName = roomDao.findByName(room.getName());
+		if (roomByName.isPresent()) {
+			return roomByName.get().getId().equals(room.getId());
+		} else {
+			return true;
+		}
 	}
 }

@@ -67,8 +67,11 @@ public class GroupService {
 	}
 
 	private boolean isNameUnique(Group group) {
-		return !groupDao.findByName(group.getName())
-				.filter(g -> !g.getId().equals(group.getId()))
-				.isPresent();
+		Optional<Group> groupByName = groupDao.findByName(group.getName());
+		if (groupByName.isPresent()) {
+			return groupByName.get().getId().equals(group.getId());
+		} else {
+			return true;
+		}
 	}
 }
