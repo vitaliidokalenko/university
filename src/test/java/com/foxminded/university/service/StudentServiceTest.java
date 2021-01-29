@@ -109,7 +109,7 @@ public class StudentServiceTest {
 	@Test
 	public void givenGroupSizeIsNotEnuogh_whenCreate_thenStudentIsNotCreating() {
 		Student student = buildStudent();
-		when(studentDao.getStudentsByGroup(student.getGroup()))
+		when(studentDao.getByGroup(student.getGroup()))
 				.thenReturn(Arrays.asList(new Student("Serhii", "Gerega"), new Student("Anatoly", "Soprano")));
 
 		studentService.create(student);

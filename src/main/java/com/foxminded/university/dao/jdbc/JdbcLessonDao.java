@@ -108,7 +108,7 @@ public class JdbcLessonDao implements LessonDao {
 				lesson.getTeacher().getId(),
 				lesson.getRoom().getId(),
 				lesson.getId());
-		List<Group> groups = groupDao.getGroupsByLessonId(lesson.getId());
+		List<Group> groups = groupDao.getByLessonId(lesson.getId());
 		groups.stream()
 				.filter(g -> !lesson.getGroups().contains(g))
 				.forEach(g -> jdbcTemplate.update(DELETE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
@@ -124,12 +124,12 @@ public class JdbcLessonDao implements LessonDao {
 	}
 
 	@Override
-	public List<Lesson> getLessonsByGroupIdAndDate(Long groupId, LocalDate date) {
+	public List<Lesson> getByGroupIdAndDate(Long groupId, LocalDate date) {
 		return jdbcTemplate.query(GET_LESSONS_BY_GROUP_ID_AND_DATE_QUERY, new Object[] { groupId, date }, lessonMapper);
 	}
 
 	@Override
-	public List<Lesson> getLessonsByTimeframe(Timeframe timeframe) {
+	public List<Lesson> getByTimeframe(Timeframe timeframe) {
 		return jdbcTemplate
 				.query(GET_LESSONS_BY_TIMEFRAME_ID_QUERY, new Object[] { timeframe.getId() }, (rs, rowNum) -> {
 					Lesson lesson = new Lesson();
@@ -139,13 +139,13 @@ public class JdbcLessonDao implements LessonDao {
 					lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)).orElse(null));
 					lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)).orElse(null));
 					lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)).orElse(null));
-					lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
+					lesson.setGroups(groupDao.getByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 					return lesson;
 				});
 	}
 
 	@Override
-	public List<Lesson> getLessonsByCourse(Course course) {
+	public List<Lesson> getByCourse(Course course) {
 		return jdbcTemplate.query(GET_LESSONS_BY_COURSE_ID_QUERY, new Object[] { course.getId() }, (rs, rowNum) -> {
 			Lesson lesson = new Lesson();
 			lesson.setId(rs.getLong(LESSON_ID));
@@ -154,13 +154,13 @@ public class JdbcLessonDao implements LessonDao {
 			lesson.setCourse(course);
 			lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)).orElse(null));
 			lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)).orElse(null));
-			lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
+			lesson.setGroups(groupDao.getByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 			return lesson;
 		});
 	}
 
 	@Override
-	public List<Lesson> getLessonsByTeacherAndDate(Teacher teacher, LocalDate date) {
+	public List<Lesson> getByTeacherAndDate(Teacher teacher, LocalDate date) {
 		return jdbcTemplate
 				.query(GET_LESSONS_BY_TEACHER_ID_AND_DATE_QUERY,
 						new Object[] { teacher.getId(), date },
@@ -173,13 +173,13 @@ public class JdbcLessonDao implements LessonDao {
 							lesson.setTeacher(teacher);
 							lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)).orElse(null));
 							lesson.setGroups(
-									groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
+									groupDao.getByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 							return lesson;
 						});
 	}
 
 	@Override
-	public List<Lesson> getLessonsByRoomAndDate(Room room, LocalDate date) {
+	public List<Lesson> getByRoomAndDate(Room room, LocalDate date) {
 		return jdbcTemplate
 				.query(GET_LESSONS_BY_ROOM_ID_AND_DATE_QUERY, new Object[] { room.getId(), date }, (rs, rowNum) -> {
 					Lesson lesson = new Lesson();
@@ -189,7 +189,7 @@ public class JdbcLessonDao implements LessonDao {
 					lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)).orElse(null));
 					lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)).orElse(null));
 					lesson.setRoom(room);
-					lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
+					lesson.setGroups(groupDao.getByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 					return lesson;
 				});
 	}

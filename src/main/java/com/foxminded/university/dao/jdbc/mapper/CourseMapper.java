@@ -29,7 +29,7 @@ public class CourseMapper implements RowMapper<Course> {
 		Course course = new Course(rs.getString(COURSE_NAME));
 		course.setId(rs.getLong(COURSE_ID));
 		course.setDescription(rs.getString(COURSE_DESCRIPTION));
-		course.setRooms(roomDao.getRoomsByCourseId(rs.getLong(COURSE_ID)).stream().collect(toSet()));
+		course.setRooms(roomDao.getByCourseId(rs.getLong(COURSE_ID)).stream().collect(toSet()));
 		return course;
 	}
 }

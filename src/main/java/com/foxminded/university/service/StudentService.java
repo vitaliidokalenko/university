@@ -64,7 +64,7 @@ public class StudentService {
 	}
 
 	private boolean isGroupSizeEnough(Student student) {
-		return studentDao.getStudentsByGroup(student.getGroup())
+		return studentDao.getByGroup(student.getGroup())
 				.stream()
 				.count()
 				< groupSize;

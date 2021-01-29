@@ -73,7 +73,7 @@ public class JdbcGroupDao implements GroupDao {
 	}
 
 	@Override
-	public List<Group> getGroupsByLessonId(Long lessonId) {
+	public List<Group> getByLessonId(Long lessonId) {
 		return jdbcTemplate.query(GET_GROUPS_BY_LESSON_ID_QUERY, new Object[] { lessonId }, groupMapper);
 	}
 

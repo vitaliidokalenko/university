@@ -31,7 +31,7 @@ public class GroupService {
 	@Transactional
 	public Optional<Group> findById(Long id) {
 		Group group = groupDao.findById(id).get();
-		group.setStudents(studentDao.getStudentsByGroup(group));
+		group.setStudents(studentDao.getByGroup(group));
 		return Optional.of(group);
 	}
 

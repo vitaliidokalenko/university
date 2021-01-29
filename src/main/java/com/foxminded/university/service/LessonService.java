@@ -74,13 +74,13 @@ public class LessonService {
 	}
 
 	private boolean isTeacherAvailable(Lesson lesson) {
-		return lessonDao.getLessonsByTeacherAndDate(lesson.getTeacher(), lesson.getDate())
+		return lessonDao.getByTeacherAndDate(lesson.getTeacher(), lesson.getDate())
 				.stream()
 				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
 	}
 
 	private boolean isRoomAvailable(Lesson lesson) {
-		return lessonDao.getLessonsByRoomAndDate(lesson.getRoom(), lesson.getDate())
+		return lessonDao.getByRoomAndDate(lesson.getRoom(), lesson.getDate())
 				.stream()
 				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
 	}
@@ -88,7 +88,7 @@ public class LessonService {
 	private boolean isGroupAvailable(Lesson lesson) {
 		return lesson.getGroups()
 				.stream()
-				.map(g -> lessonDao.getLessonsByGroupIdAndDate(g.getId(), lesson.getDate()))
+				.map(g -> lessonDao.getByGroupIdAndDate(g.getId(), lesson.getDate()))
 				.flatMap(Collection::stream)
 				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
 	}
@@ -96,7 +96,7 @@ public class LessonService {
 	private boolean isRoomCapacityCompatible(Lesson lesson) {
 		return lesson.getGroups()
 				.stream()
-				.map(studentDao::getStudentsByGroup)
+				.map(studentDao::getByGroup)
 				.mapToInt(Collection::size)
 				.sum()
 				<= lesson.getRoom().getCapacity();

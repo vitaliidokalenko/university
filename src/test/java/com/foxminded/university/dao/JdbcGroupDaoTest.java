@@ -101,7 +101,7 @@ public class JdbcGroupDaoTest {
 		group2.setId(2L);
 		List<Group> expected = Arrays.asList(group1, group2);
 
-		List<Group> actual = groupDao.getGroupsByLessonId(1L);
+		List<Group> actual = groupDao.getByLessonId(1L);
 
 		assertEquals(expected, actual);
 	}

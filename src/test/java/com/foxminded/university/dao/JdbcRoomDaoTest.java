@@ -109,7 +109,7 @@ public class JdbcRoomDaoTest {
 		room2.setCapacity(30);
 		List<Room> expected = Arrays.asList(room1, room2);
 
-		List<Room> actual = roomDao.getRoomsByCourseId(1L);
+		List<Room> actual = roomDao.getByCourseId(1L);
 
 		assertEquals(expected, actual);
 	}

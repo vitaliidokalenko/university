@@ -91,7 +91,7 @@ public class JdbcTeacherDao implements TeacherDao {
 				teacher.getBirthDate(),
 				teacher.getGender().toString(),
 				teacher.getId());
-		List<Course> courses = courseDao.getCoursesByTeacherId(teacher.getId());
+		List<Course> courses = courseDao.getByTeacherId(teacher.getId());
 		courses.stream()
 				.filter(c -> !teacher.getCourses().contains(c))
 				.forEach(c -> jdbcTemplate.update(DELETE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
@@ -107,7 +107,7 @@ public class JdbcTeacherDao implements TeacherDao {
 	}
 
 	@Override
-	public List<Teacher> getTeachersByCourseId(Long courseId) {
+	public List<Teacher> getByCourseId(Long courseId) {
 		return jdbcTemplate.query(GET_TEACHERS_BY_COURSE_ID_QUERY, new Object[] { courseId }, teacherMapper);
 	}
 }

@@ -57,7 +57,7 @@ public class LessonServiceTest {
 	public void givenTeacherIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
 		Lesson lessonByTeacher = buildLesson();
 		Lesson actualLesson = buildLesson();
-		when(lessonDao.getLessonsByTeacherAndDate(actualLesson.getTeacher(), LocalDate.parse("2021-01-21")))
+		when(lessonDao.getByTeacherAndDate(actualLesson.getTeacher(), LocalDate.parse("2021-01-21")))
 				.thenReturn(Arrays.asList(lessonByTeacher));
 
 		lessonService.create(actualLesson);
@@ -69,7 +69,7 @@ public class LessonServiceTest {
 	public void givenRoomIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
 		Lesson lessonByRoom = buildLesson();
 		Lesson actualLesson = buildLesson();
-		when(lessonDao.getLessonsByRoomAndDate(actualLesson.getRoom(), LocalDate.parse("2021-01-21")))
+		when(lessonDao.getByRoomAndDate(actualLesson.getRoom(), LocalDate.parse("2021-01-21")))
 				.thenReturn(Arrays.asList(lessonByRoom));
 
 		lessonService.create(actualLesson);
@@ -81,7 +81,7 @@ public class LessonServiceTest {
 	public void givenGroupIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
 		Lesson lessonByGroup = buildLesson();
 		Lesson actualLesson = buildLesson();
-		when(lessonDao.getLessonsByGroupIdAndDate(1L, LocalDate.parse("2021-01-21")))
+		when(lessonDao.getByGroupIdAndDate(1L, LocalDate.parse("2021-01-21")))
 				.thenReturn(Arrays.asList(lessonByGroup));
 
 		lessonService.create(actualLesson);
@@ -92,7 +92,7 @@ public class LessonServiceTest {
 	@Test
 	public void givenRoomCapacityIsNotCompatible_whenCreate_thenLessonIsNotCreating() {
 		Lesson lesson = buildLesson();
-		when(studentDao.getStudentsByGroup(Mockito.any(Group.class)))
+		when(studentDao.getByGroup(Mockito.any(Group.class)))
 				.thenReturn(Arrays.asList(new Student("Anna", "Maria"),
 						new Student("Anatoly", "Deineka"),
 						new Student("Alina", "Linkoln"),
@@ -106,7 +106,7 @@ public class LessonServiceTest {
 	@Test
 	public void givenRoomCapacityIsCompatible_whenCreate_thenLessonIsCreating() {
 		Lesson lesson = buildLesson();
-		when(studentDao.getStudentsByGroup(Mockito.any(Group.class)))
+		when(studentDao.getByGroup(Mockito.any(Group.class)))
 				.thenReturn(Arrays.asList(new Student("Anna", "Maria"),
 						new Student("Anatoly", "Deineka")));
 

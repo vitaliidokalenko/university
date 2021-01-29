@@ -42,7 +42,7 @@ public class TeacherMapper implements RowMapper<Teacher> {
 		teacher.setAddress(rs.getString(TEACHER_ADDRESS));
 		teacher.setBirthDate(rs.getObject(TEACHER_BIRTH_DATE, LocalDate.class));
 		teacher.setGender(Gender.valueOf(rs.getString(TEACHER_GENDER)));
-		teacher.setCourses(courseDao.getCoursesByTeacherId(rs.getLong(TEACHER_ID)).stream().collect(toSet()));
+		teacher.setCourses(courseDao.getByTeacherId(rs.getLong(TEACHER_ID)).stream().collect(toSet()));
 		return teacher;
 	}
 }

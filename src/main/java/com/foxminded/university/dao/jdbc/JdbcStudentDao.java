@@ -103,7 +103,7 @@ public class JdbcStudentDao implements StudentDao {
 				student.getBirthDate(),
 				student.getGender().toString(),
 				student.getId());
-		List<Course> courses = courseDao.getCoursesByStudentId(student.getId());
+		List<Course> courses = courseDao.getByStudentId(student.getId());
 		courses.stream()
 				.filter(c -> !student.getCourses().contains(c))
 				.forEach(c -> jdbcTemplate.update(DELETE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
@@ -119,7 +119,7 @@ public class JdbcStudentDao implements StudentDao {
 	}
 
 	@Override
-	public List<Student> getStudentsByGroup(Group group) {
+	public List<Student> getByGroup(Group group) {
 		return jdbcTemplate.query(GET_STUDENTS_BY_GROUP_ID_QUERY, new Object[] { group.getId() }, (rs, rowNum) -> {
 			Student student = new Student(rs.getString(STUDENT_NAME), rs.getString(STUDENT_SURNAME));
 			student.setId(rs.getLong(STUDENT_ID));
@@ -129,13 +129,13 @@ public class JdbcStudentDao implements StudentDao {
 			student.setBirthDate(rs.getObject(STUDENT_BIRTH_DATE, LocalDate.class));
 			student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
 			student.setGroup(group);
-			student.setCourses(courseDao.getCoursesByStudentId(rs.getLong(STUDENT_ID)).stream().collect(toSet()));
+			student.setCourses(courseDao.getByStudentId(rs.getLong(STUDENT_ID)).stream().collect(toSet()));
 			return student;
 		});
 	}
 
 	@Override
-	public List<Student> getStudentsByCourseId(Long courseId) {
+	public List<Student> getByCourseId(Long courseId) {
 		return jdbcTemplate.query(GET_STUDENTS_BY_COURSE_ID_QUERY, new Object[] { courseId }, studentMapper);
 	}
 }

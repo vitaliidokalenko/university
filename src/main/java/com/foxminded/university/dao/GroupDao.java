@@ -7,7 +7,7 @@ import com.foxminded.university.model.Group;
 
 public interface GroupDao extends GenericDao<Group> {
 
-	public List<Group> getGroupsByLessonId(Long lessonId);
+	public List<Group> getByLessonId(Long lessonId);
 
 	Optional<Group> findByName(String name);
 }

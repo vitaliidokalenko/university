@@ -375,7 +375,7 @@ public class JdbcLessonDaoTest {
 		lesson2.setGroups(groups);
 		List<Lesson> expected = Arrays.asList(lesson1, lesson2);
 
-		List<Lesson> actual = lessonDao.getLessonsByGroupIdAndDate(2L, LocalDate.parse("2020-12-12"));
+		List<Lesson> actual = lessonDao.getByGroupIdAndDate(2L, LocalDate.parse("2020-12-12"));
 
 		assertEquals(expected, actual);
 	}
@@ -415,7 +415,7 @@ public class JdbcLessonDaoTest {
 		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		List<Lesson> expected = Arrays.asList(lesson);
 
-		List<Lesson> actual = lessonDao.getLessonsByTimeframe(timeframe);
+		List<Lesson> actual = lessonDao.getByTimeframe(timeframe);
 
 		assertEquals(expected, actual);
 	}
@@ -451,7 +451,7 @@ public class JdbcLessonDaoTest {
 		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		List<Lesson> expected = Arrays.asList(lesson);
 
-		List<Lesson> actual = lessonDao.getLessonsByCourse(course);
+		List<Lesson> actual = lessonDao.getByCourse(course);
 
 		assertEquals(expected, actual);
 	}
@@ -494,7 +494,7 @@ public class JdbcLessonDaoTest {
 		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		List<Lesson> expected = Arrays.asList(lesson);
 
-		List<Lesson> actual = lessonDao.getLessonsByTeacherAndDate(teacher, LocalDate.parse("2020-12-12"));
+		List<Lesson> actual = lessonDao.getByTeacherAndDate(teacher, LocalDate.parse("2020-12-12"));
 
 		assertEquals(expected, actual);
 	}
@@ -534,7 +534,7 @@ public class JdbcLessonDaoTest {
 		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		List<Lesson> expected = Arrays.asList(lesson);
 
-		List<Lesson> actual = lessonDao.getLessonsByRoomAndDate(room1, LocalDate.parse("2020-12-12"));
+		List<Lesson> actual = lessonDao.getByRoomAndDate(room1, LocalDate.parse("2020-12-12"));
 
 		assertEquals(expected, actual);
 	}

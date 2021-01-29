@@ -166,7 +166,7 @@ public class JdbcCourseDaoTest {
 		course2.setRooms(new HashSet<>(Arrays.asList(room2, room3)));
 		List<Course> expected = Arrays.asList(course1, course2);
 
-		List<Course> actual = courseDao.getCoursesByRoomId(2L);
+		List<Course> actual = courseDao.getByRoomId(2L);
 
 		assertEquals(expected, actual);
 	}
@@ -191,7 +191,7 @@ public class JdbcCourseDaoTest {
 		course2.setRooms(new HashSet<>(Arrays.asList(room2, room3)));
 		List<Course> expected = Arrays.asList(course1, course2);
 
-		List<Course> actual = courseDao.getCoursesByStudentId(1L);
+		List<Course> actual = courseDao.getByStudentId(1L);
 
 		assertEquals(expected, actual);
 	}
@@ -216,7 +216,7 @@ public class JdbcCourseDaoTest {
 		course2.setRooms(new HashSet<>(Arrays.asList(room2, room3)));
 		List<Course> expected = Arrays.asList(course1, course2);
 
-		List<Course> actual = courseDao.getCoursesByTeacherId(1L);
+		List<Course> actual = courseDao.getByTeacherId(1L);
 
 		assertEquals(expected, actual);
 	}

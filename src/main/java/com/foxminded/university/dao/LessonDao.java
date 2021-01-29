@@ -11,13 +11,13 @@ import com.foxminded.university.model.Timeframe;
 
 public interface LessonDao extends GenericDao<Lesson> {
 
-	public List<Lesson> getLessonsByGroupIdAndDate(Long groupId, LocalDate date);
+	public List<Lesson> getByGroupIdAndDate(Long groupId, LocalDate date);
 
-	public List<Lesson> getLessonsByTimeframe(Timeframe timeframe);
+	public List<Lesson> getByTimeframe(Timeframe timeframe);
 
-	public List<Lesson> getLessonsByCourse(Course course);
+	public List<Lesson> getByCourse(Course course);
 
-	public List<Lesson> getLessonsByTeacherAndDate(Teacher teacher, LocalDate date);
+	public List<Lesson> getByTeacherAndDate(Teacher teacher, LocalDate date);
 
-	public List<Lesson> getLessonsByRoomAndDate(Room room, LocalDate date);
+	public List<Lesson> getByRoomAndDate(Room room, LocalDate date);
 }

@@ -73,7 +73,7 @@ public class JdbcRoomDao implements RoomDao {
 	}
 
 	@Override
-	public List<Room> getRoomsByCourseId(Long courseId) {
+	public List<Room> getByCourseId(Long courseId) {
 		return jdbcTemplate.query(GET_ROOMS_BY_COURSE_ID_QUERY, new Object[] { courseId }, roomMapper);
 	}
 

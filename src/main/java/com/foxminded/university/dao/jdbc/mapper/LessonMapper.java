@@ -50,7 +50,7 @@ public class LessonMapper implements RowMapper<Lesson> {
 		lesson.setCourse(courseDao.findById(rs.getLong(COURSE_ID)).orElse(null));
 		lesson.setTeacher(teacherDao.findById(rs.getLong(TEACHER_ID)).orElse(null));
 		lesson.setRoom(roomDao.findById(rs.getLong(ROOM_ID)).orElse(null));
-		lesson.setGroups(groupDao.getGroupsByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
+		lesson.setGroups(groupDao.getByLessonId(rs.getLong(LESSON_ID)).stream().collect(toSet()));
 		return lesson;
 	}
 }

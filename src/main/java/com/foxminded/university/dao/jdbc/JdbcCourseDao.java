@@ -77,7 +77,7 @@ public class JdbcCourseDao implements CourseDao {
 	@Override
 	public void update(Course course) {
 		jdbcTemplate.update(UPDATE_COURSE_QUERY, course.getName(), course.getDescription(), course.getId());
-		List<Room> rooms = roomDao.getRoomsByCourseId(course.getId());
+		List<Room> rooms = roomDao.getByCourseId(course.getId());
 		rooms.stream()
 				.filter(r -> !course.getRooms().contains(r))
 				.forEach(r -> jdbcTemplate.update(DELETE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
@@ -93,17 +93,17 @@ public class JdbcCourseDao implements CourseDao {
 	}
 
 	@Override
-	public List<Course> getCoursesByRoomId(Long roomId) {
+	public List<Course> getByRoomId(Long roomId) {
 		return jdbcTemplate.query(GET_COURSES_BY_ROOM_ID_QUERY, new Object[] { roomId }, courseMapper);
 	}
 
 	@Override
-	public List<Course> getCoursesByStudentId(Long studentId) {
+	public List<Course> getByStudentId(Long studentId) {
 		return jdbcTemplate.query(GET_COURSES_BY_STUDENT_ID_QUERY, new Object[] { studentId }, courseMapper);
 	}
 
 	@Override
-	public List<Course> getCoursesByTeacherId(Long teacherId) {
+	public List<Course> getByTeacherId(Long teacherId) {
 		return jdbcTemplate.query(GET_COURSES_BY_TEACHER_ID_QUERY, new Object[] { teacherId }, courseMapper);
 	}
 

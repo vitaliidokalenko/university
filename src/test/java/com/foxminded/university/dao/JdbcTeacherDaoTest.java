@@ -196,7 +196,7 @@ public class JdbcTeacherDaoTest {
 		teacher2.setCourses(new HashSet<>(Arrays.asList(course2, course3)));
 		List<Teacher> expected = Arrays.asList(teacher1, teacher2);
 
-		List<Teacher> actual = teacherDao.getTeachersByCourseId(2L);
+		List<Teacher> actual = teacherDao.getByCourseId(2L);
 
 		assertEquals(expected, actual);
 	}

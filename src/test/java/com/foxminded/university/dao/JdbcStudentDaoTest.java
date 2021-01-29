@@ -225,7 +225,7 @@ public class JdbcStudentDaoTest {
 		student.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 		List<Student> expected = Arrays.asList(student);
 
-		List<Student> actual = studentDao.getStudentsByGroup(group);
+		List<Student> actual = studentDao.getByGroup(group);
 
 		assertEquals(expected, actual);
 	}
@@ -257,7 +257,7 @@ public class JdbcStudentDaoTest {
 		student2.setCourses(new HashSet<>(Arrays.asList(course2, course3)));
 		List<Student> expected = Arrays.asList(student1, student2);
 
-		List<Student> actual = studentDao.getStudentsByCourseId(2L);
+		List<Student> actual = studentDao.getByCourseId(2L);
 
 		assertEquals(expected, actual);
 	}

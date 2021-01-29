@@ -68,7 +68,7 @@ public class GroupServiceTest {
 		Optional<Group> expected = Optional.of(buildGroup());
 		List<Student> students = Arrays.asList(new Student("Avraam", "Melburn"), new Student("Homer", "Mahony"));
 		when(groupDao.findById(1L)).thenReturn(expected);
-		when(studentDao.getStudentsByGroup(expected.get())).thenReturn(students);
+		when(studentDao.getByGroup(expected.get())).thenReturn(students);
 
 		Optional<Group> actual = groupService.findById(1L);
 
