@@ -430,13 +430,17 @@ public class JdbcLessonDaoTest {
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Course course = new Course("Law");
 		course.setId(1L);
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		course.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 		Teacher teacher = new Teacher("Victor", "Doncov");
 		teacher.setId(1L);
 		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
-		Room room = new Room("A111");
-		room.setId(1L);
-		room.setCapacity(30);
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
@@ -447,7 +451,7 @@ public class JdbcLessonDaoTest {
 		lesson.setTimeframe(timeframe);
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
-		lesson.setRoom(room);
+		lesson.setRoom(room1);
 		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		List<Lesson> expected = Arrays.asList(lesson);
 
@@ -477,9 +481,6 @@ public class JdbcLessonDaoTest {
 		teacher.setId(1L);
 		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
 		teacher.setGender(Gender.MALE);
-		Room room = new Room("A111");
-		room.setId(1L);
-		room.setCapacity(30);
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
@@ -490,7 +491,7 @@ public class JdbcLessonDaoTest {
 		lesson.setTimeframe(timeframe);
 		lesson.setCourse(course);
 		lesson.setTeacher(teacher);
-		lesson.setRoom(room);
+		lesson.setRoom(room1);
 		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
 		List<Lesson> expected = Arrays.asList(lesson);
 
