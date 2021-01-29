@@ -56,10 +56,17 @@ public class GroupService {
 
 	private boolean isGroupValid(Group group) {
 		return group.getName() != null
+				&& isNameUnique(group)
 				&& !group.getName().isEmpty();
 	}
 
 	private boolean isPresentById(Long id) {
 		return groupDao.findById(id).isPresent();
+	}
+
+	private boolean isNameUnique(Group group) {
+		return !groupDao.findByName(group.getName())
+				.filter(g -> !g.getId().equals(group.getId()))
+				.isPresent();
 	}
 }

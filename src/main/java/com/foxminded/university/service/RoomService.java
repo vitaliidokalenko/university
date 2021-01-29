@@ -51,11 +51,18 @@ public class RoomService {
 
 	private boolean isRoomValid(Room room) {
 		return room.getName() != null
+				&& isNameUnique(room)
 				&& !room.getName().isEmpty()
 				&& room.getCapacity() > 0;
 	}
 
 	private boolean isPresentById(Long id) {
 		return roomDao.findById(id).isPresent();
+	}
+
+	private boolean isNameUnique(Room room) {
+		return !roomDao.findByName(room.getName())
+				.filter(r -> !r.getId().equals(room.getId()))
+				.isPresent();
 	}
 }

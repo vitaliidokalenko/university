@@ -83,7 +83,6 @@ public class GroupServiceTest {
 		List<Group> actual = groupService.getAll();
 
 		assertEquals(expected, actual);
-
 	}
 
 	@Test
@@ -111,6 +110,18 @@ public class GroupServiceTest {
 		groupService.deleteById(1L);
 
 		verify(groupDao, never()).deleteById(1L);
+	}
+
+	@Test
+	public void givenNameIsNotUnique_whenCreate_thenGroupIsCreating() {
+		Group actual = buildGroup();
+		Group retrieved = buildGroup();
+		retrieved.setId(2L);
+		when(groupDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
+
+		groupService.create(actual);
+
+		verify(groupDao, never()).create(actual);
 	}
 
 	private Group buildGroup() {

@@ -118,6 +118,18 @@ public class CourseServiceTest {
 		verify(courseDao, never()).deleteById(1L);
 	}
 
+	@Test
+	public void givenNameIsNotUnique_whenCreate_thenCourseIsNotCreating() {
+		Course actual = buildCourse();
+		Course retrieved = buildCourse();
+		retrieved.setId(2L);
+		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
+
+		courseService.create(actual);
+
+		verify(courseDao, never()).create(actual);
+	}
+
 	private Course buildCourse() {
 		Room room1 = new Room("111");
 		room1.setId(1L);

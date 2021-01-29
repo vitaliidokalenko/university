@@ -47,7 +47,6 @@ public class RoomServiceTest {
 		roomService.create(room);
 
 		verify(roomDao, never()).create(room);
-
 	}
 
 	@Test
@@ -58,7 +57,6 @@ public class RoomServiceTest {
 		roomService.create(room);
 
 		verify(roomDao, never()).create(room);
-
 	}
 
 	@Test
@@ -69,7 +67,6 @@ public class RoomServiceTest {
 		roomService.create(room);
 
 		verify(roomDao, never()).create(room);
-
 	}
 
 	@Test
@@ -117,6 +114,18 @@ public class RoomServiceTest {
 		roomService.deleteById(1L);
 
 		verify(roomDao, never()).deleteById(1L);
+	}
+
+	@Test
+	public void givenNameIsNotUnique_whenCreate_thenRoomIsNotCreating() {
+		Room room = buildRoom();
+		Room retrieved = buildRoom();
+		retrieved.setId(2L);
+		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
+
+		roomService.create(room);
+
+		verify(roomDao, never()).create(room);
 	}
 
 	private Room buildRoom() {

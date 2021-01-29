@@ -51,11 +51,18 @@ public class CourseService {
 
 	private boolean isCourseValid(Course course) {
 		return course.getName() != null
+				&& isNameUnique(course)
 				&& !course.getName().isEmpty()
 				&& !course.getRooms().isEmpty();
 	}
 
 	private boolean isPresentById(Long id) {
 		return courseDao.findById(id).isPresent();
+	}
+
+	private boolean isNameUnique(Course course) {
+		return !courseDao.findByName(course.getName())
+				.filter(c -> !c.getId().equals(course.getId()))
+				.isPresent();
 	}
 }
