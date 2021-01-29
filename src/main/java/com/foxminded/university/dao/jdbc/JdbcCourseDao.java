@@ -20,16 +20,16 @@ import com.foxminded.university.model.Room;
 @Component
 public class JdbcCourseDao implements CourseDao {
 
-	private static final String CREATE_COURSE_QUERY = "INSERT INTO courses (name, description) VALUES (?, ?);";
+	private static final String CREATE_COURSE_QUERY = "INSERT INTO courses (name, description) VALUES (?, ?)";
 	private static final String FIND_COURSE_BY_ID_QUERY = "SELECT * FROM courses WHERE id = ?";
 	private static final String GET_COURSES_QUERY = "SELECT * FROM courses";
-	private static final String DELETE_COURSE_BY_ID_QUERY = "DELETE FROM courses WHERE id = ?;";
-	private static final String UPDATE_COURSE_QUERY = "UPDATE courses SET name = ?, description = ? WHERE id = ?;";
-	private static final String CREATE_COURSE_ROOM_QUERY = "INSERT INTO courses_rooms (course_id, room_id) VALUES (?, ?);";
-	private static final String DELETE_COURSE_ROOM_QUERY = "DELETE FROM courses_rooms WHERE course_id = ? AND room_id = ?;";
-	private static final String GET_COURSES_BY_ROOM_ID_QUERY = "SELECT * FROM courses JOIN courses_rooms ON courses_rooms.course_id = courses.id WHERE room_id = ?;";
-	private static final String GET_COURSES_BY_STUDENT_ID_QUERY = "SELECT * FROM courses JOIN students_courses ON students_courses.course_id = courses.id WHERE student_id = ?;";
-	private static final String GET_COURSES_BY_TEACHER_ID_QUERY = "SELECT * FROM courses JOIN teachers_courses ON teachers_courses.course_id = courses.id WHERE teacher_id = ?;";
+	private static final String DELETE_COURSE_BY_ID_QUERY = "DELETE FROM courses WHERE id = ?";
+	private static final String UPDATE_COURSE_QUERY = "UPDATE courses SET name = ?, description = ? WHERE id = ?";
+	private static final String CREATE_COURSE_ROOM_QUERY = "INSERT INTO courses_rooms (course_id, room_id) VALUES (?, ?)";
+	private static final String DELETE_COURSE_ROOM_QUERY = "DELETE FROM courses_rooms WHERE course_id = ? AND room_id = ?";
+	private static final String GET_COURSES_BY_ROOM_ID_QUERY = "SELECT * FROM courses JOIN courses_rooms ON courses_rooms.course_id = courses.id WHERE room_id = ?";
+	private static final String GET_COURSES_BY_STUDENT_ID_QUERY = "SELECT * FROM courses JOIN students_courses ON students_courses.course_id = courses.id WHERE student_id = ?";
+	private static final String GET_COURSES_BY_TEACHER_ID_QUERY = "SELECT * FROM courses JOIN teachers_courses ON teachers_courses.course_id = courses.id WHERE teacher_id = ?";
 	private static final String FIND_COURSE_BY_NAME_QUERY = "SELECT * FROM courses WHERE name = ?";
 
 	private JdbcTemplate jdbcTemplate;
