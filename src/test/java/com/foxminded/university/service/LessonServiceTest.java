@@ -55,29 +55,38 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenTeacherIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
-		Optional<Lesson> lessonByCriteria = Optional.of(buildLesson());
-		lessonByCriteria.get().setId(2L);
+		Lesson lessonByCriteria = buildLesson();
+		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
-		actual.setId(1L);
 		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
-				LocalDate.parse("2021-01-21"),
-				actual.getTimeframe()))
-						.thenReturn(lessonByCriteria);
+				actual.getDate(),
+				actual.getTimeframe())).thenReturn(Optional.of(lessonByCriteria));
 
 		lessonService.create(actual);
 
 		verify(lessonDao, never()).create(actual);
+	}
+
+	@Test
+	public void givenTeacherIsAvailable_whenCreate_thenLessonIsCreating() {
+		Lesson actual = buildLesson();
+		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
+				actual.getDate(),
+				actual.getTimeframe())).thenReturn(Optional.empty());
+
+		lessonService.create(actual);
+
+		verify(lessonDao).create(actual);
 	}
 
 	@Test
 	public void givenRoomIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
-		Optional<Lesson> lessonByCriteria = Optional.of(buildLesson());
-		lessonByCriteria.get().setId(2L);
+		Lesson lessonByCriteria = buildLesson();
+		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
-		actual.setId(1L);
 		when(lessonDao
-				.getByRoomAndDateAndTimeframe(actual.getRoom(), LocalDate.parse("2021-01-21"), actual.getTimeframe()))
-						.thenReturn(lessonByCriteria);
+				.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
+						.thenReturn(Optional.of(lessonByCriteria));
 
 		lessonService.create(actual);
 
@@ -85,17 +94,39 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenGroupIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
-		Optional<Lesson> lessonByCriteria = Optional.of(buildLesson());
-		lessonByCriteria.get().setId(2L);
+	public void givenRoomIsAvailable_whenCreate_thenLessonIsCreating() {
 		Lesson actual = buildLesson();
-		actual.setId(1L);
-		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, LocalDate.parse("2021-01-21"), actual.getTimeframe()))
-				.thenReturn(lessonByCriteria);
+		when(lessonDao
+				.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
+						.thenReturn(Optional.empty());
+
+		lessonService.create(actual);
+
+		verify(lessonDao).create(actual);
+	}
+
+	@Test
+	public void givenGroupIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
+		Lesson lessonByCriteria = buildLesson();
+		lessonByCriteria.setId(2L);
+		Lesson actual = buildLesson();
+		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
 
 		lessonService.create(actual);
 
 		verify(lessonDao, never()).create(actual);
+	}
+
+	@Test
+	public void givenGroupIsAvailable_whenCreate_thenLessonIsCreating() {
+		Lesson actual = buildLesson();
+		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.empty());
+
+		lessonService.create(actual);
+
+		verify(lessonDao).create(actual);
 	}
 
 	@Test
@@ -192,6 +223,94 @@ public class LessonServiceTest {
 		lessonService.update(lesson);
 
 		verify(lessonDao).update(lesson);
+	}
+
+	@Test
+	public void givenTeacherIsNotAvailable_whenUpdate_thenLessonIsNotUpdating() {
+		Lesson lessonByCriteria = buildLesson();
+		lessonByCriteria.setId(2L);
+		Lesson actual = buildLesson();
+		actual.setId(1L);
+		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
+				actual.getDate(),
+				actual.getTimeframe())).thenReturn(Optional.of(lessonByCriteria));
+
+		lessonService.update(actual);
+
+		verify(lessonDao, never()).update(actual);
+	}
+
+	@Test
+	public void givenTeacherIsAvailable_whenUpdate_thenLessonIsUpdating() {
+		Lesson lessonByCriteria = buildLesson();
+		lessonByCriteria.setId(1L);
+		Lesson actual = buildLesson();
+		actual.setId(1L);
+		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
+				actual.getDate(),
+				actual.getTimeframe())).thenReturn(Optional.of(lessonByCriteria));
+
+		lessonService.update(actual);
+
+		verify(lessonDao).update(actual);
+	}
+
+	@Test
+	public void givenRoomIsNotAvailable_whenUpdate_thenLessonIsNotUpdating() {
+		Lesson lessonByCriteria = buildLesson();
+		lessonByCriteria.setId(2L);
+		Lesson actual = buildLesson();
+		actual.setId(1L);
+		when(lessonDao
+				.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
+						.thenReturn(Optional.of(lessonByCriteria));
+
+		lessonService.update(actual);
+
+		verify(lessonDao, never()).update(actual);
+	}
+
+	@Test
+	public void givenRoomIsAvailable_whenUpdate_thenLessonIsUpdating() {
+		Lesson lessonByCriteria = buildLesson();
+		lessonByCriteria.setId(1L);
+		Lesson actual = buildLesson();
+		actual.setId(1L);
+		when(lessonDao
+				.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
+						.thenReturn(Optional.of(lessonByCriteria));
+
+		lessonService.update(actual);
+
+		verify(lessonDao).update(actual);
+	}
+
+	@Test
+	public void givenGroupIsNotAvailable_whenUpdate_thenLessonIsNotUpdating() {
+		Lesson lessonByCriteria = buildLesson();
+		lessonByCriteria.setId(2L);
+		Lesson actual = buildLesson();
+		actual.setId(1L);
+		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
+
+		lessonService.update(actual);
+
+		verify(lessonDao, never()).update(actual);
+	}
+
+	@Test
+	public void givenGroupIsAvailable_whenUpdate_thenLessonIsUpdating() {
+		Lesson lessonByCriteria = buildLesson();
+		lessonByCriteria.setId(1L);
+		Lesson actual = buildLesson();
+		actual.setId(1L);
+		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
+
+		lessonService.update(actual);
+
+		verify(lessonDao).update(actual);
 	}
 
 	@Test
