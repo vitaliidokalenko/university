@@ -100,7 +100,7 @@ public class JdbcRoomDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenCourseId_whenGetRoomsByCourseId_thenGetRightListOfRooms() {
+	public void givenCourseId_whenGetByCourseId_thenGetRightListOfRooms() {
 		Room room1 = new Room("A111");
 		room1.setId(1L);
 		room1.setCapacity(30);

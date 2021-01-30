@@ -208,7 +208,7 @@ public class JdbcStudentDaoTest {
 
 	@Test
 	@Sql("/dataStudents.sql")
-	public void givenGroup_whenGetStudentsByGroup_thenGetRightListOfStudents() {
+	public void givenGroup_whenGetByGroup_thenGetRightListOfStudents() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
 		Course course1 = new Course("Law");
@@ -232,7 +232,7 @@ public class JdbcStudentDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenCourseId_whenGetStudentsByCourseId_thenGetRightListOfStudents() {
+	public void givenCourseId_whenGetByCourseId_thenGetRightListOfStudents() {
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");

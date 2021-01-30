@@ -148,7 +148,7 @@ public class JdbcCourseDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenRoomId_whenGetCoursesByRoomId_thenGetRightListOfCourses() {
+	public void givenRoomId_whenGetByRoomId_thenGetRightListOfCourses() {
 		Room room1 = new Room("A111");
 		room1.setId(1L);
 		room1.setCapacity(30);
@@ -173,7 +173,7 @@ public class JdbcCourseDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenStudentId_whenGetCoursesByStudentId_thenGetRightListOfCourses() {
+	public void givenStudentId_whenGetByStudentId_thenGetRightListOfCourses() {
 		Room room1 = new Room("A111");
 		room1.setId(1L);
 		room1.setCapacity(30);
@@ -198,7 +198,7 @@ public class JdbcCourseDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenTeacherId_whenGetCoursesByTeacherId_thenGetRightListOfCourses() {
+	public void givenTeacherId_whenGetByTeacherId_thenGetRightListOfCourses() {
 		Room room1 = new Room("A111");
 		room1.setId(1L);
 		room1.setCapacity(30);

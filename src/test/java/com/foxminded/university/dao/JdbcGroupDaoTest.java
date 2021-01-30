@@ -94,7 +94,7 @@ public class JdbcGroupDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenLessonId_whenGetGroupsByLessonId_thenGetRightListOfGroups() {
+	public void givenLessonId_whenGetByLessonId_thenGetRightListOfGroups() {
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");

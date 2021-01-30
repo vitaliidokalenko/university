@@ -358,7 +358,7 @@ public class JdbcLessonDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenTimeframe_whenGetLessonsByTimeframe_thenGetRightListOfLessons() {
+	public void givenTimeframe_whenGetByTimeframe_thenGetRightListOfLessons() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
 		timeframe.setSequance(1);
@@ -398,7 +398,7 @@ public class JdbcLessonDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenCourse_whenGetLessonsByCourse_thenGetRightListOfLessons() {
+	public void givenCourse_whenGetByCourse_thenGetRightListOfLessons() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
 		timeframe.setSequance(1);

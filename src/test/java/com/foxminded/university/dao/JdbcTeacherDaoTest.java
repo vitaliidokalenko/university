@@ -177,7 +177,7 @@ public class JdbcTeacherDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenCourseId_whenGetTeachersByCourseId_thenGetRightListOfTeachers() {
+	public void givenCourseId_whenGetByCourseId_thenGetRightListOfTeachers() {
 		Course course1 = new Course("Law");
 		course1.setId(1L);
 		Course course2 = new Course("Biology");
