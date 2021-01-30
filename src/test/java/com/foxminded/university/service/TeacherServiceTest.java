@@ -93,7 +93,7 @@ public class TeacherServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRightData() {
+	public void givenId_whenFindById_thenGetTeacher() {
 		Optional<Teacher> expected = Optional.of(buildTeacher());
 		when(teacherDao.findById(1L)).thenReturn(expected);
 
@@ -103,7 +103,7 @@ public class TeacherServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightData() {
+	public void whenGetAll_thenGetListOfAllTeachers() {
 		List<Teacher> expected = Arrays.asList(buildTeacher());
 		when(teacherDao.getAll()).thenReturn(expected);
 

@@ -81,7 +81,7 @@ public class TimeframeServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRightData() {
+	public void givenId_whenFindById_thenGetTimeframe() {
 		Optional<Timeframe> expected = Optional.of(buildTimeframe());
 		when(timeframeDao.findById(1L)).thenReturn(expected);
 
@@ -91,7 +91,7 @@ public class TimeframeServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightData() {
+	public void whenGetAll_thenGetListOfAllTimeframes() {
 		List<Timeframe> expected = Arrays.asList(buildTimeframe());
 		when(timeframeDao.getAll()).thenReturn(expected);
 
