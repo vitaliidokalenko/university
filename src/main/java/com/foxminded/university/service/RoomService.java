@@ -51,8 +51,8 @@ public class RoomService {
 
 	private boolean isRoomValid(Room room) {
 		return room.getName() != null
-				&& isNameUnique(room)
 				&& !room.getName().isEmpty()
+				&& isNameUnique(room)
 				&& room.getCapacity() > 0;
 	}
 

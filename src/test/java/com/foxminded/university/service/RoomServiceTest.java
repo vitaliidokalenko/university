@@ -70,7 +70,7 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRightData() {
+	public void givenId_whenFindById_thenGetRoom() {
 		Optional<Room> expected = Optional.of(buildRoom());
 		when(roomDao.findById(1L)).thenReturn(expected);
 
@@ -80,7 +80,7 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightData() {
+	public void whenGetAll_thenGetListOfAllRooms() {
 		List<Room> expected = Arrays.asList(buildRoom());
 		when(roomDao.getAll()).thenReturn(expected);
 
@@ -126,6 +126,39 @@ public class RoomServiceTest {
 		roomService.create(room);
 
 		verify(roomDao, never()).create(room);
+	}
+
+	@Test
+	public void givenNameIsUnique_whenCreate_thenRoomIsCreating() {
+		Room room = buildRoom();
+		when(roomDao.findByName(room.getName())).thenReturn(Optional.empty());
+
+		roomService.create(room);
+
+		verify(roomDao).create(room);
+	}
+
+	@Test
+	public void givenNameIsNotUnique_whenUpdate_thenRoomIsNotUpdating() {
+		Room room = buildRoom();
+		Room retrieved = buildRoom();
+		retrieved.setId(2L);
+		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
+
+		roomService.update(room);
+
+		verify(roomDao, never()).update(room);
+	}
+
+	@Test
+	public void givenNameIsUnique_whenUpdate_thenRoomIsUpdating() {
+		Room room = buildRoom();
+		Room retrieved = buildRoom();
+		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
+
+		roomService.update(room);
+
+		verify(roomDao).update(room);
 	}
 
 	private Room buildRoom() {
