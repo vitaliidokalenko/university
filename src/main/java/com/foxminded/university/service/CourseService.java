@@ -51,8 +51,8 @@ public class CourseService {
 
 	private boolean isCourseValid(Course course) {
 		return course.getName() != null
-				&& isNameUnique(course)
 				&& !course.getName().isEmpty()
+				&& isNameUnique(course)
 				&& !course.getRooms().isEmpty();
 	}
 
