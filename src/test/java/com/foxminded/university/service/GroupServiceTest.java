@@ -64,7 +64,7 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRightData() {
+	public void givenId_whenFindById_thenGetGroupWithItStudents() {
 		Optional<Group> expected = Optional.of(buildGroup());
 		List<Student> students = Arrays.asList(new Student("Avraam", "Melburn"), new Student("Homer", "Mahony"));
 		when(groupDao.findById(1L)).thenReturn(expected);
@@ -76,7 +76,7 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightData() {
+	public void whenGetAll_thenGetListOfAllGroups() {
 		List<Group> expected = Arrays.asList(buildGroup());
 		when(groupDao.getAll()).thenReturn(expected);
 
@@ -113,7 +113,7 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenCreate_thenGroupIsCreating() {
+	public void givenNameIsNotUnique_whenCreate_thenGroupIsNotCreating() {
 		Group actual = buildGroup();
 		Group retrieved = buildGroup();
 		retrieved.setId(2L);
@@ -122,6 +122,39 @@ public class GroupServiceTest {
 		groupService.create(actual);
 
 		verify(groupDao, never()).create(actual);
+	}
+
+	@Test
+	public void givenNameIsUnique_whenCreate_thenGroupIsCreating() {
+		Group actual = buildGroup();
+		when(groupDao.findByName(actual.getName())).thenReturn(Optional.empty());
+
+		groupService.create(actual);
+
+		verify(groupDao).create(actual);
+	}
+
+	@Test
+	public void givenNameIsNotUnique_whenUpdate_thenGroupIsNotUpdating() {
+		Group actual = buildGroup();
+		Group retrieved = buildGroup();
+		retrieved.setId(2L);
+		when(groupDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
+
+		groupService.update(actual);
+
+		verify(groupDao, never()).update(actual);
+	}
+
+	@Test
+	public void givenNameIsUnique_whenUpdate_thenGroupIsUpdating() {
+		Group actual = buildGroup();
+		Group retrieved = buildGroup();
+		when(groupDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
+
+		groupService.update(actual);
+
+		verify(groupDao).update(actual);
 	}
 
 	private Group buildGroup() {
