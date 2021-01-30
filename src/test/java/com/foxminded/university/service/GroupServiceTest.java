@@ -64,7 +64,7 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetGroupWithItStudents() {
+	public void givenId_whenFindById_thenGetRightGroupWithItStudents() {
 		Optional<Group> expected = Optional.of(buildGroup());
 		List<Student> students = Arrays.asList(new Student("Avraam", "Melburn"), new Student("Homer", "Mahony"));
 		when(groupDao.findById(1L)).thenReturn(expected);
@@ -76,7 +76,7 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetListOfAllGroups() {
+	public void whenGetAll_thenGetRightListOfGroups() {
 		List<Group> expected = Arrays.asList(buildGroup());
 		when(groupDao.getAll()).thenReturn(expected);
 

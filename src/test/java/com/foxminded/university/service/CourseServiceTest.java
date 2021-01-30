@@ -72,7 +72,7 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetCourse() {
+	public void givenId_whenFindById_thenGetRightCourse() {
 		Optional<Course> expected = Optional.of(buildCourse());
 		when(courseDao.findById(1L)).thenReturn(expected);
 
@@ -82,7 +82,7 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetListOfAllCourses() {
+	public void whenGetAll_thenGetRightListOfCourses() {
 		List<Course> expected = Arrays.asList(buildCourse());
 		when(courseDao.getAll()).thenReturn(expected);
 

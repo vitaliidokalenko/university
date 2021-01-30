@@ -118,7 +118,7 @@ public class StudentServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetStudent() {
+	public void givenId_whenFindById_thenGetRightStudent() {
 		Optional<Student> expected = Optional.of(buildStudent());
 		when(studentDao.findById(1L)).thenReturn(expected);
 
@@ -128,7 +128,7 @@ public class StudentServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetListOfAllStudents() {
+	public void whenGetAll_thenGetRightListOfStudents() {
 		List<Student> expected = Arrays.asList(buildStudent());
 		when(studentDao.getAll()).thenReturn(expected);
 

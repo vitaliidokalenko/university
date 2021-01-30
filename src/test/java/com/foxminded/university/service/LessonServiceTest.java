@@ -196,7 +196,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRightData() {
+	public void givenId_whenFindById_thenGetRightLesson() {
 		Optional<Lesson> expected = Optional.of(buildLesson());
 		when(lessonDao.findById(1L)).thenReturn(expected);
 
@@ -206,7 +206,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightData() {
+	public void whenGetAll_thenGetRightListOfLessons() {
 		Lesson lesson = buildLesson();
 		List<Lesson> expected = Arrays.asList(lesson);
 		when(lessonDao.getAll()).thenReturn(expected);

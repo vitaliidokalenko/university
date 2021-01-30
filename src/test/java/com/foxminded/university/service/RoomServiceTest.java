@@ -70,7 +70,7 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRoom() {
+	public void givenId_whenFindById_thenGetRightRoom() {
 		Optional<Room> expected = Optional.of(buildRoom());
 		when(roomDao.findById(1L)).thenReturn(expected);
 
@@ -80,7 +80,7 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetListOfAllRooms() {
+	public void whenGetAll_thenGetRightListOfRooms() {
 		List<Room> expected = Arrays.asList(buildRoom());
 		when(roomDao.getAll()).thenReturn(expected);
 
