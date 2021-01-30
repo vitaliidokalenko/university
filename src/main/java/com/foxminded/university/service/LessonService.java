@@ -74,23 +74,31 @@ public class LessonService {
 	}
 
 	private boolean isTeacherAvailable(Lesson lesson) {
-		return lessonDao.getByTeacherAndDate(lesson.getTeacher(), lesson.getDate())
-				.stream()
-				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
+		Optional<Lesson> lessonByCriteria = lessonDao
+				.getByTeacherAndDateAndTimeframe(lesson.getTeacher(), lesson.getDate(), lesson.getTimeframe());
+		if (lessonByCriteria.isPresent()) {
+			return lessonByCriteria.get().getId().equals(lesson.getId());
+		} else {
+			return true;
+		}
 	}
 
 	private boolean isRoomAvailable(Lesson lesson) {
-		return lessonDao.getByRoomAndDate(lesson.getRoom(), lesson.getDate())
-				.stream()
-				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
+		Optional<Lesson> lessonByCriteria = lessonDao
+				.getByRoomAndDateAndTimeframe(lesson.getRoom(), lesson.getDate(), lesson.getTimeframe());
+		if (lessonByCriteria.isPresent()) {
+			return lessonByCriteria.get().getId().equals(lesson.getId());
+		} else {
+			return true;
+		}
 	}
 
 	private boolean isGroupAvailable(Lesson lesson) {
 		return lesson.getGroups()
 				.stream()
-				.map(g -> lessonDao.getByGroupIdAndDate(g.getId(), lesson.getDate()))
-				.flatMap(Collection::stream)
-				.noneMatch(l -> l.getTimeframe().equals(lesson.getTimeframe()));
+				.map(g -> lessonDao.getByGroupIdAndDateAndTimeframe(g.getId(), lesson.getDate(), lesson.getTimeframe()))
+				.filter(Optional::isPresent)
+				.allMatch(l -> l.get().getId().equals(lesson.getId()));
 	}
 
 	private boolean isRoomCapacityCompatible(Lesson lesson) {

@@ -34,12 +34,12 @@ public class JdbcLessonDao implements LessonDao {
 			+ "WHERE id = ?";
 	private static final String CREATE_LESSON_GROUP_QUERY = "INSERT INTO lessons_groups (lesson_id, group_id) VALUES(?, ?)";
 	private static final String DELETE_LESSON_GROUP_QUERY = "DELETE FROM lessons_groups WHERE lesson_id = ? AND group_id = ?";
-	private static final String GET_LESSONS_BY_GROUP_ID_AND_DATE_QUERY = "SELECT * FROM lessons "
-			+ "JOIN lessons_groups ON lessons_groups.lesson_id = lessons.id WHERE group_id = ? AND date = ?";
+	private static final String GET_LESSON_BY_GROUP_ID_AND_DATE_AND_TIMEFRAME_ID_QUERY = "SELECT * FROM lessons "
+			+ "JOIN lessons_groups ON lessons_groups.lesson_id = lessons.id WHERE group_id = ? AND date = ? AND timeframe_id = ?";
 	private static final String GET_LESSONS_BY_TIMEFRAME_ID_QUERY = "SELECT * FROM lessons WHERE timeframe_id = ?";
 	private static final String GET_LESSONS_BY_COURSE_ID_QUERY = "SELECT * FROM lessons WHERE course_id = ?";
-	private static final String GET_LESSONS_BY_TEACHER_ID_AND_DATE_QUERY = "SELECT * FROM lessons WHERE teacher_id = ? AND date = ?";
-	private static final String GET_LESSONS_BY_ROOM_ID_AND_DATE_QUERY = "SELECT * FROM lessons WHERE room_id = ? AND date = ?";
+	private static final String GET_LESSON_BY_TEACHER_ID_AND_DATE_AND_TIMEFRAME_ID_QUERY = "SELECT * FROM lessons WHERE teacher_id = ? AND date = ? AND timeframe_id = ?";
+	private static final String GET_LESSON_BY_ROOM_ID_AND_DATE_AND_TIMEFRAME_ID_QUERY = "SELECT * FROM lessons WHERE room_id = ? AND date = ? AND timeframe_id = ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcGroupDao groupDao;
@@ -109,8 +109,14 @@ public class JdbcLessonDao implements LessonDao {
 	}
 
 	@Override
-	public List<Lesson> getByGroupIdAndDate(Long groupId, LocalDate date) {
-		return jdbcTemplate.query(GET_LESSONS_BY_GROUP_ID_AND_DATE_QUERY, new Object[] { groupId, date }, lessonMapper);
+	public Optional<Lesson> getByGroupIdAndDateAndTimeframe(Long groupId, LocalDate date, Timeframe timeframe) {
+		try {
+			return Optional.of(jdbcTemplate.queryForObject(GET_LESSON_BY_GROUP_ID_AND_DATE_AND_TIMEFRAME_ID_QUERY,
+					new Object[] { groupId, date, timeframe.getId() },
+					lessonMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override
@@ -125,14 +131,26 @@ public class JdbcLessonDao implements LessonDao {
 	}
 
 	@Override
-	public List<Lesson> getByTeacherAndDate(Teacher teacher, LocalDate date) {
-		return jdbcTemplate
-				.query(GET_LESSONS_BY_TEACHER_ID_AND_DATE_QUERY, new Object[] { teacher.getId(), date }, lessonMapper);
+	public Optional<Lesson> getByTeacherAndDateAndTimeframe(Teacher teacher, LocalDate date, Timeframe timeframe) {
+		try {
+			return Optional.of(jdbcTemplate
+					.queryForObject(GET_LESSON_BY_TEACHER_ID_AND_DATE_AND_TIMEFRAME_ID_QUERY,
+							new Object[] { teacher.getId(), date, timeframe.getId() },
+							lessonMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override
-	public List<Lesson> getByRoomAndDate(Room room, LocalDate date) {
-		return jdbcTemplate
-				.query(GET_LESSONS_BY_ROOM_ID_AND_DATE_QUERY, new Object[] { room.getId(), date }, lessonMapper);
+	public Optional<Lesson> getByRoomAndDateAndTimeframe(Room room, LocalDate date, Timeframe timeframe) {
+		try {
+			return Optional.of(jdbcTemplate
+					.queryForObject(GET_LESSON_BY_ROOM_ID_AND_DATE_AND_TIMEFRAME_ID_QUERY,
+							new Object[] { room.getId(), date, timeframe.getId() },
+							lessonMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 }

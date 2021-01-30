@@ -55,38 +55,47 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenTeacherIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
-		Lesson lessonByTeacher = buildLesson();
-		Lesson actualLesson = buildLesson();
-		when(lessonDao.getByTeacherAndDate(actualLesson.getTeacher(), LocalDate.parse("2021-01-21")))
-				.thenReturn(Arrays.asList(lessonByTeacher));
+		Optional<Lesson> lessonByCriteria = Optional.of(buildLesson());
+		lessonByCriteria.get().setId(2L);
+		Lesson actual = buildLesson();
+		actual.setId(1L);
+		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
+				LocalDate.parse("2021-01-21"),
+				actual.getTimeframe()))
+						.thenReturn(lessonByCriteria);
 
-		lessonService.create(actualLesson);
+		lessonService.create(actual);
 
-		verify(lessonDao, never()).create(actualLesson);
+		verify(lessonDao, never()).create(actual);
 	}
 
 	@Test
 	public void givenRoomIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
-		Lesson lessonByRoom = buildLesson();
-		Lesson actualLesson = buildLesson();
-		when(lessonDao.getByRoomAndDate(actualLesson.getRoom(), LocalDate.parse("2021-01-21")))
-				.thenReturn(Arrays.asList(lessonByRoom));
+		Optional<Lesson> lessonByCriteria = Optional.of(buildLesson());
+		lessonByCriteria.get().setId(2L);
+		Lesson actual = buildLesson();
+		actual.setId(1L);
+		when(lessonDao
+				.getByRoomAndDateAndTimeframe(actual.getRoom(), LocalDate.parse("2021-01-21"), actual.getTimeframe()))
+						.thenReturn(lessonByCriteria);
 
-		lessonService.create(actualLesson);
+		lessonService.create(actual);
 
-		verify(lessonDao, never()).create(actualLesson);
+		verify(lessonDao, never()).create(actual);
 	}
 
 	@Test
 	public void givenGroupIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
-		Lesson lessonByGroup = buildLesson();
-		Lesson actualLesson = buildLesson();
-		when(lessonDao.getByGroupIdAndDate(1L, LocalDate.parse("2021-01-21")))
-				.thenReturn(Arrays.asList(lessonByGroup));
+		Optional<Lesson> lessonByCriteria = Optional.of(buildLesson());
+		lessonByCriteria.get().setId(2L);
+		Lesson actual = buildLesson();
+		actual.setId(1L);
+		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, LocalDate.parse("2021-01-21"), actual.getTimeframe()))
+				.thenReturn(lessonByCriteria);
 
-		lessonService.create(actualLesson);
+		lessonService.create(actual);
 
-		verify(lessonDao, never()).create(actualLesson);
+		verify(lessonDao, never()).create(actual);
 	}
 
 	@Test

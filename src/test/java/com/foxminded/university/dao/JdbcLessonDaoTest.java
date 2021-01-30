@@ -9,6 +9,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -316,66 +317,41 @@ public class JdbcLessonDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenGroupId_whenGetLessonsByGroupId_thenGetRightListOfLessons() {
-		Timeframe timeframe1 = new Timeframe();
-		timeframe1.setId(1L);
-		timeframe1.setSequance(1);
-		timeframe1.setStartTime(LocalTime.parse("08:00"));
-		timeframe1.setEndTime(LocalTime.parse("09:20"));
-		Timeframe timeframe2 = new Timeframe();
-		timeframe2.setId(2L);
-		timeframe2.setSequance(2);
-		timeframe2.setStartTime(LocalTime.parse("09:40"));
-		timeframe2.setEndTime(LocalTime.parse("11:00"));
+	public void givenGroupIdAndDateAndTimeframe_whenGetByGroupIdAndDateAndTimeframe_thenGetRightLesson() {
+		Timeframe timeframe = new Timeframe();
+		timeframe.setId(1L);
+		timeframe.setSequance(1);
+		timeframe.setStartTime(LocalTime.parse("08:00"));
+		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Room room1 = new Room("A111");
 		room1.setId(1L);
 		room1.setCapacity(30);
 		Room room2 = new Room("B222");
 		room2.setId(2L);
 		room2.setCapacity(30);
-		Room room3 = new Room("C333");
-		room3.setId(3L);
-		room3.setCapacity(30);
-		Course course1 = new Course("Law");
-		course1.setId(1L);
-		course1.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
-		Course course2 = new Course("Biology");
-		course2.setId(2L);
-		course2.setRooms(new HashSet<>(Arrays.asList(room2, room3)));
-		Teacher teacher1 = new Teacher("Victor", "Doncov");
-		teacher1.setId(1L);
-		teacher1.setBirthDate(LocalDate.parse("1991-01-01"));
-		teacher1.setGender(Gender.MALE);
-		Teacher teacher2 = new Teacher("Aleksandra", "Ivanova");
-		teacher2.setId(2L);
-		teacher2.setBirthDate(LocalDate.parse("1992-02-02"));
-		teacher2.setGender(Gender.FEMALE);
+		Course course = new Course("Law");
+		course.setId(1L);
+		course.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
+		Teacher teacher = new Teacher("Victor", "Doncov");
+		teacher.setId(1L);
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
+		teacher.setGender(Gender.MALE);
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
-		Set<Group> groups = new HashSet<>();
-		groups.add(group1);
-		groups.add(group2);
-		Lesson lesson1 = new Lesson();
-		lesson1.setId(1L);
-		lesson1.setDate(LocalDate.parse("2020-12-12"));
-		lesson1.setTimeframe(timeframe1);
-		lesson1.setCourse(course1);
-		lesson1.setTeacher(teacher1);
-		lesson1.setRoom(room1);
-		lesson1.setGroups(groups);
-		Lesson lesson2 = new Lesson();
-		lesson2.setId(2L);
-		lesson2.setDate(LocalDate.parse("2020-12-12"));
-		lesson2.setTimeframe(timeframe2);
-		lesson2.setCourse(course2);
-		lesson2.setTeacher(teacher2);
-		lesson2.setRoom(room2);
-		lesson2.setGroups(groups);
-		List<Lesson> expected = Arrays.asList(lesson1, lesson2);
+		Lesson lesson = new Lesson();
+		lesson.setId(1L);
+		lesson.setDate(LocalDate.parse("2020-12-12"));
+		lesson.setTimeframe(timeframe);
+		lesson.setCourse(course);
+		lesson.setTeacher(teacher);
+		lesson.setRoom(room1);
+		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
+		Optional<Lesson> expected = Optional.of(lesson);
 
-		List<Lesson> actual = lessonDao.getByGroupIdAndDate(2L, LocalDate.parse("2020-12-12"));
+		Optional<Lesson> actual = lessonDao
+				.getByGroupIdAndDateAndTimeframe(2L, LocalDate.parse("2020-12-12"), timeframe);
 
 		assertEquals(expected, actual);
 	}
@@ -462,7 +438,7 @@ public class JdbcLessonDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenTeacher_whenGetLessonsByTeacher_thenGetRightListOfLessons() {
+	public void givenTeacherAndDateAndTimeframe_whenGetByTeacherAndDateAndTimeframe_thenGetRightLesson() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
 		timeframe.setSequance(1);
@@ -493,16 +469,17 @@ public class JdbcLessonDaoTest {
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room1);
 		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
-		List<Lesson> expected = Arrays.asList(lesson);
+		Optional<Lesson> expected = Optional.of(lesson);
 
-		List<Lesson> actual = lessonDao.getByTeacherAndDate(teacher, LocalDate.parse("2020-12-12"));
+		Optional<Lesson> actual = lessonDao
+				.getByTeacherAndDateAndTimeframe(teacher, LocalDate.parse("2020-12-12"), timeframe);
 
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	@Sql("/data.sql")
-	public void givenRoom_whenGetLessonsByRoom_thenGetRightListOfLessons() {
+	public void givenRoomAndDateAndTimeframe_whenGetByRoomAndDateAndTimeframe_thenGetRightLesson() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
 		timeframe.setSequance(1);
@@ -533,9 +510,10 @@ public class JdbcLessonDaoTest {
 		lesson.setTeacher(teacher);
 		lesson.setRoom(room1);
 		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
-		List<Lesson> expected = Arrays.asList(lesson);
+		Optional<Lesson> expected = Optional.of(lesson);
 
-		List<Lesson> actual = lessonDao.getByRoomAndDate(room1, LocalDate.parse("2020-12-12"));
+		Optional<Lesson> actual = lessonDao
+				.getByRoomAndDateAndTimeframe(room1, LocalDate.parse("2020-12-12"), timeframe);
 
 		assertEquals(expected, actual);
 	}

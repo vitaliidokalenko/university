@@ -58,8 +58,8 @@ public class GroupService {
 
 	private boolean isGroupValid(Group group) {
 		return group.getName() != null
-				&& isNameUnique(group)
-				&& !group.getName().isEmpty();
+				&& !group.getName().isEmpty()
+				&& isNameUnique(group);
 	}
 
 	private boolean isPresentById(Long id) {
