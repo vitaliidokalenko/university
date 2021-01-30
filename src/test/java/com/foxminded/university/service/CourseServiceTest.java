@@ -72,7 +72,7 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRightData() {
+	public void givenId_whenFindById_thenGetCourse() {
 		Optional<Course> expected = Optional.of(buildCourse());
 		when(courseDao.findById(1L)).thenReturn(expected);
 
@@ -82,7 +82,7 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightData() {
+	public void whenGetAll_thenGetListOfAllCourses() {
 		List<Course> expected = Arrays.asList(buildCourse());
 		when(courseDao.getAll()).thenReturn(expected);
 
@@ -128,6 +128,39 @@ public class CourseServiceTest {
 		courseService.create(actual);
 
 		verify(courseDao, never()).create(actual);
+	}
+
+	@Test
+	public void givenNameIsUnique_whenCreate_thenCourseIsCreating() {
+		Course actual = buildCourse();
+		when(courseDao.findByName(actual.getName())).thenReturn(Optional.empty());
+
+		courseService.create(actual);
+
+		verify(courseDao).create(actual);
+	}
+
+	@Test
+	public void givenNameIsUnique_whenUpdate_thenCourseIsUpdating() {
+		Course actual = buildCourse();
+		Course retrieved = buildCourse();
+		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
+
+		courseService.update(actual);
+
+		verify(courseDao).update(actual);
+	}
+
+	@Test
+	public void givenNameIsNotUnique_whenUpdate_thenCourseIsNotUpdating() {
+		Course actual = buildCourse();
+		Course retrieved = buildCourse();
+		retrieved.setId(2L);
+		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
+
+		courseService.update(actual);
+
+		verify(courseDao, never()).update(actual);
 	}
 
 	private Course buildCourse() {
