@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 import org.springframework.stereotype.Component;
 
-import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.model.Course;
+import com.foxminded.university.service.CourseService;
 
 @Component
 public class CourseMenu {
@@ -20,11 +20,11 @@ public class CourseMenu {
 	private static final String PRINT_COURSES_FORMAT = "id %d. %s%n";
 
 	private Scanner scanner;
-	private CourseDao courseDao;
+	private CourseService courseService;
 
-	public CourseMenu(Scanner scanner, CourseDao courseDao) {
+	public CourseMenu(Scanner scanner, CourseService courseService) {
 		this.scanner = scanner;
-		this.courseDao = courseDao;
+		this.courseService = courseService;
 	}
 
 	public void runMenu() {
@@ -63,16 +63,16 @@ public class CourseMenu {
 	private void addCourse() {
 		System.out.println(NAME_INQUIRY);
 		String name = scanner.nextLine();
-		courseDao.create(new Course(name));
+		courseService.create(new Course(name));
 	}
 
 	private void removeCourse() {
 		System.out.println(ID_INQUIRY);
 		long id = scanner.nextInt();
-		courseDao.deleteById(id);
+		courseService.deleteById(id);
 	}
 
 	private void printCourses() {
-		courseDao.getAll().forEach(c -> System.out.printf(PRINT_COURSES_FORMAT, c.getId(), c.getName()));
+		courseService.getAll().forEach(c -> System.out.printf(PRINT_COURSES_FORMAT, c.getId(), c.getName()));
 	}
 }

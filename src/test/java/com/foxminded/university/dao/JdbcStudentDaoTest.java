@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ public class JdbcStudentDaoTest {
 	private JdbcStudentDao studentDao;
 
 	@Test
-	@Sql("/dataGroups.sql")
+	@Sql("/dataStudentRelations.sql")
 	public void givenStudent_whenCreate_thenStudentIsAddedToTable() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
@@ -55,7 +54,7 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql("/dataGroupsCourses.sql")
+	@Sql("/dataStudentRelations.sql")
 	public void givenStudentWithCourses_whenCreate_thenRightDataIsAddedToStudentsCoursesTable() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
@@ -65,15 +64,11 @@ public class JdbcStudentDaoTest {
 		course2.setId(2L);
 		Course course3 = new Course("Music");
 		course3.setId(3L);
-		Set<Course> courses = new HashSet<>();
-		courses.add(course1);
-		courses.add(course2);
-		courses.add(course3);
 		Student student = new Student("Anna", "Dvorecka");
 		student.setGroup(group);
 		student.setBirthDate(LocalDate.parse("2001-01-01"));
 		student.setGender(Gender.FEMALE);
-		student.setCourses(courses);
+		student.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME) + 3;
 
 		studentDao.create(student);
@@ -103,11 +98,18 @@ public class JdbcStudentDaoTest {
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
 		Student student1 = new Student("Anna", "Dvorecka");
 		student1.setId(1L);
 		student1.setGroup(group1);
 		student1.setBirthDate(LocalDate.parse("2001-01-01"));
 		student1.setGender(Gender.FEMALE);
+		student1.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 		Student student2 = new Student("Sergii", "Koklush");
 		student2.setId(2L);
 		student2.setGroup(group2);
@@ -129,13 +131,20 @@ public class JdbcStudentDaoTest {
 	public void givenId_whenFindById_thenGetRightStudent() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
 		Student expected = new Student("Anna", "Dvorecka");
 		expected.setId(1L);
 		expected.setGroup(group);
 		expected.setBirthDate(LocalDate.parse("2001-01-01"));
 		expected.setGender(Gender.FEMALE);
+		expected.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 
-		Student actual = studentDao.findById(1L);
+		Student actual = studentDao.findById(1L).orElse(null);
 
 		assertEquals(expected, actual);
 	}
@@ -151,16 +160,12 @@ public class JdbcStudentDaoTest {
 		course2.setId(2L);
 		Course course3 = new Course("Music");
 		course3.setId(3L);
-		Set<Course> courses = new HashSet<>();
-		courses.add(course1);
-		courses.add(course2);
-		courses.add(course3);
 		Student student = new Student("Andrey", "Skorochod");
 		student.setId(1L);
 		student.setGroup(group);
 		student.setBirthDate(LocalDate.parse("2011-01-01"));
 		student.setGender(Gender.MALE);
-		student.setCourses(courses);
+		student.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 		int expectedRows = countRowsInTableWhere(jdbcTemplate, STUDENTS_TABLE_NAME, "birth_date = '2011-01-01'") + 1;
 
 		studentDao.update(student);
@@ -170,20 +175,18 @@ public class JdbcStudentDaoTest {
 	}
 
 	@Test
-	@Sql("/dataStudentsCourses.sql")
+	@Sql("/dataStudents.sql")
 	public void givenUpdatedCourses_whenUpdate_thenStudentsCoursesTableIsUpdated() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
-		Course course1 = new Course("Art");
-		course1.setId(4L);
-		Set<Course> courses = new HashSet<>();
-		courses.add(course1);
+		Course course = new Course("Art");
+		course.setId(4L);
 		Student student = new Student("Andrey", "Skorochod");
 		student.setId(1L);
 		student.setGroup(group);
 		student.setBirthDate(LocalDate.parse("2011-01-01"));
 		student.setGender(Gender.MALE);
-		student.setCourses(courses);
+		student.setCourses(new HashSet<>(Arrays.asList(course)));
 		int expectedRows = countRowsInTable(jdbcTemplate, STUDENTS_COURSES_TABLE_NAME) - 2;
 
 		studentDao.update(student);
@@ -205,41 +208,56 @@ public class JdbcStudentDaoTest {
 
 	@Test
 	@Sql("/dataStudents.sql")
-	public void givenGroup_whenGetStudentsByGroup_thenGetRightListOfStudents() {
+	public void givenGroup_whenGetByGroup_thenGetRightListOfStudents() {
 		Group group = new Group("AA-11");
 		group.setId(1L);
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
 		Student student = new Student("Anna", "Dvorecka");
 		student.setId(1L);
 		student.setGroup(group);
 		student.setBirthDate(LocalDate.parse("2001-01-01"));
 		student.setGender(Gender.FEMALE);
+		student.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
 		List<Student> expected = Arrays.asList(student);
 
-		List<Student> actual = studentDao.getStudentsByGroup(group);
+		List<Student> actual = studentDao.getByGroup(group);
 
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	@Sql("/data.sql")
-	public void givenCourseId_whenGetStudentsByCourseId_thenGetRightListOfStudents() {
+	public void givenCourseId_whenGetByCourseId_thenGetRightListOfStudents() {
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
 		Student student1 = new Student("Anna", "Dvorecka");
 		student1.setId(1L);
 		student1.setGroup(group1);
 		student1.setBirthDate(LocalDate.parse("2001-01-01"));
 		student1.setGender(Gender.FEMALE);
+		student1.setCourses(new HashSet<>(Arrays.asList(course1, course2)));
 		Student student2 = new Student("Sergii", "Koklush");
 		student2.setId(2L);
 		student2.setGroup(group2);
 		student2.setBirthDate(LocalDate.parse("2002-02-02"));
 		student2.setGender(Gender.MALE);
+		student2.setCourses(new HashSet<>(Arrays.asList(course2, course3)));
 		List<Student> expected = Arrays.asList(student1, student2);
 
-		List<Student> actual = studentDao.getStudentsByCourseId(2L);
+		List<Student> actual = studentDao.getByCourseId(2L);
 
 		assertEquals(expected, actual);
 	}

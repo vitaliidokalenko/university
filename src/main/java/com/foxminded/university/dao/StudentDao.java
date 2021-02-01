@@ -7,7 +7,7 @@ import com.foxminded.university.model.Student;
 
 public interface StudentDao extends GenericDao<Student> {
 
-	public List<Student> getStudentsByGroup(Group group);
+	public List<Student> getByGroup(Group group);
 
-	public List<Student> getStudentsByCourseId(Long courseId);
+	public List<Student> getByCourseId(Long courseId);
 }

@@ -4,9 +4,9 @@ import java.util.Scanner;
 
 import org.springframework.stereotype.Component;
 
-import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Student;
+import com.foxminded.university.service.StudentService;
 
 @Component
 public class StudentMenu {
@@ -25,11 +25,11 @@ public class StudentMenu {
 	private static final String PRINT_STUDENTS_FORMAT = "id %d. %s %s%n";
 
 	private Scanner scanner;
-	private StudentDao studentDao;
+	private StudentService studentService;
 
-	public StudentMenu(Scanner scanner, StudentDao studentDao) {
+	public StudentMenu(Scanner scanner, StudentService studentService) {
 		this.scanner = scanner;
-		this.studentDao = studentDao;
+		this.studentService = studentService;
 	}
 
 	public void runMenu() {
@@ -78,17 +78,17 @@ public class StudentMenu {
 		} else if (genderChoice.equals("b")) {
 			student.setGender(Gender.FEMALE);
 		}
-		studentDao.create(student);
+		studentService.create(student);
 	}
 
 	private void printStudents() {
-		studentDao.getAll()
+		studentService.getAll()
 				.forEach(s -> System.out.printf(PRINT_STUDENTS_FORMAT, s.getId(), s.getName(), s.getSurname()));
 	}
 
 	private void removeStudent() {
 		System.out.println(ID_INQUIRY);
 		long id = scanner.nextInt();
-		studentDao.deleteById(id);
+		studentService.deleteById(id);
 	}
 }

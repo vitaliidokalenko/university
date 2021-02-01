@@ -49,7 +49,7 @@ public class Course {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(description, id, name);
+		return Objects.hash(description, id, name, rooms);
 	}
 
 	@Override
@@ -65,6 +65,6 @@ public class Course {
 		}
 		Course other = (Course) obj;
 		return Objects.equals(description, other.description) && Objects.equals(id, other.id)
-				&& Objects.equals(name, other.name);
+				&& Objects.equals(name, other.name) && Objects.equals(rooms, other.rooms);
 	}
 }

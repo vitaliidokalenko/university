@@ -8,12 +8,14 @@ import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_ID;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_NAME;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_PHONE;
 import static com.foxminded.university.dao.jdbc.mapper.StudentMapper.STUDENT_SURNAME;
+import static java.util.stream.Collectors.toSet;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -30,17 +32,17 @@ import com.foxminded.university.model.Student;
 public class JdbcStudentDao implements StudentDao {
 
 	private static final String CREATE_STUDENT_QUERY = "INSERT INTO students (group_id, name, surname, phone, email, address, birth_date, gender) "
-			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-	private static final String FIND_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE id = ?;";
-	private static final String GET_STUDENTS_QUERY = "SELECT * FROM students;";
-	private static final String DELETE_STUDENT_BY_ID_QUERY = "DELETE FROM students WHERE id = ?;";
+			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String FIND_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE id = ?";
+	private static final String GET_STUDENTS_QUERY = "SELECT * FROM students";
+	private static final String DELETE_STUDENT_BY_ID_QUERY = "DELETE FROM students WHERE id = ?";
 	private static final String UPDATE_STUDENT_QUERY = "UPDATE students SET id = ?, name = ?, surname = ?, phone = ?, email = ?, address = ?, birth_date = ?, gender = ? "
-			+ "WHERE id = ?;";
-	private static final String GET_STUDENTS_BY_GROUP_ID_QUERY = "SELECT * FROM students WHERE group_id = ?;";
-	private static final String CREATE_STUDENT_COURSE_QUERY = "INSERT INTO students_courses (student_id, course_id) VALUES(?, ?);";
-	private static final String DELETE_STUDENT_COURSE_QUERY = "DELETE FROM students_courses WHERE student_id = ? AND course_id =?;";
+			+ "WHERE id = ?";
+	private static final String GET_STUDENTS_BY_GROUP_ID_QUERY = "SELECT * FROM students WHERE group_id = ?";
+	private static final String CREATE_STUDENT_COURSE_QUERY = "INSERT INTO students_courses (student_id, course_id) VALUES(?, ?)";
+	private static final String DELETE_STUDENT_COURSE_QUERY = "DELETE FROM students_courses WHERE student_id = ? AND course_id =?";
 	private static final String GET_STUDENTS_BY_COURSE_ID_QUERY = "SELECT * FROM students "
-			+ "JOIN students_courses ON students_courses.student_id = students.id WHERE course_id = ?;";
+			+ "JOIN students_courses ON students_courses.student_id = students.id WHERE course_id = ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcCourseDao courseDao;
@@ -75,8 +77,13 @@ public class JdbcStudentDao implements StudentDao {
 	}
 
 	@Override
-	public Student findById(Long studentId) {
-		return jdbcTemplate.queryForObject(FIND_STUDENT_BY_ID_QUERY, new Object[] { studentId }, studentMapper);
+	public Optional<Student> findById(Long studentId) {
+		try {
+			return Optional.of(
+					jdbcTemplate.queryForObject(FIND_STUDENT_BY_ID_QUERY, new Object[] { studentId }, studentMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override
@@ -96,7 +103,7 @@ public class JdbcStudentDao implements StudentDao {
 				student.getBirthDate(),
 				student.getGender().toString(),
 				student.getId());
-		List<Course> courses = courseDao.getCoursesByStudentId(student.getId());
+		List<Course> courses = courseDao.getByStudentId(student.getId());
 		courses.stream()
 				.filter(c -> !student.getCourses().contains(c))
 				.forEach(c -> jdbcTemplate.update(DELETE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
@@ -112,7 +119,7 @@ public class JdbcStudentDao implements StudentDao {
 	}
 
 	@Override
-	public List<Student> getStudentsByGroup(Group group) {
+	public List<Student> getByGroup(Group group) {
 		return jdbcTemplate.query(GET_STUDENTS_BY_GROUP_ID_QUERY, new Object[] { group.getId() }, (rs, rowNum) -> {
 			Student student = new Student(rs.getString(STUDENT_NAME), rs.getString(STUDENT_SURNAME));
 			student.setId(rs.getLong(STUDENT_ID));
@@ -122,12 +129,13 @@ public class JdbcStudentDao implements StudentDao {
 			student.setBirthDate(rs.getObject(STUDENT_BIRTH_DATE, LocalDate.class));
 			student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
 			student.setGroup(group);
+			student.setCourses(courseDao.getByStudentId(rs.getLong(STUDENT_ID)).stream().collect(toSet()));
 			return student;
 		});
 	}
 
 	@Override
-	public List<Student> getStudentsByCourseId(Long courseId) {
+	public List<Student> getByCourseId(Long courseId) {
 		return jdbcTemplate.query(GET_STUDENTS_BY_COURSE_ID_QUERY, new Object[] { courseId }, studentMapper);
 	}
 }

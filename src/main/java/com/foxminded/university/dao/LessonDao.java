@@ -1,6 +1,8 @@
 package com.foxminded.university.dao;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Lesson;
@@ -10,13 +12,13 @@ import com.foxminded.university.model.Timeframe;
 
 public interface LessonDao extends GenericDao<Lesson> {
 
-	public List<Lesson> getLessonsByGroupId(Long groupId);
+	public Optional<Lesson> getByGroupIdAndDateAndTimeframe(Long groupId, LocalDate date, Timeframe timeframe);
 
-	public List<Lesson> getLessonsByTimeframe(Timeframe timeframe);
+	public List<Lesson> getByTimeframe(Timeframe timeframe);
 
-	public List<Lesson> getLessonsByCourse(Course course);
+	public List<Lesson> getByCourse(Course course);
 
-	public List<Lesson> getLessonsByTeacher(Teacher teacher);
+	public Optional<Lesson> getByTeacherAndDateAndTimeframe(Teacher teacher, LocalDate date, Timeframe timeframe);
 
-	public List<Lesson> getLessonsByRoom(Room room);
+	public Optional<Lesson> getByRoomAndDateAndTimeframe(Room room, LocalDate date, Timeframe timeframe);
 }

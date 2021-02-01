@@ -4,7 +4,9 @@ import static com.foxminded.university.dao.jdbc.mapper.GroupMapper.GROUP_ID;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,13 +19,14 @@ import com.foxminded.university.model.Group;
 @Component
 public class JdbcGroupDao implements GroupDao {
 
-	private static final String CREATE_GROUP_QUERY = "INSERT INTO groups (name) VALUES (?);";
-	private static final String DELETE_GROUP_BY_ID_QUERY = "DELETE FROM groups WHERE id = ?;";
+	private static final String CREATE_GROUP_QUERY = "INSERT INTO groups (name) VALUES (?)";
+	private static final String DELETE_GROUP_BY_ID_QUERY = "DELETE FROM groups WHERE id = ?";
 	private static final String FIND_GROUP_BY_ID_QUERY = "SELECT * FROM groups WHERE id = ?";
-	private static final String GET_GROUPS_QUERY = "SELECT * FROM groups;";
-	private static final String UPDATE_GROUP_QUERY = "UPDATE groups SET name = ? WHERE id = ?;";
+	private static final String GET_GROUPS_QUERY = "SELECT * FROM groups";
+	private static final String UPDATE_GROUP_QUERY = "UPDATE groups SET name = ? WHERE id = ?";
 	private static final String GET_GROUPS_BY_LESSON_ID_QUERY = "SELECT * FROM groups "
-			+ "JOIN lessons_groups ON lessons_groups.group_id = groups.id WHERE lesson_id = ?;";
+			+ "JOIN lessons_groups ON lessons_groups.group_id = groups.id WHERE lesson_id = ?";
+	private static final String FIND_GROUP_BY_NAME_QUERY = "SELECT * FROM groups WHERE name = ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private GroupMapper groupMapper;
@@ -45,11 +48,13 @@ public class JdbcGroupDao implements GroupDao {
 	}
 
 	@Override
-	public Group findById(Long groupId) {
-		if (groupId == 0) {
-			return null;
+	public Optional<Group> findById(Long groupId) {
+		try {
+			return Optional
+					.of(jdbcTemplate.queryForObject(FIND_GROUP_BY_ID_QUERY, new Object[] { groupId }, groupMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
 		}
-		return jdbcTemplate.queryForObject(FIND_GROUP_BY_ID_QUERY, new Object[] { groupId }, groupMapper);
 	}
 
 	@Override
@@ -68,7 +73,17 @@ public class JdbcGroupDao implements GroupDao {
 	}
 
 	@Override
-	public List<Group> getGroupsByLessonId(Long lessonId) {
+	public List<Group> getByLessonId(Long lessonId) {
 		return jdbcTemplate.query(GET_GROUPS_BY_LESSON_ID_QUERY, new Object[] { lessonId }, groupMapper);
+	}
+
+	@Override
+	public Optional<Group> findByName(String name) {
+		try {
+			return Optional
+					.of(jdbcTemplate.queryForObject(FIND_GROUP_BY_NAME_QUERY, new Object[] { name }, groupMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 }

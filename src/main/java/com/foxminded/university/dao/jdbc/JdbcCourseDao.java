@@ -4,7 +4,9 @@ import static com.foxminded.university.dao.jdbc.mapper.CourseMapper.COURSE_ID;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -18,16 +20,17 @@ import com.foxminded.university.model.Room;
 @Component
 public class JdbcCourseDao implements CourseDao {
 
-	private static final String CREATE_COURSE_QUERY = "INSERT INTO courses (name, description) VALUES (?, ?);";
+	private static final String CREATE_COURSE_QUERY = "INSERT INTO courses (name, description) VALUES (?, ?)";
 	private static final String FIND_COURSE_BY_ID_QUERY = "SELECT * FROM courses WHERE id = ?";
 	private static final String GET_COURSES_QUERY = "SELECT * FROM courses";
-	private static final String DELETE_COURSE_BY_ID_QUERY = "DELETE FROM courses WHERE id = ?;";
-	private static final String UPDATE_COURSE_QUERY = "UPDATE courses SET name = ?, description = ? WHERE id = ?;";
-	private static final String CREATE_COURSE_ROOM_QUERY = "INSERT INTO courses_rooms (course_id, room_id) VALUES (?, ?);";
-	private static final String DELETE_COURSE_ROOM_QUERY = "DELETE FROM courses_rooms WHERE course_id = ? AND room_id = ?;";
-	private static final String GET_COURSES_BY_ROOM_ID_QUERY = "SELECT * FROM courses JOIN courses_rooms ON courses_rooms.course_id = courses.id WHERE room_id = ?;";
-	private static final String GET_COURSES_BY_STUDENT_ID_QUERY = "SELECT * FROM courses JOIN students_courses ON students_courses.course_id = courses.id WHERE student_id = ?;";
-	private static final String GET_COURSES_BY_TEACHER_ID_QUERY = "SELECT * FROM courses JOIN teachers_courses ON teachers_courses.course_id = courses.id WHERE teacher_id = ?;";
+	private static final String DELETE_COURSE_BY_ID_QUERY = "DELETE FROM courses WHERE id = ?";
+	private static final String UPDATE_COURSE_QUERY = "UPDATE courses SET name = ?, description = ? WHERE id = ?";
+	private static final String CREATE_COURSE_ROOM_QUERY = "INSERT INTO courses_rooms (course_id, room_id) VALUES (?, ?)";
+	private static final String DELETE_COURSE_ROOM_QUERY = "DELETE FROM courses_rooms WHERE course_id = ? AND room_id = ?";
+	private static final String GET_COURSES_BY_ROOM_ID_QUERY = "SELECT * FROM courses JOIN courses_rooms ON courses_rooms.course_id = courses.id WHERE room_id = ?";
+	private static final String GET_COURSES_BY_STUDENT_ID_QUERY = "SELECT * FROM courses JOIN students_courses ON students_courses.course_id = courses.id WHERE student_id = ?";
+	private static final String GET_COURSES_BY_TEACHER_ID_QUERY = "SELECT * FROM courses JOIN teachers_courses ON teachers_courses.course_id = courses.id WHERE teacher_id = ?";
+	private static final String FIND_COURSE_BY_NAME_QUERY = "SELECT * FROM courses WHERE name = ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcRoomDao roomDao;
@@ -56,19 +59,25 @@ public class JdbcCourseDao implements CourseDao {
 	}
 
 	@Override
-	public Course findById(Long courseId) {
-		return jdbcTemplate.queryForObject(FIND_COURSE_BY_ID_QUERY, new Object[] { courseId }, new CourseMapper());
+	public Optional<Course> findById(Long courseId) {
+		try {
+			return Optional
+					.of(jdbcTemplate.queryForObject(FIND_COURSE_BY_ID_QUERY, new Object[] { courseId }, courseMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
+
 	}
 
 	@Override
 	public List<Course> getAll() {
-		return jdbcTemplate.query(GET_COURSES_QUERY, new CourseMapper());
+		return jdbcTemplate.query(GET_COURSES_QUERY, courseMapper);
 	}
 
 	@Override
 	public void update(Course course) {
 		jdbcTemplate.update(UPDATE_COURSE_QUERY, course.getName(), course.getDescription(), course.getId());
-		List<Room> rooms = roomDao.getRoomsByCourseId(course.getId());
+		List<Room> rooms = roomDao.getByCourseId(course.getId());
 		rooms.stream()
 				.filter(r -> !course.getRooms().contains(r))
 				.forEach(r -> jdbcTemplate.update(DELETE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
@@ -84,17 +93,27 @@ public class JdbcCourseDao implements CourseDao {
 	}
 
 	@Override
-	public List<Course> getCoursesByRoomId(Long roomId) {
+	public List<Course> getByRoomId(Long roomId) {
 		return jdbcTemplate.query(GET_COURSES_BY_ROOM_ID_QUERY, new Object[] { roomId }, courseMapper);
 	}
 
 	@Override
-	public List<Course> getCoursesByStudentId(Long studentId) {
+	public List<Course> getByStudentId(Long studentId) {
 		return jdbcTemplate.query(GET_COURSES_BY_STUDENT_ID_QUERY, new Object[] { studentId }, courseMapper);
 	}
 
 	@Override
-	public List<Course> getCoursesByTeacherId(Long teacherId) {
+	public List<Course> getByTeacherId(Long teacherId) {
 		return jdbcTemplate.query(GET_COURSES_BY_TEACHER_ID_QUERY, new Object[] { teacherId }, courseMapper);
+	}
+
+	@Override
+	public Optional<Course> findByName(String name) {
+		try {
+			return Optional
+					.of(jdbcTemplate.queryForObject(FIND_COURSE_BY_NAME_QUERY, new Object[] { name }, courseMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 }

@@ -1,12 +1,13 @@
 package com.foxminded.university.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GenericDao<T> {
 
 	public void create(T entity);
 
-	public T findById(Long id);
+	public Optional<T> findById(Long id);
 
 	public List<T> getAll();
 

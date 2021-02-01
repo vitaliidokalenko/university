@@ -4,7 +4,9 @@ import static com.foxminded.university.dao.jdbc.mapper.TeacherMapper.TEACHER_ID;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -19,16 +21,16 @@ import com.foxminded.university.model.Teacher;
 public class JdbcTeacherDao implements TeacherDao {
 
 	private static final String CREATE_TEACHER_QUERY = "INSERT INTO teachers (name, surname, rank, phone, email, address, birth_date, gender) "
-			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-	private static final String FIND_TEACHER_BY_ID_QUERY = "SELECT * FROM teachers WHERE id = ?;";
-	private static final String GET_TEACHERS_QUERY = "SELECT * FROM teachers;";
-	private static final String DELETE_TEACHER_BY_ID_QUERY = "DELETE FROM teachers WHERE id = ?;";
+			+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	private static final String FIND_TEACHER_BY_ID_QUERY = "SELECT * FROM teachers WHERE id = ?";
+	private static final String GET_TEACHERS_QUERY = "SELECT * FROM teachers";
+	private static final String DELETE_TEACHER_BY_ID_QUERY = "DELETE FROM teachers WHERE id = ?";
 	private static final String UPDATE_TEACHER_QUERY = "UPDATE teachers SET name = ?, surname = ?, rank = ?, phone = ?, email = ?, address = ?, birth_date = ?, gender = ? "
-			+ "WHERE id = ?;";
-	private static final String CREATE_TEACHER_COURSE_QUERY = "INSERT INTO teachers_courses (teacher_id, course_id) VALUES(?, ?);";
-	private static final String DELETE_TEACHER_COURSE_QUERY = "DELETE FROM teachers_courses WHERE teacher_id = ? AND course_id =?;";
+			+ "WHERE id = ?";
+	private static final String CREATE_TEACHER_COURSE_QUERY = "INSERT INTO teachers_courses (teacher_id, course_id) VALUES(?, ?)";
+	private static final String DELETE_TEACHER_COURSE_QUERY = "DELETE FROM teachers_courses WHERE teacher_id = ? AND course_id =?";
 	private static final String GET_TEACHERS_BY_COURSE_ID_QUERY = "SELECT * FROM teachers "
-			+ "JOIN teachers_courses ON teachers_courses.teacher_id = teachers.id WHERE course_id = ?;";
+			+ "JOIN teachers_courses ON teachers_courses.teacher_id = teachers.id WHERE course_id = ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcCourseDao courseDao;
@@ -63,8 +65,13 @@ public class JdbcTeacherDao implements TeacherDao {
 	}
 
 	@Override
-	public Teacher findById(Long teacherId) {
-		return jdbcTemplate.queryForObject(FIND_TEACHER_BY_ID_QUERY, new Object[] { teacherId }, teacherMapper);
+	public Optional<Teacher> findById(Long teacherId) {
+		try {
+			return Optional.of(
+					jdbcTemplate.queryForObject(FIND_TEACHER_BY_ID_QUERY, new Object[] { teacherId }, teacherMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override
@@ -84,7 +91,7 @@ public class JdbcTeacherDao implements TeacherDao {
 				teacher.getBirthDate(),
 				teacher.getGender().toString(),
 				teacher.getId());
-		List<Course> courses = courseDao.getCoursesByTeacherId(teacher.getId());
+		List<Course> courses = courseDao.getByTeacherId(teacher.getId());
 		courses.stream()
 				.filter(c -> !teacher.getCourses().contains(c))
 				.forEach(c -> jdbcTemplate.update(DELETE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
@@ -100,7 +107,7 @@ public class JdbcTeacherDao implements TeacherDao {
 	}
 
 	@Override
-	public List<Teacher> getTeachersByCourseId(Long courseId) {
+	public List<Teacher> getByCourseId(Long courseId) {
 		return jdbcTemplate.query(GET_TEACHERS_BY_COURSE_ID_QUERY, new Object[] { courseId }, teacherMapper);
 	}
 }

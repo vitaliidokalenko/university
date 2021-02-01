@@ -6,5 +6,5 @@ import com.foxminded.university.model.Teacher;
 
 public interface TeacherDao extends GenericDao<Teacher> {
 
-	public List<Teacher> getTeachersByCourseId(Long courseId);
+	public List<Teacher> getByCourseId(Long courseId);
 }

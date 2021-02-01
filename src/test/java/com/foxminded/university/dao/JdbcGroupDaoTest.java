@@ -63,7 +63,7 @@ public class JdbcGroupDaoTest {
 		Group expected = new Group("AA-11");
 		expected.setId(1L);
 
-		Group actual = groupDao.findById(1L);
+		Group actual = groupDao.findById(1L).orElse(null);
 
 		assertEquals(expected, actual);
 	}
@@ -94,14 +94,25 @@ public class JdbcGroupDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenLessonId_whenGetGroupsByLessonId_thenGetRightListOfGroups() {
+	public void givenLessonId_whenGetByLessonId_thenGetRightListOfGroups() {
 		Group group1 = new Group("AA-11");
 		group1.setId(1L);
 		Group group2 = new Group("BB-22");
 		group2.setId(2L);
 		List<Group> expected = Arrays.asList(group1, group2);
 
-		List<Group> actual = groupDao.getGroupsByLessonId(1L);
+		List<Group> actual = groupDao.getByLessonId(1L);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataGroups.sql")
+	public void givenId_whenFindByName_thenGetRightGroup() {
+		Group expected = new Group("AA-11");
+		expected.setId(1L);
+
+		Group actual = groupDao.findByName("AA-11").orElse(null);
 
 		assertEquals(expected, actual);
 	}
