@@ -59,7 +59,9 @@ public class Timeframe {
 			return false;
 		}
 		Timeframe other = (Timeframe) obj;
-		return Objects.equals(endTime, other.endTime) && Objects.equals(id, other.id) && sequance == other.sequance
+		return Objects.equals(endTime, other.endTime)
+				&& Objects.equals(id, other.id)
+				&& sequance == other.sequance
 				&& Objects.equals(startTime, other.startTime);
 	}
 }

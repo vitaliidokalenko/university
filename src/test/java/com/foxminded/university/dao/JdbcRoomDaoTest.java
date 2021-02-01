@@ -68,7 +68,7 @@ public class JdbcRoomDaoTest {
 		expected.setId(1L);
 		expected.setCapacity(30);
 
-		Room actual = roomDao.findById(1L);
+		Room actual = roomDao.findById(1L).orElse(null);
 
 		assertEquals(expected, actual);
 	}
@@ -100,7 +100,7 @@ public class JdbcRoomDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenCourseId_whenGetRoomsByCourseId_thenGetRightListOfRooms() {
+	public void givenCourseId_whenGetByCourseId_thenGetRightListOfRooms() {
 		Room room1 = new Room("A111");
 		room1.setId(1L);
 		room1.setCapacity(30);
@@ -109,7 +109,19 @@ public class JdbcRoomDaoTest {
 		room2.setCapacity(30);
 		List<Room> expected = Arrays.asList(room1, room2);
 
-		List<Room> actual = roomDao.getRoomsByCourseId(1L);
+		List<Room> actual = roomDao.getByCourseId(1L);
+
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	@Sql("/dataRooms.sql")
+	public void givenId_whenFindByName_thenGetRightRoom() {
+		Room expected = new Room("A111");
+		expected.setId(1L);
+		expected.setCapacity(30);
+
+		Room actual = roomDao.findByName("A111").orElse(null);
 
 		assertEquals(expected, actual);
 	}

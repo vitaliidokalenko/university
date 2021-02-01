@@ -80,7 +80,7 @@ public class JdbcTimeframeDaoTest {
 		expected.setStartTime(LocalTime.parse("08:00"));
 		expected.setEndTime(LocalTime.parse("09:20"));
 
-		Timeframe actual = timeframeDao.findById(1L);
+		Timeframe actual = timeframeDao.findById(1L).orElse(null);
 
 		assertEquals(expected, actual);
 	}

@@ -37,12 +37,22 @@ public class JdbcCourseDaoTest {
 	@Test
 	@Sql("/dataCourses.sql")
 	public void givenCourses_whenGetAll_thenGetRightListOfCourses() {
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Set<Room> rooms = new HashSet<>(Arrays.asList(room1, room2));
 		Course course1 = new Course("Law");
 		course1.setId(1L);
+		course1.setRooms(rooms);
 		Course course2 = new Course("Biology");
 		course2.setId(2L);
+		course2.setRooms(rooms);
 		Course course3 = new Course("Music");
 		course3.setId(3L);
+		course3.setRooms(rooms);
 		List<Course> expected = Arrays.asList(course1, course2, course3);
 
 		List<Course> actual = courseDao.getAll();
@@ -69,10 +79,7 @@ public class JdbcCourseDaoTest {
 		room1.setId(1L);
 		Room room2 = new Room("B222");
 		room2.setId(2L);
-		Set<Room> rooms = new HashSet<>();
-		rooms.add(room1);
-		rooms.add(room2);
-		course.setRooms(rooms);
+		course.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME) + 2;
 
 		courseDao.create(course);
@@ -84,10 +91,17 @@ public class JdbcCourseDaoTest {
 	@Test
 	@Sql("/dataCourses.sql")
 	public void givenId_whenFindById_thenGetRightCourse() {
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
 		Course expected = new Course("Law");
 		expected.setId(1L);
+		expected.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 
-		Course actual = courseDao.findById(1L);
+		Course actual = courseDao.findById(1L).orElse(null);
 
 		assertEquals(expected, actual);
 	}
@@ -106,16 +120,14 @@ public class JdbcCourseDaoTest {
 	}
 
 	@Test
-	@Sql("/dataCoursesRooms.sql")
+	@Sql("/dataCourses.sql")
 	public void givenUpdatedRooms_whenUpdate_thenCoursesRoomsTableIsUpdated() {
 		Course course = new Course("Art");
 		course.setId(1L);
 		Room room = new Room("D444");
 		room.setId(4L);
-		Set<Room> rooms = new HashSet<>();
-		rooms.add(room);
-		course.setRooms(rooms);
-		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME) - 2;
+		course.setRooms(new HashSet<>(Arrays.asList(room)));
+		int expectedRows = countRowsInTable(jdbcTemplate, COURSES_ROOMS_TABLE_NAME) - 1;
 
 		courseDao.update(course);
 
@@ -136,42 +148,93 @@ public class JdbcCourseDaoTest {
 
 	@Test
 	@Sql("/data.sql")
-	public void givenRoomId_whenGetCoursesByRoomId_thenGetRightListOfCourses() {
+	public void givenRoomId_whenGetByRoomId_thenGetRightListOfCourses() {
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Room room3 = new Room("C333");
+		room3.setId(3L);
+		room3.setCapacity(30);
 		Course course1 = new Course("Law");
 		course1.setId(1L);
+		course1.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 		Course course2 = new Course("Biology");
 		course2.setId(2L);
+		course2.setRooms(new HashSet<>(Arrays.asList(room2, room3)));
 		List<Course> expected = Arrays.asList(course1, course2);
 
-		List<Course> actual = courseDao.getCoursesByRoomId(2L);
+		List<Course> actual = courseDao.getByRoomId(2L);
 
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	@Sql("/data.sql")
-	public void givenStudentId_whenGetCoursesByStudentId_thenGetRightListOfCourses() {
+	public void givenStudentId_whenGetByStudentId_thenGetRightListOfCourses() {
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Room room3 = new Room("C333");
+		room3.setId(3L);
+		room3.setCapacity(30);
 		Course course1 = new Course("Law");
 		course1.setId(1L);
+		course1.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 		Course course2 = new Course("Biology");
 		course2.setId(2L);
+		course2.setRooms(new HashSet<>(Arrays.asList(room2, room3)));
 		List<Course> expected = Arrays.asList(course1, course2);
 
-		List<Course> actual = courseDao.getCoursesByStudentId(1L);
+		List<Course> actual = courseDao.getByStudentId(1L);
 
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	@Sql("/data.sql")
-	public void givenTeacherId_whenGetCoursesByTeacherId_thenGetRightListOfCourses() {
+	public void givenTeacherId_whenGetByTeacherId_thenGetRightListOfCourses() {
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Room room3 = new Room("C333");
+		room3.setId(3L);
+		room3.setCapacity(30);
 		Course course1 = new Course("Law");
 		course1.setId(1L);
+		course1.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
 		Course course2 = new Course("Biology");
 		course2.setId(2L);
+		course2.setRooms(new HashSet<>(Arrays.asList(room2, room3)));
 		List<Course> expected = Arrays.asList(course1, course2);
 
-		List<Course> actual = courseDao.getCoursesByTeacherId(1L);
+		List<Course> actual = courseDao.getByTeacherId(1L);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataCourses.sql")
+	public void givenId_whenFindByName_thenGetRightCourse() {
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Course expected = new Course("Law");
+		expected.setId(1L);
+		expected.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
+
+		Course actual = courseDao.findByName("Law").orElse(null);
 
 		assertEquals(expected, actual);
 	}

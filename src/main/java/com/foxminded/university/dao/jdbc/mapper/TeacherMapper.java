@@ -1,5 +1,7 @@
 package com.foxminded.university.dao.jdbc.mapper;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -7,6 +9,7 @@ import java.time.LocalDate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.foxminded.university.dao.jdbc.JdbcCourseDao;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Teacher;
 
@@ -23,6 +26,12 @@ public class TeacherMapper implements RowMapper<Teacher> {
 	public static final String TEACHER_BIRTH_DATE = "birth_date";
 	public static final String TEACHER_GENDER = "gender";
 
+	private JdbcCourseDao courseDao;
+
+	public TeacherMapper(JdbcCourseDao courseDao) {
+		this.courseDao = courseDao;
+	}
+
 	@Override
 	public Teacher mapRow(ResultSet rs, int rowNum) throws SQLException {
 		Teacher teacher = new Teacher(rs.getString(TEACHER_NAME), rs.getString(TEACHER_SURNAME));
@@ -33,6 +42,7 @@ public class TeacherMapper implements RowMapper<Teacher> {
 		teacher.setAddress(rs.getString(TEACHER_ADDRESS));
 		teacher.setBirthDate(rs.getObject(TEACHER_BIRTH_DATE, LocalDate.class));
 		teacher.setGender(Gender.valueOf(rs.getString(TEACHER_GENDER)));
+		teacher.setCourses(courseDao.getByTeacherId(rs.getLong(TEACHER_ID)).stream().collect(toSet()));
 		return teacher;
 	}
 }

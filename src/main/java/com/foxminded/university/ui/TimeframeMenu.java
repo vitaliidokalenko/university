@@ -6,8 +6,8 @@ import java.util.Scanner;
 
 import org.springframework.stereotype.Component;
 
-import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
+import com.foxminded.university.service.TimeframeService;
 
 @Component
 public class TimeframeMenu {
@@ -25,11 +25,11 @@ public class TimeframeMenu {
 	private static final String PRINT_TIMEFRAMES_FORMAT = "id %d. %s - %s%n";
 
 	private Scanner scanner;
-	private TimeframeDao timeframeDao;
+	private TimeframeService timeframeService;
 
-	public TimeframeMenu(Scanner scanner, TimeframeDao timeframeDao) {
+	public TimeframeMenu(Scanner scanner, TimeframeService timeframeService) {
 		this.scanner = scanner;
-		this.timeframeDao = timeframeDao;
+		this.timeframeService = timeframeService;
 	}
 
 	public void runMenu() {
@@ -78,17 +78,17 @@ public class TimeframeMenu {
 		timeframe.setStartTime(startTime);
 		timeframe.setEndTime(endTime);
 		timeframe.setSequance(sequance);
-		timeframeDao.create(timeframe);
+		timeframeService.create(timeframe);
 	}
 
 	private void removeTimeframe() {
 		System.out.println(ID_INQUIRY);
 		long id = scanner.nextInt();
-		timeframeDao.deleteById(id);
+		timeframeService.deleteById(id);
 	}
 
 	private void printTimeframes() {
-		timeframeDao.getAll()
+		timeframeService.getAll()
 				.forEach(t -> System.out.printf(PRINT_TIMEFRAMES_FORMAT, t.getId(), t.getStartTime(), t.getEndTime()));
 	}
 }

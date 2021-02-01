@@ -6,7 +6,9 @@ import static java.sql.Types.TIME;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -20,10 +22,10 @@ import com.foxminded.university.model.Timeframe;
 public class JdbcTimeframeDao implements TimeframeDao {
 
 	private static final String CREATE_TIMEFRAME_QUERY = "INSERT INTO timeframes (sequance, start_time, end_time) "
-			+ "VALUES (?, ?, ?);";
-	private static final String FIND_TIMEFRAME_BY_ID_QUERY = "SELECT * FROM timeframes WHERE id = ?;";
-	private static final String GET_TIMEFRAMES_QUERY = "SELECT * FROM timeframes;";
-	private static final String DELETE_TIMEFRAME_BY_ID_QUERY = "DELETE FROM timeframes WHERE id = ?;";
+			+ "VALUES (?, ?, ?)";
+	private static final String FIND_TIMEFRAME_BY_ID_QUERY = "SELECT * FROM timeframes WHERE id = ?";
+	private static final String GET_TIMEFRAMES_QUERY = "SELECT * FROM timeframes";
+	private static final String DELETE_TIMEFRAME_BY_ID_QUERY = "DELETE FROM timeframes WHERE id = ?";
 	private static final String UPDATE_TIMEFRAME_QUERY = "UPDATE timeframes SET sequance = ?, start_time = ?, end_time = ? WHERE id = ?";
 
 	private JdbcTemplate jdbcTemplate;
@@ -49,8 +51,13 @@ public class JdbcTimeframeDao implements TimeframeDao {
 	}
 
 	@Override
-	public Timeframe findById(Long timeframeId) {
-		return jdbcTemplate.queryForObject(FIND_TIMEFRAME_BY_ID_QUERY, new Object[] { timeframeId }, timeframeMapper);
+	public Optional<Timeframe> findById(Long timeframeId) {
+		try {
+			return Optional.of(jdbcTemplate
+					.queryForObject(FIND_TIMEFRAME_BY_ID_QUERY, new Object[] { timeframeId }, timeframeMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
 	}
 
 	@Override
