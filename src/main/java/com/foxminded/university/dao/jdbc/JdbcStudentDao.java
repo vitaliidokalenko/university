@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -22,6 +23,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.StudentDao;
+import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.dao.jdbc.mapper.StudentMapper;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
@@ -57,23 +59,28 @@ public class JdbcStudentDao implements StudentDao {
 	@Override
 	public void create(Student student) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		jdbcTemplate.update(connection -> {
-			PreparedStatement statement = connection.prepareStatement(CREATE_STUDENT_QUERY,
-					new String[] { STUDENT_ID });
-			statement.setObject(1, Optional.ofNullable(student).map(Student::getGroup).map(Group::getId).orElse(null));
-			statement.setString(2, student.getName());
-			statement.setString(3, student.getSurname());
-			statement.setString(4, student.getPhone());
-			statement.setString(5, student.getEmail());
-			statement.setString(6, student.getAddress());
-			statement.setObject(7, student.getBirthDate());
-			statement.setString(8, student.getGender().toString());
-			return statement;
-		}, keyHolder);
-		student.setId(keyHolder.getKey().longValue());
-		student.getCourses()
-				.stream()
-				.forEach(c -> jdbcTemplate.update(CREATE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
+		try {
+			jdbcTemplate.update(connection -> {
+				PreparedStatement statement = connection.prepareStatement(CREATE_STUDENT_QUERY,
+						new String[] { STUDENT_ID });
+				statement.setObject(1,
+						Optional.ofNullable(student).map(Student::getGroup).map(Group::getId).orElse(null));
+				statement.setString(2, student.getName());
+				statement.setString(3, student.getSurname());
+				statement.setString(4, student.getPhone());
+				statement.setString(5, student.getEmail());
+				statement.setString(6, student.getAddress());
+				statement.setObject(7, student.getBirthDate());
+				statement.setString(8, student.getGender().toString());
+				return statement;
+			}, keyHolder);
+			student.setId(keyHolder.getKey().longValue());
+			student.getCourses()
+					.stream()
+					.forEach(c -> jdbcTemplate.update(CREATE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not create student: " + student, e);
+		}
 	}
 
 	@Override
@@ -83,59 +90,81 @@ public class JdbcStudentDao implements StudentDao {
 					jdbcTemplate.queryForObject(FIND_STUDENT_BY_ID_QUERY, new Object[] { studentId }, studentMapper));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get student by id: " + studentId, e);
 		}
 	}
 
 	@Override
 	public List<Student> getAll() {
-		return jdbcTemplate.query(GET_STUDENTS_QUERY, studentMapper);
+		try {
+			return jdbcTemplate.query(GET_STUDENTS_QUERY, studentMapper);
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get students", e);
+		}
 	}
 
 	@Override
 	public void update(Student student) {
-		jdbcTemplate.update(UPDATE_STUDENT_QUERY,
-				Optional.ofNullable(student).map(Student::getGroup).map(Group::getId).orElse(null),
-				student.getName(),
-				student.getSurname(),
-				student.getPhone(),
-				student.getEmail(),
-				student.getAddress(),
-				student.getBirthDate(),
-				student.getGender().toString(),
-				student.getId());
-		List<Course> courses = courseDao.getByStudentId(student.getId());
-		courses.stream()
-				.filter(c -> !student.getCourses().contains(c))
-				.forEach(c -> jdbcTemplate.update(DELETE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
-		student.getCourses()
-				.stream()
-				.filter(c -> !courses.contains(c))
-				.forEach(c -> jdbcTemplate.update(CREATE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
+		try {
+			jdbcTemplate.update(UPDATE_STUDENT_QUERY,
+					Optional.ofNullable(student).map(Student::getGroup).map(Group::getId).orElse(null),
+					student.getName(),
+					student.getSurname(),
+					student.getPhone(),
+					student.getEmail(),
+					student.getAddress(),
+					student.getBirthDate(),
+					student.getGender().toString(),
+					student.getId());
+			List<Course> courses = courseDao.getByStudentId(student.getId());
+			courses.stream()
+					.filter(c -> !student.getCourses().contains(c))
+					.forEach(c -> jdbcTemplate.update(DELETE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
+			student.getCourses()
+					.stream()
+					.filter(c -> !courses.contains(c))
+					.forEach(c -> jdbcTemplate.update(CREATE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not update student: " + student, e);
+		}
 	}
 
 	@Override
 	public void deleteById(Long studentId) {
-		jdbcTemplate.update(DELETE_STUDENT_BY_ID_QUERY, studentId);
+		try {
+			jdbcTemplate.update(DELETE_STUDENT_BY_ID_QUERY, studentId);
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not delete student by id: " + studentId, e);
+		}
 	}
 
 	@Override
 	public List<Student> getByGroup(Group group) {
-		return jdbcTemplate.query(GET_STUDENTS_BY_GROUP_ID_QUERY, new Object[] { group.getId() }, (rs, rowNum) -> {
-			Student student = new Student(rs.getString(STUDENT_NAME), rs.getString(STUDENT_SURNAME));
-			student.setId(rs.getLong(STUDENT_ID));
-			student.setPhone(rs.getString(STUDENT_PHONE));
-			student.setEmail(rs.getString(STUDENT_EMAIL));
-			student.setAddress(rs.getString(STUDENT_ADDRESS));
-			student.setBirthDate(rs.getObject(STUDENT_BIRTH_DATE, LocalDate.class));
-			student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
-			student.setGroup(group);
-			student.setCourses(courseDao.getByStudentId(rs.getLong(STUDENT_ID)).stream().collect(toSet()));
-			return student;
-		});
+		try {
+			return jdbcTemplate.query(GET_STUDENTS_BY_GROUP_ID_QUERY, new Object[] { group.getId() }, (rs, rowNum) -> {
+				Student student = new Student(rs.getString(STUDENT_NAME), rs.getString(STUDENT_SURNAME));
+				student.setId(rs.getLong(STUDENT_ID));
+				student.setPhone(rs.getString(STUDENT_PHONE));
+				student.setEmail(rs.getString(STUDENT_EMAIL));
+				student.setAddress(rs.getString(STUDENT_ADDRESS));
+				student.setBirthDate(rs.getObject(STUDENT_BIRTH_DATE, LocalDate.class));
+				student.setGender(Gender.valueOf(rs.getString(STUDENT_GENDER)));
+				student.setGroup(group);
+				student.setCourses(courseDao.getByStudentId(rs.getLong(STUDENT_ID)).stream().collect(toSet()));
+				return student;
+			});
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get students by group: " + group, e);
+		}
 	}
 
 	@Override
 	public List<Student> getByCourseId(Long courseId) {
-		return jdbcTemplate.query(GET_STUDENTS_BY_COURSE_ID_QUERY, new Object[] { courseId }, studentMapper);
+		try {
+			return jdbcTemplate.query(GET_STUDENTS_BY_COURSE_ID_QUERY, new Object[] { courseId }, studentMapper);
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get students by course id: " + courseId, e);
+		}
 	}
 }

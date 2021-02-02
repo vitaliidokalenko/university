@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.TeacherDao;
+import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.dao.jdbc.mapper.TeacherMapper;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Teacher;
@@ -45,23 +47,27 @@ public class JdbcTeacherDao implements TeacherDao {
 	@Override
 	public void create(Teacher teacher) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		jdbcTemplate.update(connection -> {
-			PreparedStatement statement = connection.prepareStatement(CREATE_TEACHER_QUERY,
-					new String[] { TEACHER_ID });
-			statement.setString(1, teacher.getName());
-			statement.setString(2, teacher.getSurname());
-			statement.setString(3, teacher.getRank());
-			statement.setString(4, teacher.getPhone());
-			statement.setString(5, teacher.getEmail());
-			statement.setString(6, teacher.getAddress());
-			statement.setObject(7, teacher.getBirthDate());
-			statement.setString(8, teacher.getGender().toString());
-			return statement;
-		}, keyHolder);
-		teacher.setId(keyHolder.getKey().longValue());
-		teacher.getCourses()
-				.stream()
-				.forEach(c -> jdbcTemplate.update(CREATE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
+		try {
+			jdbcTemplate.update(connection -> {
+				PreparedStatement statement = connection.prepareStatement(CREATE_TEACHER_QUERY,
+						new String[] { TEACHER_ID });
+				statement.setString(1, teacher.getName());
+				statement.setString(2, teacher.getSurname());
+				statement.setString(3, teacher.getRank());
+				statement.setString(4, teacher.getPhone());
+				statement.setString(5, teacher.getEmail());
+				statement.setString(6, teacher.getAddress());
+				statement.setObject(7, teacher.getBirthDate());
+				statement.setString(8, teacher.getGender().toString());
+				return statement;
+			}, keyHolder);
+			teacher.setId(keyHolder.getKey().longValue());
+			teacher.getCourses()
+					.stream()
+					.forEach(c -> jdbcTemplate.update(CREATE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not create teacher: " + teacher, e);
+		}
 	}
 
 	@Override
@@ -71,43 +77,61 @@ public class JdbcTeacherDao implements TeacherDao {
 					jdbcTemplate.queryForObject(FIND_TEACHER_BY_ID_QUERY, new Object[] { teacherId }, teacherMapper));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get teacher by id: " + teacherId, e);
 		}
 	}
 
 	@Override
 	public List<Teacher> getAll() {
-		return jdbcTemplate.query(GET_TEACHERS_QUERY, teacherMapper);
+		try {
+			return jdbcTemplate.query(GET_TEACHERS_QUERY, teacherMapper);
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get teachers", e);
+		}
 	}
 
 	@Override
 	public void update(Teacher teacher) {
-		jdbcTemplate.update(UPDATE_TEACHER_QUERY,
-				teacher.getName(),
-				teacher.getSurname(),
-				teacher.getRank(),
-				teacher.getPhone(),
-				teacher.getEmail(),
-				teacher.getAddress(),
-				teacher.getBirthDate(),
-				teacher.getGender().toString(),
-				teacher.getId());
-		List<Course> courses = courseDao.getByTeacherId(teacher.getId());
-		courses.stream()
-				.filter(c -> !teacher.getCourses().contains(c))
-				.forEach(c -> jdbcTemplate.update(DELETE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
-		teacher.getCourses()
-				.stream()
-				.filter(c -> !courses.contains(c))
-				.forEach(c -> jdbcTemplate.update(CREATE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
+		try {
+			jdbcTemplate.update(UPDATE_TEACHER_QUERY,
+					teacher.getName(),
+					teacher.getSurname(),
+					teacher.getRank(),
+					teacher.getPhone(),
+					teacher.getEmail(),
+					teacher.getAddress(),
+					teacher.getBirthDate(),
+					teacher.getGender().toString(),
+					teacher.getId());
+			List<Course> courses = courseDao.getByTeacherId(teacher.getId());
+			courses.stream()
+					.filter(c -> !teacher.getCourses().contains(c))
+					.forEach(c -> jdbcTemplate.update(DELETE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
+			teacher.getCourses()
+					.stream()
+					.filter(c -> !courses.contains(c))
+					.forEach(c -> jdbcTemplate.update(CREATE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not update teacher: " + teacher, e);
+		}
 	}
 
 	@Override
 	public void deleteById(Long teacherId) {
-		jdbcTemplate.update(DELETE_TEACHER_BY_ID_QUERY, teacherId);
+		try {
+			jdbcTemplate.update(DELETE_TEACHER_BY_ID_QUERY, teacherId);
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not delete teacher by id: " + teacherId, e);
+		}
 	}
 
 	@Override
 	public List<Teacher> getByCourseId(Long courseId) {
-		return jdbcTemplate.query(GET_TEACHERS_BY_COURSE_ID_QUERY, new Object[] { courseId }, teacherMapper);
+		try {
+			return jdbcTemplate.query(GET_TEACHERS_BY_COURSE_ID_QUERY, new Object[] { courseId }, teacherMapper);
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get teachers by course id: " + courseId, e);
+		}
 	}
 }

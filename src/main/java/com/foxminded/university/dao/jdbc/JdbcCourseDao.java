@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.CourseDao;
+import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.dao.jdbc.mapper.CourseMapper;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
@@ -45,17 +47,21 @@ public class JdbcCourseDao implements CourseDao {
 	@Override
 	public void create(Course course) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		jdbcTemplate.update(connection -> {
-			PreparedStatement statement = connection.prepareStatement(CREATE_COURSE_QUERY, new String[] { COURSE_ID });
-			statement.setString(1, course.getName());
-			statement.setString(2, course.getDescription());
-			return statement;
-		}, keyHolder);
-		course.setId(keyHolder.getKey().longValue());
-		course.getRooms()
-				.stream()
-				.forEach(r -> jdbcTemplate.update(CREATE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
-
+		try {
+			jdbcTemplate.update(connection -> {
+				PreparedStatement statement = connection.prepareStatement(CREATE_COURSE_QUERY,
+						new String[] { COURSE_ID });
+				statement.setString(1, course.getName());
+				statement.setString(2, course.getDescription());
+				return statement;
+			}, keyHolder);
+			course.setId(keyHolder.getKey().longValue());
+			course.getRooms()
+					.stream()
+					.forEach(r -> jdbcTemplate.update(CREATE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not create course: " + course, e);
+		}
 	}
 
 	@Override
@@ -65,46 +71,72 @@ public class JdbcCourseDao implements CourseDao {
 					.of(jdbcTemplate.queryForObject(FIND_COURSE_BY_ID_QUERY, new Object[] { courseId }, courseMapper));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get course by id: " + courseId, e);
 		}
-
 	}
 
 	@Override
 	public List<Course> getAll() {
-		return jdbcTemplate.query(GET_COURSES_QUERY, courseMapper);
+		try {
+			return jdbcTemplate.query(GET_COURSES_QUERY, courseMapper);
+
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get courses", e);
+		}
 	}
 
 	@Override
 	public void update(Course course) {
-		jdbcTemplate.update(UPDATE_COURSE_QUERY, course.getName(), course.getDescription(), course.getId());
-		List<Room> rooms = roomDao.getByCourseId(course.getId());
-		rooms.stream()
-				.filter(r -> !course.getRooms().contains(r))
-				.forEach(r -> jdbcTemplate.update(DELETE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
-		course.getRooms()
-				.stream()
-				.filter(r -> !rooms.contains(r))
-				.forEach(r -> jdbcTemplate.update(CREATE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
+		try {
+			jdbcTemplate.update(UPDATE_COURSE_QUERY, course.getName(), course.getDescription(), course.getId());
+			List<Room> rooms = roomDao.getByCourseId(course.getId());
+			rooms.stream()
+					.filter(r -> !course.getRooms().contains(r))
+					.forEach(r -> jdbcTemplate.update(DELETE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
+			course.getRooms()
+					.stream()
+					.filter(r -> !rooms.contains(r))
+					.forEach(r -> jdbcTemplate.update(CREATE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not update course: " + course, e);
+		}
 	}
 
 	@Override
 	public void deleteById(Long courseId) {
-		jdbcTemplate.update(DELETE_COURSE_BY_ID_QUERY, courseId);
+		try {
+			jdbcTemplate.update(DELETE_COURSE_BY_ID_QUERY, courseId);
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not delete course by id: " + courseId, e);
+		}
 	}
 
 	@Override
 	public List<Course> getByRoomId(Long roomId) {
-		return jdbcTemplate.query(GET_COURSES_BY_ROOM_ID_QUERY, new Object[] { roomId }, courseMapper);
+		try {
+			return jdbcTemplate.query(GET_COURSES_BY_ROOM_ID_QUERY, new Object[] { roomId }, courseMapper);
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get courses by room id: " + roomId, e);
+		}
 	}
 
 	@Override
 	public List<Course> getByStudentId(Long studentId) {
-		return jdbcTemplate.query(GET_COURSES_BY_STUDENT_ID_QUERY, new Object[] { studentId }, courseMapper);
+		try {
+			return jdbcTemplate.query(GET_COURSES_BY_STUDENT_ID_QUERY, new Object[] { studentId }, courseMapper);
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get courses by student id: " + studentId, e);
+		}
 	}
 
 	@Override
 	public List<Course> getByTeacherId(Long teacherId) {
-		return jdbcTemplate.query(GET_COURSES_BY_TEACHER_ID_QUERY, new Object[] { teacherId }, courseMapper);
+		try {
+			return jdbcTemplate.query(GET_COURSES_BY_TEACHER_ID_QUERY, new Object[] { teacherId }, courseMapper);
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get courses by teacher id: " + teacherId, e);
+		}
 	}
 
 	@Override
@@ -114,6 +146,8 @@ public class JdbcCourseDao implements CourseDao {
 					.of(jdbcTemplate.queryForObject(FIND_COURSE_BY_NAME_QUERY, new Object[] { name }, courseMapper));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get course by name: " + name, e);
 		}
 	}
 }
