@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.StudentDao;
+import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Lesson;
+import com.foxminded.university.service.exception.ServiceException;
 
 @Service
 public class LessonService {
@@ -29,31 +31,51 @@ public class LessonService {
 	@Transactional
 	public void create(Lesson lesson) {
 		if (isLessonValid(lesson)) {
-			lessonDao.create(lesson);
+			try {
+				lessonDao.create(lesson);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not create lesson: " + lesson, e);
+			}
 		}
 	}
 
 	@Transactional
 	public Optional<Lesson> findById(Long id) {
-		return lessonDao.findById(id);
+		try {
+			return lessonDao.findById(id);
+		} catch (DAOException e) {
+			throw new ServiceException("Could not get lesson by id: " + id, e);
+		}
 	}
 
 	@Transactional
 	public List<Lesson> getAll() {
-		return lessonDao.getAll();
+		try {
+			return lessonDao.getAll();
+		} catch (DAOException e) {
+			throw new ServiceException("Could not get lessons", e);
+		}
 	}
 
 	@Transactional
 	public void update(Lesson lesson) {
 		if (isLessonValid(lesson)) {
-			lessonDao.update(lesson);
+			try {
+				lessonDao.update(lesson);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not update lesson: " + lesson, e);
+			}
 		}
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			lessonDao.deleteById(id);
+			try {
+				lessonDao.deleteById(id);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not delete lesson by id: " + id, e);
+			}
 		}
 	}
 

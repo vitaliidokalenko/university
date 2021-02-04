@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.StudentDao;
+import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Student;
+import com.foxminded.university.service.exception.ServiceException;
 
 @Service
 @PropertySource("application.properties")
@@ -26,31 +28,51 @@ public class StudentService {
 	@Transactional
 	public void create(Student student) {
 		if (isStudentValid(student)) {
-			studentDao.create(student);
+			try {
+				studentDao.create(student);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not create student: " + student, e);
+			}
 		}
 	}
 
 	@Transactional
 	public Optional<Student> findById(Long id) {
-		return studentDao.findById(id);
+		try {
+			return studentDao.findById(id);
+		} catch (DAOException e) {
+			throw new ServiceException("Could not get student by id: " + id, e);
+		}
 	}
 
 	@Transactional
 	public List<Student> getAll() {
-		return studentDao.getAll();
+		try {
+			return studentDao.getAll();
+		} catch (DAOException e) {
+			throw new ServiceException("Could not get students", e);
+		}
 	}
 
 	@Transactional
 	public void update(Student student) {
 		if (isStudentValid(student)) {
-			studentDao.update(student);
+			try {
+				studentDao.update(student);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not update student: " + student, e);
+			}
 		}
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			studentDao.deleteById(id);
+			try {
+				studentDao.deleteById(id);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not delete student by id: " + id, e);
+			}
 		}
 	}
 

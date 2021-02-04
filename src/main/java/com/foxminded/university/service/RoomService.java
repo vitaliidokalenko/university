@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.RoomDao;
+import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Room;
+import com.foxminded.university.service.exception.ServiceException;
 
 @Service
 public class RoomService {
@@ -21,31 +23,51 @@ public class RoomService {
 	@Transactional
 	public void create(Room room) {
 		if (isRoomValid(room)) {
-			roomDao.create(room);
+			try {
+				roomDao.create(room);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not create room: " + room, e);
+			}
 		}
 	}
 
 	@Transactional
 	public Optional<Room> findById(Long id) {
-		return roomDao.findById(id);
+		try {
+			return roomDao.findById(id);
+		} catch (DAOException e) {
+			throw new ServiceException("Could not get room by id: " + id, e);
+		}
 	}
 
 	@Transactional
 	public List<Room> getAll() {
-		return roomDao.getAll();
+		try {
+			return roomDao.getAll();
+		} catch (DAOException e) {
+			throw new ServiceException("Could not get rooms", e);
+		}
 	}
 
 	@Transactional
 	public void update(Room room) {
 		if (isRoomValid(room)) {
-			roomDao.update(room);
+			try {
+				roomDao.update(room);
+			} catch (DAOException e) {
+				throw new ServiceException("Cold not update room: " + room, e);
+			}
 		}
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			roomDao.deleteById(id);
+			try {
+				roomDao.deleteById(id);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not delete room by id: " + id, e);
+			}
 		}
 	}
 

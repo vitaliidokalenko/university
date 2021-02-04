@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.StudentDao;
+import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Group;
+import com.foxminded.university.service.exception.ServiceException;
 
 @Service
 public class GroupService {
@@ -24,35 +26,55 @@ public class GroupService {
 	@Transactional
 	public void create(Group group) {
 		if (isGroupValid(group)) {
-			groupDao.create(group);
+			try {
+				groupDao.create(group);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not create group: " + group, e);
+			}
 		}
 	}
 
 	@Transactional
 	public Optional<Group> findById(Long id) {
-		Optional<Group> group = groupDao.findById(id);
-		if (group.isPresent()) {
-			group.get().setStudents(studentDao.getByGroup(group.get()));
+		try {
+			Optional<Group> group = groupDao.findById(id);
+			if (group.isPresent()) {
+				group.get().setStudents(studentDao.getByGroup(group.get()));
+			}
+			return group;
+		} catch (DAOException e) {
+			throw new ServiceException("Could not get group by id: " + id, e);
 		}
-		return group;
 	}
 
 	@Transactional
 	public List<Group> getAll() {
-		return groupDao.getAll();
+		try {
+			return groupDao.getAll();
+		} catch (DAOException e) {
+			throw new ServiceException("Could not get groups", e);
+		}
 	}
 
 	@Transactional
 	public void update(Group group) {
 		if (isGroupValid(group)) {
-			groupDao.update(group);
+			try {
+				groupDao.update(group);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not update group: " + group, e);
+			}
 		}
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			groupDao.deleteById(id);
+			try {
+				groupDao.deleteById(id);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not delete group by id: " + id, e);
+			}
 		}
 	}
 

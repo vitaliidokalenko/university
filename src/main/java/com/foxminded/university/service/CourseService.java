@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.CourseDao;
+import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Course;
+import com.foxminded.university.service.exception.ServiceException;
 
 @Service
 public class CourseService {
@@ -21,31 +23,51 @@ public class CourseService {
 	@Transactional
 	public void create(Course course) {
 		if (isCourseValid(course)) {
-			courseDao.create(course);
+			try {
+				courseDao.create(course);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not create course: " + course, e);
+			}
 		}
 	}
 
 	@Transactional
 	public Optional<Course> findById(Long id) {
-		return courseDao.findById(id);
+		try {
+			return courseDao.findById(id);
+		} catch (DAOException e) {
+			throw new ServiceException("Could not get course by id: " + id, e);
+		}
 	}
 
 	@Transactional
 	public List<Course> getAll() {
-		return courseDao.getAll();
+		try {
+			return courseDao.getAll();
+		} catch (DAOException e) {
+			throw new ServiceException("Could not get courses", e);
+		}
 	}
 
 	@Transactional
 	public void update(Course course) {
 		if (isCourseValid(course)) {
-			courseDao.update(course);
+			try {
+				courseDao.update(course);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not update course: " + course, e);
+			}
 		}
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			courseDao.deleteById(id);
+			try {
+				courseDao.deleteById(id);
+			} catch (DAOException e) {
+				throw new ServiceException("Could not delete course by id: " + id, e);
+			}
 		}
 	}
 
