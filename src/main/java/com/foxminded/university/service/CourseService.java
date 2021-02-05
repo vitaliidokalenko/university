@@ -1,5 +1,7 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -7,9 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.CourseDao;
-import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Course;
-import com.foxminded.university.service.exception.ServiceException;
+import com.foxminded.university.service.exception.AlreadyExistsEntityException;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.IncompleteEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Service
 public class CourseService {
@@ -22,60 +26,46 @@ public class CourseService {
 
 	@Transactional
 	public void create(Course course) {
-		if (isCourseValid(course)) {
-			try {
-				courseDao.create(course);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not create course: " + course, e);
-			}
-		}
+		verify(course);
+		courseDao.create(course);
 	}
 
 	@Transactional
 	public Optional<Course> findById(Long id) {
-		try {
-			return courseDao.findById(id);
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get course by id: " + id, e);
-		}
+		return courseDao.findById(id);
 	}
 
 	@Transactional
 	public List<Course> getAll() {
-		try {
-			return courseDao.getAll();
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get courses", e);
-		}
+		return courseDao.getAll();
 	}
 
 	@Transactional
 	public void update(Course course) {
-		if (isCourseValid(course)) {
-			try {
-				courseDao.update(course);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not update course: " + course, e);
-			}
-		}
+		verify(course);
+		courseDao.update(course);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			try {
-				courseDao.deleteById(id);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not delete course by id: " + id, e);
-			}
+			courseDao.deleteById(id);
+		} else {
+			throw new NotFoundEntityException(format("There is nothing to delete. Course with id: %d is absent", id));
 		}
 	}
 
-	private boolean isCourseValid(Course course) {
-		return course.getName() != null
-				&& !course.getName().isEmpty()
-				&& isNameUnique(course)
-				&& !course.getRooms().isEmpty();
+	private void verify(Course course) {
+		if (course.getName() == null) {
+			throw new IllegalFieldEntityException("The name of the course is absent");
+		} else if (course.getName().isEmpty()) {
+			throw new IllegalFieldEntityException("The name of the course is empty");
+		} else if (!isNameUnique(course)) {
+			throw new AlreadyExistsEntityException(format("The course with name %s already exists", course.getName()));
+		} else if (course.getRooms().isEmpty()) {
+			throw new IncompleteEntityException(
+					format("There are no rooms assigned to the course: %s", course.getName()));
+		}
 	}
 
 	private boolean isPresentById(Long id) {

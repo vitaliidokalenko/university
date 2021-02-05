@@ -1,5 +1,7 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -9,9 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.StudentDao;
-import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Student;
-import com.foxminded.university.service.exception.ServiceException;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.IncompatibleRelationEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Service
 @PropertySource("application.properties")
@@ -27,62 +30,53 @@ public class StudentService {
 
 	@Transactional
 	public void create(Student student) {
-		if (isStudentValid(student)) {
-			try {
-				studentDao.create(student);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not create student: " + student, e);
-			}
-		}
+		verify(student);
+		studentDao.create(student);
 	}
 
 	@Transactional
 	public Optional<Student> findById(Long id) {
-		try {
-			return studentDao.findById(id);
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get student by id: " + id, e);
-		}
+		return studentDao.findById(id);
 	}
 
 	@Transactional
 	public List<Student> getAll() {
-		try {
-			return studentDao.getAll();
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get students", e);
-		}
+		return studentDao.getAll();
 	}
 
 	@Transactional
 	public void update(Student student) {
-		if (isStudentValid(student)) {
-			try {
-				studentDao.update(student);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not update student: " + student, e);
-			}
-		}
+		verify(student);
+		studentDao.update(student);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			try {
-				studentDao.deleteById(id);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not delete student by id: " + id, e);
-			}
+			studentDao.deleteById(id);
+		} else {
+			throw new NotFoundEntityException(format("There is nothing to delete. Student with id: %d is absent", id));
 		}
 	}
 
-	private boolean isStudentValid(Student student) {
-		return student.getGender() != null
-				&& student.getName() != null
-				&& student.getSurname() != null
-				&& !student.getName().isEmpty()
-				&& !student.getSurname().isEmpty()
-				&& isGroupSizeEnough(student);
+	private void verify(Student student) {
+		if (student.getName() == null) {
+			throw new IllegalFieldEntityException("The name of the student is absent");
+		} else if (student.getSurname() == null) {
+			throw new IllegalFieldEntityException("The surname of the student is absent");
+		} else if (student.getName().isEmpty()) {
+			throw new IllegalFieldEntityException("The name of the student is empty");
+		} else if (student.getSurname().isEmpty()) {
+			throw new IllegalFieldEntityException("The surname of the student is empty");
+		} else if (student.getGender() == null) {
+			throw new IllegalFieldEntityException(
+					format("Gender of the student %s %s is absent", student.getName(), student.getSurname()));
+		} else if (!isGroupSizeEnough(student)) {
+			throw new IncompatibleRelationEntityException(format(
+					"The size of the group %s is not enough to include new student in. Size = %d students",
+					student.getGroup().getName(),
+					groupSize));
+		}
 	}
 
 	private boolean isGroupSizeEnough(Student student) {

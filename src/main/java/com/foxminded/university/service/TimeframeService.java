@@ -1,20 +1,28 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
+
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.TimeframeDao;
-import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Timeframe;
-import com.foxminded.university.service.exception.ServiceException;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Service
+@PropertySource("application.properties")
 public class TimeframeService {
 
 	private TimeframeDao timeframeDao;
+	@Value("${timeframe.duration}")
+	private long duration;
 
 	public TimeframeService(TimeframeDao timeframeDao) {
 		this.timeframeDao = timeframeDao;
@@ -22,63 +30,56 @@ public class TimeframeService {
 
 	@Transactional
 	public void create(Timeframe timeframe) {
-		if (isTimeframeValid(timeframe)) {
-			try {
-				timeframeDao.create(timeframe);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not create timeframe: " + timeframe, e);
-			}
-		}
+		verify(timeframe);
+		timeframeDao.create(timeframe);
 	}
 
 	@Transactional
 	public Optional<Timeframe> findById(Long id) {
-		try {
-			return timeframeDao.findById(id);
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get timeframe by id: " + id, e);
-		}
+		return timeframeDao.findById(id);
 	}
 
 	@Transactional
 	public List<Timeframe> getAll() {
-		try {
-			return timeframeDao.getAll();
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get timeframes", e);
-		}
+		return timeframeDao.getAll();
 	}
 
 	@Transactional
 	public void update(Timeframe timeframe) {
-		if (isTimeframeValid(timeframe)) {
-			try {
-				timeframeDao.update(timeframe);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not update timeframe: " + timeframe, e);
-			}
-		}
+		verify(timeframe);
+		timeframeDao.update(timeframe);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			try {
-				timeframeDao.deleteById(id);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not delete timeframe by id: " + id, e);
-			}
+			timeframeDao.deleteById(id);
+		} else {
+			throw new NotFoundEntityException(
+					format("There is nothing to delete. Timeframe with id: %d is absent", id));
 		}
 	}
 
-	private boolean isTimeframeValid(Timeframe timeframe) {
-		return timeframe.getSequance() > 0
-				&& timeframe.getStartTime() != null
-				&& timeframe.getEndTime() != null
-				&& timeframe.getStartTime().isBefore(timeframe.getEndTime());
+	private void verify(Timeframe timeframe) {
+		if (timeframe.getSequance() < 1) {
+			throw new IllegalFieldEntityException("Sequance of the timeframe is less than 1");
+		} else if (timeframe.getStartTime() == null) {
+			throw new IllegalFieldEntityException("Start time of the timeframe is absent");
+		} else if (timeframe.getEndTime() == null) {
+			throw new IllegalFieldEntityException("End time of the timeframe is absent");
+		} else if (timeframe.getStartTime().isAfter(timeframe.getEndTime())) {
+			throw new IllegalFieldEntityException("Start time of the timeframe is after end time");
+		} else if (!isDurationValid(timeframe)) {
+			throw new IllegalFieldEntityException(
+					format("Duration of the timeframe is not valid. It should be %dmin.", duration));
+		}
 	}
 
 	private boolean isPresentById(Long id) {
 		return timeframeDao.findById(id).isPresent();
+	}
+
+	private boolean isDurationValid(Timeframe timeframe) {
+		return Duration.between(timeframe.getStartTime(), timeframe.getEndTime()).equals(Duration.ofMinutes(duration));
 	}
 }

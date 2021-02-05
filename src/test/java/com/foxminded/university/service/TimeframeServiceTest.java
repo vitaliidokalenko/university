@@ -10,12 +10,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.TimeframeDao;
@@ -24,12 +26,19 @@ import com.foxminded.university.model.Timeframe;
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class TimeframeServiceTest {
+	
+	private static final long DURATION = 80;
 
 	@Mock
 	private TimeframeDao timeframeDao;
 
 	@InjectMocks
 	private TimeframeService timeframeService;
+	
+	@BeforeEach
+	void setUp() {
+		ReflectionTestUtils.setField(timeframeService, "duration", DURATION);
+	}
 
 	@Test
 	public void givenTimeframe_whenCreate_thenTimeframeIsCreating() {

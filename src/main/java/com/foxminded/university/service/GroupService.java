@@ -1,5 +1,7 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -8,9 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.StudentDao;
-import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Group;
-import com.foxminded.university.service.exception.ServiceException;
+import com.foxminded.university.service.exception.AlreadyExistsEntityException;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Service
 public class GroupService {
@@ -25,63 +28,47 @@ public class GroupService {
 
 	@Transactional
 	public void create(Group group) {
-		if (isGroupValid(group)) {
-			try {
-				groupDao.create(group);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not create group: " + group, e);
-			}
-		}
+		verify(group);
+		groupDao.create(group);
 	}
 
 	@Transactional
 	public Optional<Group> findById(Long id) {
-		try {
-			Optional<Group> group = groupDao.findById(id);
-			if (group.isPresent()) {
-				group.get().setStudents(studentDao.getByGroup(group.get()));
-			}
-			return group;
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get group by id: " + id, e);
+		Optional<Group> group = groupDao.findById(id);
+		if (group.isPresent()) {
+			group.get().setStudents(studentDao.getByGroup(group.get()));
 		}
+		return group;
 	}
 
 	@Transactional
 	public List<Group> getAll() {
-		try {
-			return groupDao.getAll();
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get groups", e);
-		}
+		return groupDao.getAll();
 	}
 
 	@Transactional
 	public void update(Group group) {
-		if (isGroupValid(group)) {
-			try {
-				groupDao.update(group);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not update group: " + group, e);
-			}
-		}
+		verify(group);
+		groupDao.update(group);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			try {
-				groupDao.deleteById(id);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not delete group by id: " + id, e);
-			}
+			groupDao.deleteById(id);
+		} else {
+			throw new NotFoundEntityException(format("There is nothing to delete. Group with id: %d is absent", id));
 		}
 	}
 
-	private boolean isGroupValid(Group group) {
-		return group.getName() != null
-				&& !group.getName().isEmpty()
-				&& isNameUnique(group);
+	private void verify(Group group) {
+		if (group.getName() == null) {
+			throw new IllegalFieldEntityException("The name of the group is absent");
+		} else if (group.getName().isEmpty()) {
+			throw new IllegalFieldEntityException("The name of the group is empty");
+		} else if (!isNameUnique(group)) {
+			throw new AlreadyExistsEntityException(format("The group with name %s already exists", group.getName()));
+		}
 	}
 
 	private boolean isPresentById(Long id) {

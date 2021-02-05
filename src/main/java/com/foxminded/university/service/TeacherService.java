@@ -1,5 +1,7 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -7,9 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.TeacherDao;
-import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Teacher;
-import com.foxminded.university.service.exception.ServiceException;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.IncompleteEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Service
 public class TeacherService {
@@ -22,61 +25,52 @@ public class TeacherService {
 
 	@Transactional
 	public void create(Teacher teacher) {
-		if (isTeacherValid(teacher)) {
-			try {
-				teacherDao.create(teacher);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not create teacher: " + teacher, e);
-			}
-		}
+		verify(teacher);
+		teacherDao.create(teacher);
 	}
 
 	@Transactional
 	public Optional<Teacher> findById(Long id) {
-		try {
-			return teacherDao.findById(id);
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get teacher by id: " + id, e);
-		}
+		return teacherDao.findById(id);
 	}
 
 	@Transactional
 	public List<Teacher> getAll() {
-		try {
-			return teacherDao.getAll();
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get teachers", e);
-		}
+		return teacherDao.getAll();
 	}
 
 	@Transactional
 	public void update(Teacher teacher) {
-		if (isTeacherValid(teacher)) {
-			try {
-				teacherDao.update(teacher);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not update teacher: " + teacher, e);
-			}
-		}
+		verify(teacher);
+		teacherDao.update(teacher);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			try {
-				teacherDao.deleteById(id);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not delete teacher by id: " + id, e);
-			}
+			teacherDao.deleteById(id);
+		} else {
+			throw new NotFoundEntityException(format("There is nothing to delete. Teacher with id: %d is absent", id));
 		}
 	}
 
-	private boolean isTeacherValid(Teacher teacher) {
-		return teacher.getGender() != null
-				&& teacher.getName() != null
-				&& teacher.getSurname() != null
-				&& !teacher.getName().isEmpty()
-				&& !teacher.getSurname().isEmpty();
+	private void verify(Teacher teacher) {
+		if (teacher.getName() == null) {
+			throw new IllegalFieldEntityException("The name of the teacher is absent");
+		} else if (teacher.getSurname() == null) {
+			throw new IllegalFieldEntityException("The surname of the teacher is absent");
+		} else if (teacher.getName().isEmpty()) {
+			throw new IllegalFieldEntityException("The name of the teacher is empty");
+		} else if (teacher.getSurname().isEmpty()) {
+			throw new IllegalFieldEntityException("The surname of the teacher is empty");
+		} else if (teacher.getGender() == null) {
+			throw new IllegalFieldEntityException(
+					format("Gender of the teacher %s %s is absent", teacher.getName(), teacher.getSurname()));
+		} else if (teacher.getCourses().isEmpty()) {
+			throw new IncompleteEntityException(format("There are no courses assigned to the teacher %s %s",
+					teacher.getName(),
+					teacher.getSurname()));
+		}
 	}
 
 	private boolean isPresentById(Long id) {

@@ -1,5 +1,6 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
 import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
 
@@ -13,9 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.StudentDao;
-import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Lesson;
-import com.foxminded.university.service.exception.ServiceException;
+import com.foxminded.university.service.exception.IncompatibleDateException;
+import com.foxminded.university.service.exception.IncompatibleRelationEntityException;
+import com.foxminded.university.service.exception.IncompleteEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Service
 public class LessonService {
@@ -30,69 +33,76 @@ public class LessonService {
 
 	@Transactional
 	public void create(Lesson lesson) {
-		if (isLessonValid(lesson)) {
-			try {
-				lessonDao.create(lesson);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not create lesson: " + lesson, e);
-			}
-		}
+		verify(lesson);
+		lessonDao.create(lesson);
 	}
 
 	@Transactional
 	public Optional<Lesson> findById(Long id) {
-		try {
-			return lessonDao.findById(id);
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get lesson by id: " + id, e);
-		}
+		return lessonDao.findById(id);
 	}
 
 	@Transactional
 	public List<Lesson> getAll() {
-		try {
-			return lessonDao.getAll();
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get lessons", e);
-		}
+		return lessonDao.getAll();
 	}
 
 	@Transactional
 	public void update(Lesson lesson) {
-		if (isLessonValid(lesson)) {
-			try {
-				lessonDao.update(lesson);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not update lesson: " + lesson, e);
-			}
-		}
+		verify(lesson);
+		lessonDao.update(lesson);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			try {
-				lessonDao.deleteById(id);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not delete lesson by id: " + id, e);
-			}
+			lessonDao.deleteById(id);
+		} else {
+			throw new NotFoundEntityException(format("There is nothing to delete. Lesson with id: %d is absent", id));
 		}
 	}
 
-	private boolean isLessonValid(Lesson lesson) {
-		return lesson.getCourse() != null
-				&& lesson.getDate() != null
-				&& !lesson.getGroups().isEmpty()
-				&& lesson.getRoom() != null
-				&& lesson.getTeacher() != null
-				&& lesson.getTimeframe() != null
-				&& isTeacherAvailable(lesson)
-				&& isRoomAvailable(lesson)
-				&& isGroupAvailable(lesson)
-				&& isRoomCapacityCompatible(lesson)
-				&& isTeacherCourseCompatible(lesson)
-				&& isCourseRoomCompatible(lesson)
-				&& !isAtWeekend(lesson);
+	private void verify(Lesson lesson) {
+		if (lesson.getCourse() == null) {
+			throw new IncompleteEntityException("There is any course assigned to the lesson");
+		} else if (lesson.getDate() == null) {
+			throw new IncompleteEntityException("There is any date assigned to the lesson");
+		} else if (lesson.getGroups().isEmpty()) {
+			throw new IncompleteEntityException("There is any group assigned to the lesson");
+		} else if (lesson.getRoom() == null) {
+			throw new IncompleteEntityException("There is any room assigned to the lesson");
+		} else if (lesson.getTeacher() == null) {
+			throw new IncompleteEntityException("There is any teacher assigned to the lesson");
+		} else if (lesson.getTimeframe() == null) {
+			throw new IncompleteEntityException("There is any timeframe assigned to the lesson");
+		} else if (!isTeacherAvailable(lesson)) {
+			throw new IncompatibleRelationEntityException(format(
+					"Teacher %s %s is not available for the lesson",
+					lesson.getTeacher().getName(),
+					lesson.getTeacher().getSurname()));
+		} else if (!isRoomAvailable(lesson)) {
+			throw new IncompatibleRelationEntityException(
+					format("Room %s is not available for the lesson", lesson.getRoom().getName()));
+		} else if (!isGroupAvailable(lesson)) {
+			throw new IncompatibleRelationEntityException("Groups is not available for the lesson");
+		} else if (!isRoomCapacityCompatible(lesson)) {
+			throw new IncompatibleRelationEntityException(
+					format("Capacity of the room %s is incompatible for the lesson. Size = %d seats",
+							lesson.getRoom().getName(),
+							lesson.getRoom().getCapacity()));
+		} else if (!isTeacherCourseCompatible(lesson)) {
+			throw new IncompatibleRelationEntityException(
+					format("The teacher %s %s is incompetent to lecture course %s for the lesson",
+							lesson.getTeacher().getName(),
+							lesson.getTeacher().getSurname(),
+							lesson.getCourse()));
+		} else if (!isCourseRoomCompatible(lesson)) {
+			throw new IncompatibleRelationEntityException(format("Course %s can not be lectured in the room %s",
+					lesson.getCourse().getName(),
+					lesson.getRoom().getName()));
+		} else if (isAtWeekend(lesson)) {
+			throw new IncompatibleDateException("The date the lesson assigned to is at the weekend");
+		}
 	}
 
 	private boolean isTeacherAvailable(Lesson lesson) {

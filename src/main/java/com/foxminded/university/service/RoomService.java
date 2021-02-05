@@ -1,5 +1,7 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -7,9 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.RoomDao;
-import com.foxminded.university.dao.exception.DAOException;
 import com.foxminded.university.model.Room;
-import com.foxminded.university.service.exception.ServiceException;
+import com.foxminded.university.service.exception.AlreadyExistsEntityException;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Service
 public class RoomService {
@@ -22,60 +25,45 @@ public class RoomService {
 
 	@Transactional
 	public void create(Room room) {
-		if (isRoomValid(room)) {
-			try {
-				roomDao.create(room);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not create room: " + room, e);
-			}
-		}
+		verify(room);
+		roomDao.create(room);
 	}
 
 	@Transactional
 	public Optional<Room> findById(Long id) {
-		try {
-			return roomDao.findById(id);
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get room by id: " + id, e);
-		}
+		return roomDao.findById(id);
 	}
 
 	@Transactional
 	public List<Room> getAll() {
-		try {
-			return roomDao.getAll();
-		} catch (DAOException e) {
-			throw new ServiceException("Could not get rooms", e);
-		}
+		return roomDao.getAll();
 	}
 
 	@Transactional
 	public void update(Room room) {
-		if (isRoomValid(room)) {
-			try {
-				roomDao.update(room);
-			} catch (DAOException e) {
-				throw new ServiceException("Cold not update room: " + room, e);
-			}
-		}
+		verify(room);
+		roomDao.update(room);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		if (isPresentById(id)) {
-			try {
-				roomDao.deleteById(id);
-			} catch (DAOException e) {
-				throw new ServiceException("Could not delete room by id: " + id, e);
-			}
+			roomDao.deleteById(id);
+		} else {
+			throw new NotFoundEntityException(format("There is nothing to delete. Room with id: %d is absent", id));
 		}
 	}
 
-	private boolean isRoomValid(Room room) {
-		return room.getName() != null
-				&& !room.getName().isEmpty()
-				&& isNameUnique(room)
-				&& room.getCapacity() > 0;
+	private void verify(Room room) {
+		if (room.getName() == null) {
+			throw new IllegalFieldEntityException("The name of the room is absent");
+		} else if (room.getName().isEmpty()) {
+			throw new IllegalFieldEntityException("The name of the room is empty");
+		} else if (!isNameUnique(room)) {
+			throw new AlreadyExistsEntityException(format("The room with name %s already exists", room.getName()));
+		} else if (room.getCapacity() < 1) {
+			throw new IllegalFieldEntityException(format("Capacity of the room %s is less than 1", room.getName()));
+		}
 	}
 
 	private boolean isPresentById(Long id) {
