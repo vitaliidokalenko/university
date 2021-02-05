@@ -1,7 +1,8 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,9 @@ import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
+import com.foxminded.university.service.exception.IncompatibleDateException;
+import com.foxminded.university.service.exception.IncompatibleRelationEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -54,25 +58,27 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenTeacherIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
+	public void givenTeacherIsNotAvailable_whenCreate_thenThrowException() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
-		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
-				actual.getDate(),
-				actual.getTimeframe())).thenReturn(Optional.of(lessonByCriteria));
+		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(), actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.create(actual);
-
-		verify(lessonDao, never()).create(actual);
+		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+				() -> lessonService.create(actual));
+		assertEquals(
+				format("Teacher %s %s is not available for the lesson",
+						actual.getTeacher().getName(),
+						actual.getTeacher().getSurname()),
+				exception.getMessage());
 	}
 
 	@Test
 	public void givenTeacherIsAvailable_whenCreate_thenLessonIsCreating() {
 		Lesson actual = buildLesson();
-		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
-				actual.getDate(),
-				actual.getTimeframe())).thenReturn(Optional.empty());
+		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(), actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.empty());
 
 		lessonService.create(actual);
 
@@ -80,17 +86,17 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenRoomIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
+	public void givenRoomIsNotAvailable_whenCreate_thenThrowExceptin() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
-		when(lessonDao
-				.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
-						.thenReturn(Optional.of(lessonByCriteria));
+		when(lessonDao.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.create(actual);
-
-		verify(lessonDao, never()).create(actual);
+		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+				() -> lessonService.create(actual));
+		assertEquals(format("Room %s is not available for the lesson", actual.getRoom().getName()),
+				exception.getMessage());
 	}
 
 	@Test
@@ -106,16 +112,16 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenGroupIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
+	public void givenGroupIsNotAvailable_whenCreate_thenThrowException() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
 		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.create(actual);
-
-		verify(lessonDao, never()).create(actual);
+		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+				() -> lessonService.create(actual));
+		assertEquals("Groups is not available for the lesson", exception.getMessage());
 	}
 
 	@Test
@@ -130,7 +136,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenRoomCapacityIsNotCompatible_whenCreate_thenLessonIsNotCreating() {
+	public void givenRoomCapacityIsNotCompatible_whenCreate_thenThrowException() {
 		Lesson lesson = buildLesson();
 		when(studentDao.getByGroup(Mockito.any(Group.class)))
 				.thenReturn(Arrays.asList(new Student("Anna", "Maria"),
@@ -138,9 +144,11 @@ public class LessonServiceTest {
 						new Student("Alina", "Linkoln"),
 						new Student("Homer", "Simpson")));
 
-		lessonService.create(lesson);
-
-		verify(lessonDao, never()).create(lesson);
+		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+				() -> lessonService.create(lesson));
+		assertEquals(format("Capacity of the room %s is incompatible for the lesson. Size = %d seats",
+				lesson.getRoom().getName(),
+				lesson.getRoom().getCapacity()), exception.getMessage());
 	}
 
 	@Test
@@ -156,43 +164,46 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenTeacherCourseIsNotCompatible_whenCreate_thenLessonIsNotCreating() {
+	public void givenTeacherCourseIsNotCompatible_whenCreate_thenThrowException() {
 		Lesson lesson = buildLesson();
 		lesson.setCourse(new Course("Law"));
 
-		lessonService.create(lesson);
-
-		verify(lessonDao, never()).create(lesson);
+		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+				() -> lessonService.create(lesson));
+		assertEquals(format("The teacher %s %s is incompetent to lecture course %s for the lesson",
+				lesson.getTeacher().getName(),
+				lesson.getTeacher().getSurname(),
+				lesson.getCourse()), exception.getMessage());
 	}
 
 	@Test
-	public void givenCourseRoomIsNotCompatible_whenCreate_thenLessonIsNotCreating() {
+	public void givenCourseRoomIsNotCompatible_whenCreate_thenThrowException() {
 		Lesson lesson = buildLesson();
 		lesson.setRoom(new Room("333"));
 
-		lessonService.create(lesson);
-
-		verify(lessonDao, never()).create(lesson);
+		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+				() -> lessonService.create(lesson));
+		assertEquals(format("Course %s can not be lectured in the room %s",
+				lesson.getCourse().getName(),
+				lesson.getRoom().getName()), exception.getMessage());
 	}
 
 	@Test
-	public void givenDateIsOnSaturday_whenCreate_thenLessonIsNotCreating() {
+	public void givenDateIsOnSaturday_whenCreate_thenThrowException() {
 		Lesson lesson = buildLesson();
 		lesson.setDate(LocalDate.parse("2021-01-23"));
 
-		lessonService.create(lesson);
-
-		verify(lessonDao, never()).create(lesson);
+		Exception exception = assertThrows(IncompatibleDateException.class, () -> lessonService.create(lesson));
+		assertEquals("The date the lesson appointed at is at the weekend", exception.getMessage());
 	}
 
 	@Test
-	public void givenDateIsOnSunday_whenCreate_thenLessonIsNotCreating() {
+	public void givenDateIsOnSunday_whenCreate_thenThrowException() {
 		Lesson lesson = buildLesson();
 		lesson.setDate(LocalDate.parse("2021-01-24"));
 
-		lessonService.create(lesson);
-
-		verify(lessonDao, never()).create(lesson);
+		Exception exception = assertThrows(IncompatibleDateException.class, () -> lessonService.create(lesson));
+		assertEquals("The date the lesson appointed at is at the weekend", exception.getMessage());
 	}
 
 	@Test
@@ -226,18 +237,21 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenTeacherIsNotAvailable_whenUpdate_thenLessonIsNotUpdating() {
+	public void givenTeacherIsNotAvailable_whenUpdate_thenThrowException() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
 		actual.setId(1L);
-		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
-				actual.getDate(),
-				actual.getTimeframe())).thenReturn(Optional.of(lessonByCriteria));
+		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(), actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.update(actual);
-
-		verify(lessonDao, never()).update(actual);
+		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+				() -> lessonService.update(actual));
+		assertEquals(
+				format("Teacher %s %s is not available for the lesson",
+						actual.getTeacher().getName(),
+						actual.getTeacher().getSurname()),
+				exception.getMessage());
 	}
 
 	@Test
@@ -256,18 +270,18 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenRoomIsNotAvailable_whenUpdate_thenLessonIsNotUpdating() {
+	public void givenRoomIsNotAvailable_whenUpdate_thenThrowException() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
 		actual.setId(1L);
-		when(lessonDao
-				.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
-						.thenReturn(Optional.of(lessonByCriteria));
+		when(lessonDao.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.update(actual);
-
-		verify(lessonDao, never()).update(actual);
+		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+				() -> lessonService.update(actual));
+		assertEquals(format("Room %s is not available for the lesson", actual.getRoom().getName()),
+				exception.getMessage());
 	}
 
 	@Test
@@ -286,7 +300,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenGroupIsNotAvailable_whenUpdate_thenLessonIsNotUpdating() {
+	public void givenGroupIsNotAvailable_whenUpdate_thenThrowException() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
@@ -294,9 +308,9 @@ public class LessonServiceTest {
 		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.update(actual);
-
-		verify(lessonDao, never()).update(actual);
+		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+				() -> lessonService.update(actual));
+		assertEquals("Groups is not available for the lesson", exception.getMessage());
 	}
 
 	@Test
@@ -323,12 +337,11 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenLessonIsNotDeleting() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenThrowException() {
 		when(lessonDao.findById(1L)).thenReturn(Optional.empty());
 
-		lessonService.deleteById(1L);
-
-		verify(lessonDao, never()).deleteById(1L);
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> lessonService.deleteById(1L));
+		assertEquals("There is nothing to delete. Lesson with id: 1 is absent", exception.getMessage());
 	}
 
 	private Lesson buildLesson() {

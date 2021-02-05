@@ -1,7 +1,8 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -16,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -26,12 +26,12 @@ import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.IncompatibleRelationEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
-@TestPropertySource(properties = {
-		"group.size=2"
-})
 public class StudentServiceTest {
 
 	private static final int GROUP_SIZE = 2;
@@ -57,64 +57,63 @@ public class StudentServiceTest {
 	}
 
 	@Test
-	public void givenGenderIsNull_whenCreate_thenStudentIsNotCreating() {
+	public void givenGenderIsNull_whenCreate_thenThrowException() {
 		Student student = buildStudent();
 		student.setGender(null);
 
-		studentService.create(student);
-
-		verify(studentDao, never()).create(student);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
+		assertEquals(format("Gender of the student %s %s is absent", student.getName(), student.getSurname()),
+				exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsNull_whenCreate_thenStudentIsNotCreating() {
+	public void givenNameIsNull_whenCreate_thenThrowException() {
 		Student student = buildStudent();
 		student.setName(null);
 
-		studentService.create(student);
-
-		verify(studentDao, never()).create(student);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
+		assertEquals("The name of the student is absent", exception.getMessage());
 	}
 
 	@Test
-	public void givenSurnameIsNull_whenCreate_thenStudentIsNotCreating() {
+	public void givenSurnameIsNull_whenCreate_thenThrowException() {
 		Student student = buildStudent();
 		student.setSurname(null);
 
-		studentService.create(student);
-
-		verify(studentDao, never()).create(student);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
+		assertEquals("The surname of the student is absent", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsEmpty_whenCreate_thenStudentIsNotCreating() {
+	public void givenNameIsEmpty_whenCreate_thenThrowException() {
 		Student student = buildStudent();
 		student.setName("");
 
-		studentService.create(student);
-
-		verify(studentDao, never()).create(student);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
+		assertEquals("The name of the student is empty", exception.getMessage());
 	}
 
 	@Test
-	public void givenSurnameIsEmpty_whenCreate_thenStudentIsNotCreating() {
+	public void givenSurnameIsEmpty_whenCreate_thenThrowException() {
 		Student student = buildStudent();
 		student.setSurname("");
 
-		studentService.create(student);
-
-		verify(studentDao, never()).create(student);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
+		assertEquals("The surname of the student is empty", exception.getMessage());
 	}
 
 	@Test
-	public void givenGroupSizeIsNotEnuogh_whenCreate_thenStudentIsNotCreating() {
+	public void givenGroupSizeIsNotEnuogh_whenCreate_thenThrowException() {
 		Student student = buildStudent();
 		when(studentDao.getByGroup(student.getGroup()))
 				.thenReturn(Arrays.asList(new Student("Serhii", "Gerega"), new Student("Anatoly", "Soprano")));
 
-		studentService.create(student);
-
-		verify(studentDao, never()).create(student);
+		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+				() -> studentService.create(student));
+		assertEquals(format(
+				"The size of the group %s is %d students. It is not enough to include new student in",
+				student.getGroup().getName(),
+				GROUP_SIZE), exception.getMessage());
 	}
 
 	@Test
@@ -156,12 +155,11 @@ public class StudentServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenStudentIsNotDeleting() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenThrowException() {
 		when(studentDao.findById(1L)).thenReturn(Optional.empty());
 
-		studentService.deleteById(1L);
-
-		verify(studentDao, never()).deleteById(1L);
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> studentService.deleteById(1L));
+		assertEquals("There is nothing to delete. Student with id: 1 is absent", exception.getMessage());
 	}
 
 	private Student buildStudent() {

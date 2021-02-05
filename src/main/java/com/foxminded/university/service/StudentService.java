@@ -73,7 +73,7 @@ public class StudentService {
 					format("Gender of the student %s %s is absent", student.getName(), student.getSurname()));
 		} else if (!isGroupSizeEnough(student)) {
 			throw new IncompatibleRelationEntityException(format(
-					"The size of the group %s is not enough to include new student in. Size = %d students",
+					"The size of the group %s is %d students. It is not enough to include new student in",
 					student.getGroup().getName(),
 					groupSize));
 		}

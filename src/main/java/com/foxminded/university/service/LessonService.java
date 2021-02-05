@@ -101,7 +101,7 @@ public class LessonService {
 					lesson.getCourse().getName(),
 					lesson.getRoom().getName()));
 		} else if (isAtWeekend(lesson)) {
-			throw new IncompatibleDateException("The date the lesson assigned to is at the weekend");
+			throw new IncompatibleDateException("The date the lesson appointed at is at the weekend");
 		}
 	}
 

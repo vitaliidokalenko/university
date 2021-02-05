@@ -1,7 +1,8 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,11 +23,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class TimeframeServiceTest {
-	
+
 	private static final long DURATION = 80;
 
 	@Mock
@@ -34,7 +37,7 @@ public class TimeframeServiceTest {
 
 	@InjectMocks
 	private TimeframeService timeframeService;
-	
+
 	@BeforeEach
 	void setUp() {
 		ReflectionTestUtils.setField(timeframeService, "duration", DURATION);
@@ -50,43 +53,49 @@ public class TimeframeServiceTest {
 	}
 
 	@Test
-	public void givenSequanceLessThanOne_whenCreate_thenTimeframeIsNotCreating() {
+	public void givenSequanceLessThanOne_whenCreate_thenThrowException() {
 		Timeframe timeframe = buildTimeframe();
 		timeframe.setSequance(-1);
 
-		timeframeService.create(timeframe);
-
-		verify(timeframeDao, never()).create(timeframe);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> timeframeService.create(timeframe));
+		assertEquals("Sequance of the timeframe is less than 1", exception.getMessage());
 	}
 
 	@Test
-	public void givenStartTimeIsNull_whenCreate_thenTimeframeIsNotCreating() {
+	public void givenStartTimeIsNull_whenCreate_thenThrowException() {
 		Timeframe timeframe = buildTimeframe();
 		timeframe.setStartTime(null);
 
-		timeframeService.create(timeframe);
-
-		verify(timeframeDao, never()).create(timeframe);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> timeframeService.create(timeframe));
+		assertEquals("Start time of the timeframe is absent", exception.getMessage());
 	}
 
 	@Test
-	public void givenEndTimeIsNull_whenCreate_thenTimeframeIsNotCreating() {
+	public void givenEndTimeIsNull_whenCreate_thenThrowException() {
 		Timeframe timeframe = buildTimeframe();
 		timeframe.setEndTime(null);
 
-		timeframeService.create(timeframe);
-
-		verify(timeframeDao, never()).create(timeframe);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> timeframeService.create(timeframe));
+		assertEquals("End time of the timeframe is absent", exception.getMessage());
 	}
 
 	@Test
-	public void givenStartTimeIsAfterEndTime_whenCreate_thenTimeframeIsNotCreating() {
+	public void givenStartTimeIsAfterEndTime_whenCreate_thenThrowException() {
 		Timeframe timeframe = buildTimeframe();
 		timeframe.setStartTime(LocalTime.parse("10:00"));
 
-		timeframeService.create(timeframe);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> timeframeService.create(timeframe));
+		assertEquals("Start time of the timeframe is after end time", exception.getMessage());
+	}
 
-		verify(timeframeDao, never()).create(timeframe);
+	@Test
+	public void givenIllegalDuration_whenCreate_thenThrowException() {
+		Timeframe timeframe = buildTimeframe();
+		timeframe.setStartTime(LocalTime.parse("08:01"));
+
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> timeframeService.create(timeframe));
+		assertEquals(format("Duration of the timeframe is not valid. It should be %dmin.", DURATION),
+				exception.getMessage());
 	}
 
 	@Test
@@ -128,12 +137,11 @@ public class TimeframeServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenTimeframeIsNotDeleting() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenThrowException() {
 		when(timeframeDao.findById(1L)).thenReturn(Optional.empty());
 
-		timeframeService.deleteById(1L);
-
-		verify(timeframeDao, never()).deleteById(1L);
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> timeframeService.deleteById(1L));
+		assertEquals("There is nothing to delete. Timeframe with id: 1 is absent", exception.getMessage());
 	}
 
 	private Timeframe buildTimeframe() {
