@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +31,7 @@ import com.foxminded.university.service.exception.NotFoundEntityException;
 @ExtendWith(MockitoExtension.class)
 public class TimeframeServiceTest {
 
-	private static final long DURATION = 80;
+	private static final Duration DURATION = Duration.parse("PT1H20M");
 
 	@Mock
 	private TimeframeDao timeframeDao;
@@ -94,7 +95,7 @@ public class TimeframeServiceTest {
 		timeframe.setStartTime(LocalTime.parse("08:01"));
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> timeframeService.create(timeframe));
-		assertEquals(format("Duration of the timeframe is not valid. It should be %dmin.", DURATION),
+		assertEquals(format("Duration of the timeframe is not valid. It must be %smin.", DURATION.toMinutes()),
 				exception.getMessage());
 	}
 

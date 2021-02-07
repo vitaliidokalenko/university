@@ -21,8 +21,8 @@ import com.foxminded.university.service.exception.NotFoundEntityException;
 public class TimeframeService {
 
 	private TimeframeDao timeframeDao;
-	@Value("${timeframe.duration}")
-	private long duration;
+	@Value("#{T(java.time.Duration).parse('${timeframe.duration}')}")
+	private Duration duration;
 
 	public TimeframeService(TimeframeDao timeframeDao) {
 		this.timeframeDao = timeframeDao;
@@ -71,7 +71,7 @@ public class TimeframeService {
 			throw new IllegalFieldEntityException("Start time of the timeframe is after end time");
 		} else if (!isDurationValid(timeframe)) {
 			throw new IllegalFieldEntityException(
-					format("Duration of the timeframe is not valid. It should be %dmin.", duration));
+					format("Duration of the timeframe is not valid. It must be %smin.", duration.toMinutes()));
 		}
 	}
 
@@ -80,6 +80,6 @@ public class TimeframeService {
 	}
 
 	private boolean isDurationValid(Timeframe timeframe) {
-		return Duration.between(timeframe.getStartTime(), timeframe.getEndTime()).equals(Duration.ofMinutes(duration));
+		return Duration.between(timeframe.getStartTime(), timeframe.getEndTime()).equals(duration);
 	}
 }
