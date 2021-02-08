@@ -21,12 +21,13 @@ import com.foxminded.university.model.Timeframe;
 @Component
 public class JdbcTimeframeDao implements TimeframeDao {
 
-	private static final String CREATE_TIMEFRAME_QUERY = "INSERT INTO timeframes (sequance, start_time, end_time) "
+	private static final String CREATE_TIMEFRAME_QUERY = "INSERT INTO timeframes (sequence, start_time, end_time) "
 			+ "VALUES (?, ?, ?)";
 	private static final String FIND_TIMEFRAME_BY_ID_QUERY = "SELECT * FROM timeframes WHERE id = ?";
 	private static final String GET_TIMEFRAMES_QUERY = "SELECT * FROM timeframes";
 	private static final String DELETE_TIMEFRAME_BY_ID_QUERY = "DELETE FROM timeframes WHERE id = ?";
-	private static final String UPDATE_TIMEFRAME_QUERY = "UPDATE timeframes SET sequance = ?, start_time = ?, end_time = ? WHERE id = ?";
+	private static final String UPDATE_TIMEFRAME_QUERY = "UPDATE timeframes SET sequence = ?, start_time = ?, end_time = ? WHERE id = ?";
+	private static final String FIND_TIMEFRAME_BY_SEQUENCE_QUERY = "SELECT * FROM timeframes WHERE sequence = ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private TimeframeMapper timeframeMapper;
@@ -43,7 +44,7 @@ public class JdbcTimeframeDao implements TimeframeDao {
 			jdbcTemplate.update(connection -> {
 				PreparedStatement statement = connection.prepareStatement(CREATE_TIMEFRAME_QUERY,
 						new String[] { TIMEFRAME_ID });
-				statement.setInt(1, timeframe.getSequance());
+				statement.setInt(1, timeframe.getSequence());
 				statement.setObject(2, timeframe.getStartTime());
 				statement.setObject(3, timeframe.getEndTime());
 				return statement;
@@ -79,7 +80,7 @@ public class JdbcTimeframeDao implements TimeframeDao {
 	public void update(Timeframe timeframe) {
 		try {
 			jdbcTemplate.update(UPDATE_TIMEFRAME_QUERY,
-					timeframe.getSequance(),
+					timeframe.getSequence(),
 					timeframe.getStartTime(),
 					timeframe.getEndTime(),
 					timeframe.getId());
@@ -94,6 +95,18 @@ public class JdbcTimeframeDao implements TimeframeDao {
 			jdbcTemplate.update(DELETE_TIMEFRAME_BY_ID_QUERY, timeframeId);
 		} catch (DataAccessException e) {
 			throw new DAOException("Could not delete timeframe by id: " + timeframeId, e);
+		}
+	}
+
+	@Override
+	public Optional<Timeframe> findBySequence(int sequence) {
+		try {
+			return Optional.of(jdbcTemplate
+					.queryForObject(FIND_TIMEFRAME_BY_SEQUENCE_QUERY, new Object[] { sequence }, timeframeMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DAOException("Could not get timeframe by sequence: " + sequence, e);
 		}
 	}
 }

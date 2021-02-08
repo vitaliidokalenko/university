@@ -24,6 +24,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
+import com.foxminded.university.service.exception.AlreadyExistsEntityException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
@@ -54,12 +55,12 @@ public class TimeframeServiceTest {
 	}
 
 	@Test
-	public void givenSequanceLessThanOne_whenCreate_thenThrowException() {
+	public void givenSequenceLessThanOne_whenCreate_thenThrowException() {
 		Timeframe timeframe = buildTimeframe();
-		timeframe.setSequance(-1);
+		timeframe.setSequence(-1);
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> timeframeService.create(timeframe));
-		assertEquals("Sequance of the timeframe is less than 1", exception.getMessage());
+		assertEquals("Sequence of the timeframe is less than 1", exception.getMessage());
 	}
 
 	@Test
@@ -145,10 +146,22 @@ public class TimeframeServiceTest {
 		assertEquals("There is nothing to delete. Timeframe with id: 1 is absent", exception.getMessage());
 	}
 
+	@Test
+	public void givenSequenceIsNotUnique_whenCreate_thenThrowException() {
+		Timeframe actual = buildTimeframe();
+		Timeframe retrieved = buildTimeframe();
+		retrieved.setId(2L);
+		when(timeframeDao.findBySequence(actual.getSequence())).thenReturn(Optional.of(retrieved));
+
+		Exception exception = assertThrows(AlreadyExistsEntityException.class, () -> timeframeService.create(actual));
+		assertEquals(format("The timeframe with sequence: %d already exists", actual.getSequence()),
+				exception.getMessage());
+	}
+
 	private Timeframe buildTimeframe() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		return timeframe;

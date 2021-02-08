@@ -36,17 +36,17 @@ public class JdbcTimeframeDaoTest {
 	public void givenCourses_whenGetAll_thenGetRightListOfCourses() {
 		Timeframe timeframe1 = new Timeframe();
 		timeframe1.setId(1L);
-		timeframe1.setSequance(1);
+		timeframe1.setSequence(1);
 		timeframe1.setStartTime(LocalTime.parse("08:00"));
 		timeframe1.setEndTime(LocalTime.parse("09:20"));
 		Timeframe timeframe2 = new Timeframe();
 		timeframe2.setId(2L);
-		timeframe2.setSequance(2);
+		timeframe2.setSequence(2);
 		timeframe2.setStartTime(LocalTime.parse("09:40"));
 		timeframe2.setEndTime(LocalTime.parse("11:00"));
 		Timeframe timeframe3 = new Timeframe();
 		timeframe3.setId(3L);
-		timeframe3.setSequance(3);
+		timeframe3.setSequence(3);
 		timeframe3.setStartTime(LocalTime.parse("11:20"));
 		timeframe3.setEndTime(LocalTime.parse("12:40"));
 		List<Timeframe> expected = Arrays.asList(timeframe1, timeframe2, timeframe3);
@@ -60,7 +60,7 @@ public class JdbcTimeframeDaoTest {
 	public void givenTimeframe_whenCreate_thenTimeframeIsAddedToTable() {
 		Timeframe timaframe = new Timeframe();
 		timaframe.setId(1L);
-		timaframe.setSequance(1);
+		timaframe.setSequence(1);
 		timaframe.setStartTime(LocalTime.parse("08:00"));
 		timaframe.setEndTime(LocalTime.parse("09:20"));
 		int expectedRows = countRowsInTable(jdbcTemplate, TIMEFRAMES_TABLE_NAME) + 1;
@@ -76,7 +76,7 @@ public class JdbcTimeframeDaoTest {
 	public void givenId_whenFindById_thenGetRightTimeframe() {
 		Timeframe expected = new Timeframe();
 		expected.setId(1L);
-		expected.setSequance(1);
+		expected.setSequence(1);
 		expected.setStartTime(LocalTime.parse("08:00"));
 		expected.setEndTime(LocalTime.parse("09:20"));
 
@@ -90,7 +90,7 @@ public class JdbcTimeframeDaoTest {
 	public void givenUpdatedFields_whenUpdate_thenTimeframesTableIsUpdated() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(10);
+		timeframe.setSequence(10);
 		timeframe.setStartTime(LocalTime.parse("17:00"));
 		timeframe.setEndTime(LocalTime.parse("19:20"));
 		int expectedRows = countRowsInTableWhere(jdbcTemplate, TIMEFRAMES_TABLE_NAME, "start_time = '17:00'") + 1;
@@ -112,4 +112,17 @@ public class JdbcTimeframeDaoTest {
 		assertEquals(expectedRows, actualRows);
 	}
 
+	@Test
+	@Sql("/dataTimeframes.sql")
+	public void givenSequance_whenFindBySequance_thenGetRightTimeframe() {
+		Timeframe expected = new Timeframe();
+		expected.setId(1L);
+		expected.setSequence(1);
+		expected.setStartTime(LocalTime.parse("08:00"));
+		expected.setEndTime(LocalTime.parse("09:20"));
+
+		Timeframe actual = timeframeDao.findBySequence(1).orElse(null);
+
+		assertEquals(expected, actual);
+	}
 }

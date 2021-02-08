@@ -86,7 +86,7 @@ CREATE TABLE teachers_courses(
 
 CREATE TABLE timeframes(
 	id SERIAL PRIMARY KEY,
-	sequance INT NOT NULL,
+	sequence INT NOT NULL,
 	start_time TIME NOT NULL,
 	end_time TIME NOT NULL
 );

@@ -360,7 +360,7 @@ public class LessonServiceTest {
 		teacher.setCourses(new HashSet<>(Arrays.asList(course)));
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Lesson lesson = new Lesson();

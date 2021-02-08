@@ -20,7 +20,7 @@ public class TimeframeMenu {
 	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ISO_LOCAL_TIME;
 	private static final String START_TIME_INQUIRY = "Please, insert timefram's start time in 'hh:mm' format:";
 	private static final String END_TIME_INQUIRY = "Please, insert timeframe's end time in 'hh:mm' format:";
-	private static final String SEQUANCE_INQUIRY = "Please, insert timeframe's sequance:";
+	private static final String SEQUENCE_INQUIRY = "Please, insert timeframe's sequence:";
 	private static final String ID_INQUIRY = "Please, insert timeframe`s id:";
 	private static final String PRINT_TIMEFRAMES_FORMAT = "id %d. %s - %s%n";
 
@@ -72,12 +72,12 @@ public class TimeframeMenu {
 		System.out.println(END_TIME_INQUIRY);
 		String end = scanner.nextLine();
 		LocalTime endTime = LocalTime.parse(end, TIME_FORMAT);
-		System.out.println(SEQUANCE_INQUIRY);
-		int sequance = scanner.nextInt();
+		System.out.println(SEQUENCE_INQUIRY);
+		int sequence = scanner.nextInt();
 		Timeframe timeframe = new Timeframe();
 		timeframe.setStartTime(startTime);
 		timeframe.setEndTime(endTime);
-		timeframe.setSequance(sequance);
+		timeframe.setSequence(sequence);
 		timeframeService.create(timeframe);
 	}
 
