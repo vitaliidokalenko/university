@@ -11,6 +11,7 @@
 		</project.reporting.outputEncoding>
 		<springframework.version>5.2.11.RELEASE</springframework.version>
 		<postgresql.version>42.2.14</postgresql.version>
+		<logback.version>1.2.3</logback.version>
 		<h2database.version>1.4.200</h2database.version>
 		<junit.jupiter.version>5.7.0</junit.jupiter.version>
 		<mockito.version>3.3.3</mockito.version>
@@ -52,6 +53,11 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

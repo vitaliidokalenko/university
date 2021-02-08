@@ -5,6 +5,8 @@ import static java.lang.String.format;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,8 @@ import com.foxminded.university.service.exception.NotFoundEntityException;
 @Service
 public class GroupService {
 
+	private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
+
 	private GroupDao groupDao;
 	private StudentDao studentDao;
 
@@ -28,12 +32,14 @@ public class GroupService {
 
 	@Transactional
 	public void create(Group group) {
+		logger.debug("Creating group: {}", group);
 		verify(group);
 		groupDao.create(group);
 	}
 
 	@Transactional
 	public Optional<Group> findById(Long id) {
+		logger.debug("Finding group by id: {}", id);
 		Optional<Group> group = groupDao.findById(id);
 		if (group.isPresent()) {
 			group.get().setStudents(studentDao.getByGroup(group.get()));
@@ -43,17 +49,20 @@ public class GroupService {
 
 	@Transactional
 	public List<Group> getAll() {
+		logger.debug("Getting groups");
 		return groupDao.getAll();
 	}
 
 	@Transactional
 	public void update(Group group) {
+		logger.debug("Updating group: {}", group);
 		verify(group);
 		groupDao.update(group);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
+		logger.debug("Deleting group by id: {}", id);
 		if (isPresentById(id)) {
 			groupDao.deleteById(id);
 		} else {

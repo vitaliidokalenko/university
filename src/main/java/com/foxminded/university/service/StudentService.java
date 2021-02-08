@@ -5,6 +5,8 @@ import static java.lang.String.format;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ import com.foxminded.university.service.exception.NotFoundEntityException;
 @PropertySource("application.properties")
 public class StudentService {
 
+	private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
+
 	private StudentDao studentDao;
 	@Value("${group.size}")
 	private int groupSize;
@@ -30,28 +34,33 @@ public class StudentService {
 
 	@Transactional
 	public void create(Student student) {
+		logger.debug("Creating student: {}", student);
 		verify(student);
 		studentDao.create(student);
 	}
 
 	@Transactional
 	public Optional<Student> findById(Long id) {
+		logger.debug("Finding student by id: {}", id);
 		return studentDao.findById(id);
 	}
 
 	@Transactional
 	public List<Student> getAll() {
+		logger.debug("Getting students");
 		return studentDao.getAll();
 	}
 
 	@Transactional
 	public void update(Student student) {
+		logger.debug("Updating student: {}", student);
 		verify(student);
 		studentDao.update(student);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
+		logger.debug("Deleting student by id: {}", id);
 		if (isPresentById(id)) {
 			studentDao.deleteById(id);
 		} else {

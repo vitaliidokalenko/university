@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,8 @@ import com.foxminded.university.service.exception.NotFoundEntityException;
 @Service
 public class LessonService {
 
+	private static final Logger logger = LoggerFactory.getLogger(LessonService.class);
+
 	private LessonDao lessonDao;
 	private StudentDao studentDao;
 
@@ -33,28 +37,33 @@ public class LessonService {
 
 	@Transactional
 	public void create(Lesson lesson) {
+		logger.debug("Creating lesson: {}", lesson);
 		verify(lesson);
 		lessonDao.create(lesson);
 	}
 
 	@Transactional
 	public Optional<Lesson> findById(Long id) {
+		logger.debug("Finding lesson by id: {}", id);
 		return lessonDao.findById(id);
 	}
 
 	@Transactional
 	public List<Lesson> getAll() {
+		logger.debug("Getting lessons");
 		return lessonDao.getAll();
 	}
 
 	@Transactional
 	public void update(Lesson lesson) {
+		logger.debug("Updating lesson: {}", lesson);
 		verify(lesson);
 		lessonDao.update(lesson);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
+		logger.debug("Deleting lesson by id: {}", id);
 		if (isPresentById(id)) {
 			lessonDao.deleteById(id);
 		} else {

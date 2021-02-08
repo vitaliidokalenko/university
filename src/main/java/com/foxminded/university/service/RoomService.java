@@ -5,6 +5,8 @@ import static java.lang.String.format;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,8 @@ import com.foxminded.university.service.exception.NotFoundEntityException;
 @Service
 public class RoomService {
 
+	private static final Logger logger = LoggerFactory.getLogger(RoomService.class);
+
 	private RoomDao roomDao;
 
 	public RoomService(RoomDao roomDao) {
@@ -25,28 +29,33 @@ public class RoomService {
 
 	@Transactional
 	public void create(Room room) {
+		logger.debug("Creating room: {}", room);
 		verify(room);
 		roomDao.create(room);
 	}
 
 	@Transactional
 	public Optional<Room> findById(Long id) {
+		logger.debug("Finding room by id: {}", id);
 		return roomDao.findById(id);
 	}
 
 	@Transactional
 	public List<Room> getAll() {
+		logger.debug("Getting rooms");
 		return roomDao.getAll();
 	}
 
 	@Transactional
 	public void update(Room room) {
+		logger.debug("Updating room: {}", room);
 		verify(room);
 		roomDao.update(room);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
+		logger.debug("Deleting room by id: {}", id);
 		if (isPresentById(id)) {
 			roomDao.deleteById(id);
 		} else {
