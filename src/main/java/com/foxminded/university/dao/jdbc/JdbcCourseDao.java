@@ -150,14 +150,4 @@ public class JdbcCourseDao implements CourseDao {
 			throw new DAOException("Could not get course by name: " + name, e);
 		}
 	}
-
-	@Override
-	public Optional<Course> findByName(String name) {
-		try {
-			return Optional
-					.of(jdbcTemplate.queryForObject(FIND_COURSE_BY_NAME_QUERY, new Object[] { name }, courseMapper));
-		} catch (EmptyResultDataAccessException e) {
-			return Optional.empty();
-		}
-	}
 }
