@@ -111,4 +111,13 @@ public class JdbcRoomDao implements RoomDao {
 			throw new DAOException("Could not get room by name: " + name, e);
 		}
 	}
+
+	@Override
+	public Optional<Room> findByName(String name) {
+		try {
+			return Optional.of(jdbcTemplate.queryForObject(FIND_ROOM_BY_NAME_QUERY, new Object[] { name }, roomMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
+	}
 }

@@ -113,4 +113,14 @@ public class JdbcGroupDao implements GroupDao {
 			throw new DAOException("Could not get group by name: " + name, e);
 		}
 	}
+
+	@Override
+	public Optional<Group> findByName(String name) {
+		try {
+			return Optional
+					.of(jdbcTemplate.queryForObject(FIND_GROUP_BY_NAME_QUERY, new Object[] { name }, groupMapper));
+		} catch (EmptyResultDataAccessException e) {
+			return Optional.empty();
+		}
+	}
 }
