@@ -71,7 +71,7 @@ public class StudentService {
 
 	private void verify(Student student) {
 		verifyFields(student);
-		verifyGroupIsNotFull(student);
+		verifyGroupIsFull(student);
 	}
 
 	private void verifyFields(Student student) {
@@ -85,7 +85,7 @@ public class StudentService {
 		}
 	}
 
-	private void verifyGroupIsNotFull(Student student) {
+	private void verifyGroupIsFull(Student student) {
 		if (studentDao.getByGroup(student.getGroup()).stream().count() >= groupSize) {
 			throw new GroupOverflowException(
 					format("The size of the group %s is %d students. It is not enough to include new student in",
