@@ -14,7 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.GroupDao;
-import com.foxminded.university.dao.exception.DAOException;
+import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.dao.jdbc.mapper.GroupMapper;
 import com.foxminded.university.model.Group;
 
@@ -50,7 +50,7 @@ public class JdbcGroupDao implements GroupDao {
 			}, keyHolder);
 			group.setId(keyHolder.getKey().longValue());
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not create group: " + group, e);
+			throw new DaoException("Could not create group: " + group, e);
 		}
 	}
 
@@ -62,7 +62,7 @@ public class JdbcGroupDao implements GroupDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get group by id: " + groupId, e);
+			throw new DaoException("Could not get group by id: " + groupId, e);
 		}
 	}
 
@@ -71,7 +71,7 @@ public class JdbcGroupDao implements GroupDao {
 		try {
 			return jdbcTemplate.query(GET_GROUPS_QUERY, groupMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get groups", e);
+			throw new DaoException("Could not get groups", e);
 		}
 	}
 
@@ -80,7 +80,7 @@ public class JdbcGroupDao implements GroupDao {
 		try {
 			jdbcTemplate.update(UPDATE_GROUP_QUERY, group.getName(), group.getId());
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not update group: " + group, e);
+			throw new DaoException("Could not update group: " + group, e);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class JdbcGroupDao implements GroupDao {
 		try {
 			jdbcTemplate.update(DELETE_GROUP_BY_ID_QUERY, groupId);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not delete group by id: " + groupId, e);
+			throw new DaoException("Could not delete group by id: " + groupId, e);
 		}
 	}
 
@@ -98,7 +98,7 @@ public class JdbcGroupDao implements GroupDao {
 		try {
 			return jdbcTemplate.query(GET_GROUPS_BY_LESSON_ID_QUERY, new Object[] { lessonId }, groupMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get groups by lesson id: " + lessonId, e);
+			throw new DaoException("Could not get groups by lesson id: " + lessonId, e);
 		}
 	}
 
@@ -110,7 +110,7 @@ public class JdbcGroupDao implements GroupDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get group by name: " + name, e);
+			throw new DaoException("Could not get group by name: " + name, e);
 		}
 	}
 }

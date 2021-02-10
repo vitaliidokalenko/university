@@ -15,7 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.LessonDao;
-import com.foxminded.university.dao.exception.DAOException;
+import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.dao.jdbc.mapper.LessonMapper;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Group;
@@ -72,7 +72,7 @@ public class JdbcLessonDao implements LessonDao {
 					.stream()
 					.forEach(g -> jdbcTemplate.update(CREATE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not create lesson: " + lesson, e);
+			throw new DaoException("Could not create lesson: " + lesson, e);
 		}
 	}
 
@@ -84,7 +84,7 @@ public class JdbcLessonDao implements LessonDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get lesson by id: " + lessonId, e);
+			throw new DaoException("Could not get lesson by id: " + lessonId, e);
 		}
 	}
 
@@ -93,7 +93,7 @@ public class JdbcLessonDao implements LessonDao {
 		try {
 			return jdbcTemplate.query(GET_LESSONS_QUERY, lessonMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get lessons", e);
+			throw new DaoException("Could not get lessons", e);
 		}
 	}
 
@@ -116,7 +116,7 @@ public class JdbcLessonDao implements LessonDao {
 					.filter(g -> !groups.contains(g))
 					.forEach(g -> jdbcTemplate.update(CREATE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not update lesson: " + lesson, e);
+			throw new DaoException("Could not update lesson: " + lesson, e);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class JdbcLessonDao implements LessonDao {
 		try {
 			jdbcTemplate.update(DELETE_LESSON_BY_ID_QUERY, lessonId);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not delete lesson by id: " + lessonId, e);
+			throw new DaoException("Could not delete lesson by id: " + lessonId, e);
 		}
 	}
 
@@ -138,7 +138,7 @@ public class JdbcLessonDao implements LessonDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException(
+			throw new DaoException(
 					"Could not get lesson by group id: " + groupId + ", date: " + date + ", timeframe: " + timeframe,
 					e);
 		}
@@ -150,7 +150,7 @@ public class JdbcLessonDao implements LessonDao {
 			return jdbcTemplate
 					.query(GET_LESSONS_BY_TIMEFRAME_ID_QUERY, new Object[] { timeframe.getId() }, lessonMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get lessons by timeframe: " + timeframe, e);
+			throw new DaoException("Could not get lessons by timeframe: " + timeframe, e);
 		}
 	}
 
@@ -159,7 +159,7 @@ public class JdbcLessonDao implements LessonDao {
 		try {
 			return jdbcTemplate.query(GET_LESSONS_BY_COURSE_ID_QUERY, new Object[] { course.getId() }, lessonMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get lessons by course: " + course, e);
+			throw new DaoException("Could not get lessons by course: " + course, e);
 		}
 	}
 
@@ -173,7 +173,7 @@ public class JdbcLessonDao implements LessonDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException(
+			throw new DaoException(
 					"Could not get lesson by teacher: " + teacher + ", date: " + date + ", timeframe: " + timeframe, e);
 		}
 	}
@@ -188,7 +188,7 @@ public class JdbcLessonDao implements LessonDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException(
+			throw new DaoException(
 					"Could not get lesson by room: " + room + ", date: " + date + ", timeframe: " + timeframe, e);
 		}
 	}

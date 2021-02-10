@@ -14,7 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.CourseDao;
-import com.foxminded.university.dao.exception.DAOException;
+import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.dao.jdbc.mapper.CourseMapper;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
@@ -60,7 +60,7 @@ public class JdbcCourseDao implements CourseDao {
 					.stream()
 					.forEach(r -> jdbcTemplate.update(CREATE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not create course: " + course, e);
+			throw new DaoException("Could not create course: " + course, e);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class JdbcCourseDao implements CourseDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get course by id: " + courseId, e);
+			throw new DaoException("Could not get course by id: " + courseId, e);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class JdbcCourseDao implements CourseDao {
 			return jdbcTemplate.query(GET_COURSES_QUERY, courseMapper);
 
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get courses", e);
+			throw new DaoException("Could not get courses", e);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class JdbcCourseDao implements CourseDao {
 					.filter(r -> !rooms.contains(r))
 					.forEach(r -> jdbcTemplate.update(CREATE_COURSE_ROOM_QUERY, course.getId(), r.getId()));
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not update course: " + course, e);
+			throw new DaoException("Could not update course: " + course, e);
 		}
 	}
 
@@ -108,7 +108,7 @@ public class JdbcCourseDao implements CourseDao {
 		try {
 			jdbcTemplate.update(DELETE_COURSE_BY_ID_QUERY, courseId);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not delete course by id: " + courseId, e);
+			throw new DaoException("Could not delete course by id: " + courseId, e);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class JdbcCourseDao implements CourseDao {
 		try {
 			return jdbcTemplate.query(GET_COURSES_BY_ROOM_ID_QUERY, new Object[] { roomId }, courseMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get courses by room id: " + roomId, e);
+			throw new DaoException("Could not get courses by room id: " + roomId, e);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class JdbcCourseDao implements CourseDao {
 		try {
 			return jdbcTemplate.query(GET_COURSES_BY_STUDENT_ID_QUERY, new Object[] { studentId }, courseMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get courses by student id: " + studentId, e);
+			throw new DaoException("Could not get courses by student id: " + studentId, e);
 		}
 	}
 
@@ -135,7 +135,7 @@ public class JdbcCourseDao implements CourseDao {
 		try {
 			return jdbcTemplate.query(GET_COURSES_BY_TEACHER_ID_QUERY, new Object[] { teacherId }, courseMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get courses by teacher id: " + teacherId, e);
+			throw new DaoException("Could not get courses by teacher id: " + teacherId, e);
 		}
 	}
 
@@ -147,7 +147,7 @@ public class JdbcCourseDao implements CourseDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get course by name: " + name, e);
+			throw new DaoException("Could not get course by name: " + name, e);
 		}
 	}
 }

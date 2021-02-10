@@ -23,7 +23,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.StudentDao;
-import com.foxminded.university.dao.exception.DAOException;
+import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.dao.jdbc.mapper.StudentMapper;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
@@ -79,7 +79,7 @@ public class JdbcStudentDao implements StudentDao {
 					.stream()
 					.forEach(c -> jdbcTemplate.update(CREATE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not create student: " + student, e);
+			throw new DaoException("Could not create student: " + student, e);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class JdbcStudentDao implements StudentDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get student by id: " + studentId, e);
+			throw new DaoException("Could not get student by id: " + studentId, e);
 		}
 	}
 
@@ -100,7 +100,7 @@ public class JdbcStudentDao implements StudentDao {
 		try {
 			return jdbcTemplate.query(GET_STUDENTS_QUERY, studentMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get students", e);
+			throw new DaoException("Could not get students", e);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class JdbcStudentDao implements StudentDao {
 					.filter(c -> !courses.contains(c))
 					.forEach(c -> jdbcTemplate.update(CREATE_STUDENT_COURSE_QUERY, student.getId(), c.getId()));
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not update student: " + student, e);
+			throw new DaoException("Could not update student: " + student, e);
 		}
 	}
 
@@ -135,7 +135,7 @@ public class JdbcStudentDao implements StudentDao {
 		try {
 			jdbcTemplate.update(DELETE_STUDENT_BY_ID_QUERY, studentId);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not delete student by id: " + studentId, e);
+			throw new DaoException("Could not delete student by id: " + studentId, e);
 		}
 	}
 
@@ -155,7 +155,7 @@ public class JdbcStudentDao implements StudentDao {
 				return student;
 			});
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get students by group: " + group, e);
+			throw new DaoException("Could not get students by group: " + group, e);
 		}
 	}
 
@@ -164,7 +164,7 @@ public class JdbcStudentDao implements StudentDao {
 		try {
 			return jdbcTemplate.query(GET_STUDENTS_BY_COURSE_ID_QUERY, new Object[] { courseId }, studentMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get students by course id: " + courseId, e);
+			throw new DaoException("Could not get students by course id: " + courseId, e);
 		}
 	}
 }

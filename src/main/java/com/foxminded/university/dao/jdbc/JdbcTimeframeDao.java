@@ -14,7 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.TimeframeDao;
-import com.foxminded.university.dao.exception.DAOException;
+import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.dao.jdbc.mapper.TimeframeMapper;
 import com.foxminded.university.model.Timeframe;
 
@@ -51,7 +51,7 @@ public class JdbcTimeframeDao implements TimeframeDao {
 			}, keyHolder);
 			timeframe.setId(keyHolder.getKey().longValue());
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not create timeframe: " + timeframe, e);
+			throw new DaoException("Could not create timeframe: " + timeframe, e);
 		}
 	}
 
@@ -63,7 +63,7 @@ public class JdbcTimeframeDao implements TimeframeDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get timeframe by id: " + timeframeId, e);
+			throw new DaoException("Could not get timeframe by id: " + timeframeId, e);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class JdbcTimeframeDao implements TimeframeDao {
 		try {
 			return jdbcTemplate.query(GET_TIMEFRAMES_QUERY, timeframeMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get timeframes", e);
+			throw new DaoException("Could not get timeframes", e);
 		}
 	}
 
@@ -85,7 +85,7 @@ public class JdbcTimeframeDao implements TimeframeDao {
 					timeframe.getEndTime(),
 					timeframe.getId());
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not update timeframe: " + timeframe, e);
+			throw new DaoException("Could not update timeframe: " + timeframe, e);
 		}
 	}
 
@@ -94,7 +94,7 @@ public class JdbcTimeframeDao implements TimeframeDao {
 		try {
 			jdbcTemplate.update(DELETE_TIMEFRAME_BY_ID_QUERY, timeframeId);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not delete timeframe by id: " + timeframeId, e);
+			throw new DaoException("Could not delete timeframe by id: " + timeframeId, e);
 		}
 	}
 
@@ -106,7 +106,7 @@ public class JdbcTimeframeDao implements TimeframeDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get timeframe by sequence: " + sequence, e);
+			throw new DaoException("Could not get timeframe by sequence: " + sequence, e);
 		}
 	}
 }

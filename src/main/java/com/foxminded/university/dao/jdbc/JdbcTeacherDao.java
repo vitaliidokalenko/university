@@ -14,7 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.TeacherDao;
-import com.foxminded.university.dao.exception.DAOException;
+import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.dao.jdbc.mapper.TeacherMapper;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Teacher;
@@ -66,7 +66,7 @@ public class JdbcTeacherDao implements TeacherDao {
 					.stream()
 					.forEach(c -> jdbcTemplate.update(CREATE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not create teacher: " + teacher, e);
+			throw new DaoException("Could not create teacher: " + teacher, e);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class JdbcTeacherDao implements TeacherDao {
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get teacher by id: " + teacherId, e);
+			throw new DaoException("Could not get teacher by id: " + teacherId, e);
 		}
 	}
 
@@ -87,7 +87,7 @@ public class JdbcTeacherDao implements TeacherDao {
 		try {
 			return jdbcTemplate.query(GET_TEACHERS_QUERY, teacherMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get teachers", e);
+			throw new DaoException("Could not get teachers", e);
 		}
 	}
 
@@ -113,7 +113,7 @@ public class JdbcTeacherDao implements TeacherDao {
 					.filter(c -> !courses.contains(c))
 					.forEach(c -> jdbcTemplate.update(CREATE_TEACHER_COURSE_QUERY, teacher.getId(), c.getId()));
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not update teacher: " + teacher, e);
+			throw new DaoException("Could not update teacher: " + teacher, e);
 		}
 	}
 
@@ -122,7 +122,7 @@ public class JdbcTeacherDao implements TeacherDao {
 		try {
 			jdbcTemplate.update(DELETE_TEACHER_BY_ID_QUERY, teacherId);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not delete teacher by id: " + teacherId, e);
+			throw new DaoException("Could not delete teacher by id: " + teacherId, e);
 		}
 	}
 
@@ -131,7 +131,7 @@ public class JdbcTeacherDao implements TeacherDao {
 		try {
 			return jdbcTemplate.query(GET_TEACHERS_BY_COURSE_ID_QUERY, new Object[] { courseId }, teacherMapper);
 		} catch (DataAccessException e) {
-			throw new DAOException("Could not get teachers by course id: " + courseId, e);
+			throw new DaoException("Could not get teachers by course id: " + courseId, e);
 		}
 	}
 }
