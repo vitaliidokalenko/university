@@ -113,7 +113,7 @@ public class RoomServiceTest {
 		when(roomDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> roomService.deleteById(1L));
-		assertEquals("There is nothing to delete. Room with id: 1 is absent", exception.getMessage());
+		assertEquals("Cannot find room by id: 1", exception.getMessage());
 	}
 
 	@Test

@@ -56,10 +56,10 @@ public class TeacherService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting teacher by id: {}", id);
-		if (isPresentById(id)) {
+		if (teacherDao.findById(id).isPresent()) {
 			teacherDao.deleteById(id);
 		} else {
-			throw new NotFoundEntityException(format("There is nothing to delete. Teacher with id: %d is absent", id));
+			throw new NotFoundEntityException(format("Cannot find teacher by id: %d", id));
 		}
 	}
 
@@ -80,9 +80,5 @@ public class TeacherService {
 					teacher.getName(),
 					teacher.getSurname()));
 		}
-	}
-
-	private boolean isPresentById(Long id) {
-		return teacherDao.findById(id).isPresent();
 	}
 }

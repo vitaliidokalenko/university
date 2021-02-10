@@ -159,7 +159,7 @@ public class StudentServiceTest {
 		when(studentDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> studentService.deleteById(1L));
-		assertEquals("There is nothing to delete. Student with id: 1 is absent", exception.getMessage());
+		assertEquals("Cannot find student by id: 1", exception.getMessage());
 	}
 
 	private Student buildStudent() {

@@ -62,11 +62,10 @@ public class TimeframeService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting timeframe by id: {}", id);
-		if (isPresentById(id)) {
+		if (timeframeDao.findById(id).isPresent()) {
 			timeframeDao.deleteById(id);
 		} else {
-			throw new NotFoundEntityException(
-					format("There is nothing to delete. Timeframe with id: %d is absent", id));
+			throw new NotFoundEntityException(format("Cannot find timeframe by id: %d", id));
 		}
 	}
 
@@ -86,10 +85,6 @@ public class TimeframeService {
 			throw new AlreadyExistsEntityException(
 					format("The timeframe with sequence: %d already exists", timeframe.getSequence()));
 		}
-	}
-
-	private boolean isPresentById(Long id) {
-		return timeframeDao.findById(id).isPresent();
 	}
 
 	private boolean isDurationValid(Timeframe timeframe) {

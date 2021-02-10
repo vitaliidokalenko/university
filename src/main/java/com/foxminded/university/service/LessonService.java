@@ -64,10 +64,10 @@ public class LessonService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting lesson by id: {}", id);
-		if (isPresentById(id)) {
+		if (lessonDao.findById(id).isPresent()) {
 			lessonDao.deleteById(id);
 		} else {
-			throw new NotFoundEntityException(format("There is nothing to delete. Lesson with id: %d is absent", id));
+			throw new NotFoundEntityException(format("Cannot find lesson by id: %d", id));
 		}
 	}
 
@@ -166,9 +166,5 @@ public class LessonService {
 	private boolean isAtWeekend(Lesson lesson) {
 		DayOfWeek day = lesson.getDate().getDayOfWeek();
 		return day.equals(SATURDAY) || day.equals(SUNDAY);
-	}
-
-	private boolean isPresentById(Long id) {
-		return lessonDao.findById(id).isPresent();
 	}
 }

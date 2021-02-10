@@ -341,7 +341,7 @@ public class LessonServiceTest {
 		when(lessonDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> lessonService.deleteById(1L));
-		assertEquals("There is nothing to delete. Lesson with id: 1 is absent", exception.getMessage());
+		assertEquals("Cannot find lesson by id: 1", exception.getMessage());
 	}
 
 	private Lesson buildLesson() {

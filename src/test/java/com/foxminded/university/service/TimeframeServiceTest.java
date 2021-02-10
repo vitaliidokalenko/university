@@ -143,7 +143,7 @@ public class TimeframeServiceTest {
 		when(timeframeDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> timeframeService.deleteById(1L));
-		assertEquals("There is nothing to delete. Timeframe with id: 1 is absent", exception.getMessage());
+		assertEquals("Cannot find timeframe by id: 1", exception.getMessage());
 	}
 
 	@Test

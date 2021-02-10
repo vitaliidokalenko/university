@@ -63,10 +63,10 @@ public class GroupService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting group by id: {}", id);
-		if (isPresentById(id)) {
+		if (groupDao.findById(id).isPresent()) {
 			groupDao.deleteById(id);
 		} else {
-			throw new NotFoundEntityException(format("There is nothing to delete. Group with id: %d is absent", id));
+			throw new NotFoundEntityException(format("Cannot find group by id: %d", id));
 		}
 	}
 
@@ -78,10 +78,6 @@ public class GroupService {
 		} else if (!isNameUnique(group)) {
 			throw new AlreadyExistsEntityException(format("The group with name %s already exists", group.getName()));
 		}
-	}
-
-	private boolean isPresentById(Long id) {
-		return groupDao.findById(id).isPresent();
 	}
 
 	private boolean isNameUnique(Group group) {

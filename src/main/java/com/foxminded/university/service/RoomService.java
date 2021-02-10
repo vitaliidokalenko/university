@@ -56,10 +56,10 @@ public class RoomService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting room by id: {}", id);
-		if (isPresentById(id)) {
+		if (roomDao.findById(id).isPresent()) {
 			roomDao.deleteById(id);
 		} else {
-			throw new NotFoundEntityException(format("There is nothing to delete. Room with id: %d is absent", id));
+			throw new NotFoundEntityException(format("Cannot find room by id: %d", id));
 		}
 	}
 
@@ -73,10 +73,6 @@ public class RoomService {
 		} else if (room.getCapacity() < 1) {
 			throw new IllegalFieldEntityException(format("Capacity of the room %s is less than 1", room.getName()));
 		}
-	}
-
-	private boolean isPresentById(Long id) {
-		return roomDao.findById(id).isPresent();
 	}
 
 	private boolean isNameUnique(Room room) {

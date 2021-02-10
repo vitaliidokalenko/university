@@ -57,10 +57,10 @@ public class CourseService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting course by id: {}", id);
-		if (isPresentById(id)) {
+		if (courseDao.findById(id).isPresent()) {
 			courseDao.deleteById(id);
 		} else {
-			throw new NotFoundEntityException(format("There is nothing to delete. Course with id: %d is absent", id));
+			throw new NotFoundEntityException(format("Cannot find course by id: %d", id));
 		}
 	}
 
@@ -75,10 +75,6 @@ public class CourseService {
 			throw new IncompleteEntityException(
 					format("There are no rooms assigned to the course: %s", course.getName()));
 		}
-	}
-
-	private boolean isPresentById(Long id) {
-		return courseDao.findById(id).isPresent();
 	}
 
 	private boolean isNameUnique(Course course) {

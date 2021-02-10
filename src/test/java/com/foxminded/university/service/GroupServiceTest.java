@@ -110,7 +110,7 @@ public class GroupServiceTest {
 		when(groupDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> groupService.deleteById(1L));
-		assertEquals("There is nothing to delete. Group with id: 1 is absent", exception.getMessage());
+		assertEquals("Cannot find group by id: 1", exception.getMessage());
 	}
 
 	@Test

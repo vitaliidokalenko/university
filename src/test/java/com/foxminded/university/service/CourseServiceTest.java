@@ -116,7 +116,7 @@ public class CourseServiceTest {
 		when(courseDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> courseService.deleteById(1L));
-		assertEquals("There is nothing to delete. Course with id: 1 is absent", exception.getMessage());
+		assertEquals("Cannot find course by id: 1", exception.getMessage());
 	}
 
 	@Test
