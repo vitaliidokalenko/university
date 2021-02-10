@@ -9,13 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.model.Course;
-import com.foxminded.university.service.exception.AlreadyExistsEntityException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.IncompleteEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotUniqueNameException;
 
 @Service
 public class CourseService {
@@ -65,24 +66,23 @@ public class CourseService {
 	}
 
 	private void verify(Course course) {
-		if (course.getName() == null) {
+		verifyFields(course);
+		verifyNameIsUnique(course);
+	}
+
+	private void verifyFields(Course course) {
+		if (StringUtils.isEmpty(course.getName())) {
 			throw new IllegalFieldEntityException("The name of the course is absent");
-		} else if (course.getName().isEmpty()) {
-			throw new IllegalFieldEntityException("The name of the course is empty");
-		} else if (!isNameUnique(course)) {
-			throw new AlreadyExistsEntityException(format("The course with name %s already exists", course.getName()));
 		} else if (course.getRooms().isEmpty()) {
 			throw new IncompleteEntityException(
 					format("There are no rooms assigned to the course: %s", course.getName()));
 		}
 	}
 
-	private boolean isNameUnique(Course course) {
+	private void verifyNameIsUnique(Course course) {
 		Optional<Course> courseByName = courseDao.findByName(course.getName());
-		if (courseByName.isPresent()) {
-			return courseByName.get().getId().equals(course.getId());
-		} else {
-			return true;
+		if (courseByName.isPresent() && !courseByName.get().getId().equals(course.getId())) {
+			throw new NotUniqueNameException(format("The course with name %s already exists", course.getName()));
 		}
 	}
 }

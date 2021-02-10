@@ -26,8 +26,8 @@ import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
+import com.foxminded.university.service.exception.GroupOverflowException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
-import com.foxminded.university.service.exception.IncompatibleRelationEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @SpringJUnitConfig(TestAppConfig.class)
@@ -90,7 +90,7 @@ public class StudentServiceTest {
 		student.setName("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("The name of the student is empty", exception.getMessage());
+		assertEquals("The name of the student is absent", exception.getMessage());
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class StudentServiceTest {
 		student.setSurname("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("The surname of the student is empty", exception.getMessage());
+		assertEquals("The surname of the student is absent", exception.getMessage());
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class StudentServiceTest {
 		when(studentDao.getByGroup(student.getGroup()))
 				.thenReturn(Arrays.asList(new Student("Serhii", "Gerega"), new Student("Anatoly", "Soprano")));
 
-		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+		Exception exception = assertThrows(GroupOverflowException.class,
 				() -> studentService.create(student));
 		assertEquals(format(
 				"The size of the group %s is %d students. It is not enough to include new student in",

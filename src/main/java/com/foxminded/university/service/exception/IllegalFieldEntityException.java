@@ -4,7 +4,6 @@ package com.foxminded.university.service.exception;
 public class IllegalFieldEntityException extends RuntimeException {
 
 	public IllegalFieldEntityException() {
-		super();
 	}
 
 	public IllegalFieldEntityException(String message, Throwable cause) {

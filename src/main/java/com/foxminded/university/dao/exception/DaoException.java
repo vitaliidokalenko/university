@@ -4,7 +4,6 @@ package com.foxminded.university.dao.exception;
 public class DaoException extends RuntimeException {
 
 	public DaoException() {
-		
 	}
 
 	public DaoException(String message, Throwable cause) {

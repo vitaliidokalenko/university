@@ -20,9 +20,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Room;
-import com.foxminded.university.service.exception.AlreadyExistsEntityException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotUniqueNameException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -58,7 +58,7 @@ public class RoomServiceTest {
 		room.setName("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> roomService.create(room));
-		assertEquals("The name of the room is empty", exception.getMessage());
+		assertEquals("The name of the room is absent", exception.getMessage());
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class RoomServiceTest {
 		retrieved.setId(2L);
 		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
 
-		Exception exception = assertThrows(AlreadyExistsEntityException.class, () -> roomService.create(room));
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> roomService.create(room));
 		assertEquals(format("The room with name %s already exists", room.getName()), exception.getMessage());
 	}
 
@@ -144,7 +144,7 @@ public class RoomServiceTest {
 		retrieved.setId(2L);
 		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
 
-		Exception exception = assertThrows(AlreadyExistsEntityException.class, () -> roomService.update(room));
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> roomService.update(room));
 		assertEquals(format("The room with name %s already exists", room.getName()), exception.getMessage());
 	}
 

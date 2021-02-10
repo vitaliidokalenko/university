@@ -11,11 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Student;
+import com.foxminded.university.service.exception.GroupOverflowException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
-import com.foxminded.university.service.exception.IncompatibleRelationEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Service
@@ -69,29 +70,27 @@ public class StudentService {
 	}
 
 	private void verify(Student student) {
-		if (student.getName() == null) {
+		verifyFields(student);
+		verifyGroupIsNotFull(student);
+	}
+
+	private void verifyFields(Student student) {
+		if (StringUtils.isEmpty(student.getName())) {
 			throw new IllegalFieldEntityException("The name of the student is absent");
-		} else if (student.getSurname() == null) {
+		} else if (StringUtils.isEmpty(student.getSurname())) {
 			throw new IllegalFieldEntityException("The surname of the student is absent");
-		} else if (student.getName().isEmpty()) {
-			throw new IllegalFieldEntityException("The name of the student is empty");
-		} else if (student.getSurname().isEmpty()) {
-			throw new IllegalFieldEntityException("The surname of the student is empty");
 		} else if (student.getGender() == null) {
 			throw new IllegalFieldEntityException(
 					format("Gender of the student %s %s is absent", student.getName(), student.getSurname()));
-		} else if (!isGroupSizeEnough(student)) {
-			throw new IncompatibleRelationEntityException(format(
-					"The size of the group %s is %d students. It is not enough to include new student in",
-					student.getGroup().getName(),
-					groupSize));
 		}
 	}
 
-	private boolean isGroupSizeEnough(Student student) {
-		return studentDao.getByGroup(student.getGroup())
-				.stream()
-				.count()
-				< groupSize;
+	private void verifyGroupIsNotFull(Student student) {
+		if (studentDao.getByGroup(student.getGroup()).stream().count() >= groupSize) {
+			throw new GroupOverflowException(
+					format("The size of the group %s is %d students. It is not enough to include new student in",
+							student.getGroup().getName(),
+							groupSize));
+		}
 	}
 }

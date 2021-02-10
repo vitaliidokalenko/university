@@ -22,10 +22,10 @@ import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
-import com.foxminded.university.service.exception.AlreadyExistsEntityException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.IncompleteEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotUniqueNameException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -61,7 +61,7 @@ public class CourseServiceTest {
 		course.setName("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> courseService.create(course));
-		assertEquals("The name of the course is empty", exception.getMessage());
+		assertEquals("The name of the course is absent", exception.getMessage());
 	}
 
 	@Test
@@ -126,7 +126,7 @@ public class CourseServiceTest {
 		retrieved.setId(2L);
 		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
-		Exception exception = assertThrows(AlreadyExistsEntityException.class, () -> courseService.create(actual));
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> courseService.create(actual));
 		assertEquals(format("The course with name %s already exists", actual.getName()), exception.getMessage());
 	}
 
@@ -158,7 +158,7 @@ public class CourseServiceTest {
 		retrieved.setId(2L);
 		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
-		Exception exception = assertThrows(AlreadyExistsEntityException.class, () -> courseService.update(actual));
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> courseService.update(actual));
 		assertEquals(format("The course with name %s already exists", actual.getName()), exception.getMessage());
 	}
 

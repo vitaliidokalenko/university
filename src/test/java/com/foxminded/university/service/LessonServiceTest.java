@@ -33,7 +33,12 @@ import com.foxminded.university.model.Student;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.exception.IncompatibleDateException;
-import com.foxminded.university.service.exception.IncompatibleRelationEntityException;
+import com.foxminded.university.service.exception.IncompatibleRoomException;
+import com.foxminded.university.service.exception.LackOfCapacityException;
+import com.foxminded.university.service.exception.NotAvailableGroupException;
+import com.foxminded.university.service.exception.NotAvailableRoomException;
+import com.foxminded.university.service.exception.NotAvailableTeacherException;
+import com.foxminded.university.service.exception.NotCompetentTeacherException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @SpringJUnitConfig(TestAppConfig.class)
@@ -65,12 +70,13 @@ public class LessonServiceTest {
 		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(), actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
-		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+		Exception exception = assertThrows(NotAvailableTeacherException.class,
 				() -> lessonService.create(actual));
-		assertEquals(
-				format("Teacher %s %s is not available for the lesson",
-						actual.getTeacher().getName(),
-						actual.getTeacher().getSurname()),
+		assertEquals(format("Teacher %s %s is busy at the time %s, %s",
+				actual.getTeacher().getName(),
+				actual.getTeacher().getSurname(),
+				actual.getTimeframe().getStartTime().toString(),
+				actual.getDate().toString()),
 				exception.getMessage());
 	}
 
@@ -93,9 +99,12 @@ public class LessonServiceTest {
 		when(lessonDao.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
-		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+		Exception exception = assertThrows(NotAvailableRoomException.class,
 				() -> lessonService.create(actual));
-		assertEquals(format("Room %s is not available for the lesson", actual.getRoom().getName()),
+		assertEquals(format("Room %s is occupied at the time %s, %s",
+				actual.getRoom().getName(),
+				actual.getTimeframe().getStartTime().toString(),
+				actual.getDate().toString()),
 				exception.getMessage());
 	}
 
@@ -119,9 +128,10 @@ public class LessonServiceTest {
 		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
-		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+		Exception exception = assertThrows(NotAvailableGroupException.class,
 				() -> lessonService.create(actual));
-		assertEquals("Groups is not available for the lesson", exception.getMessage());
+		assertEquals("Other lesson was scheduled for the group AA-11 at the time 08:00, 2021-01-21",
+				exception.getMessage());
 	}
 
 	@Test
@@ -136,23 +146,24 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenRoomCapacityIsNotCompatible_whenCreate_thenThrowException() {
+	public void givenRoomCapacityIsNotEnough_whenCreate_thenThrowException() {
 		Lesson lesson = buildLesson();
-		when(studentDao.getByGroup(Mockito.any(Group.class)))
-				.thenReturn(Arrays.asList(new Student("Anna", "Maria"),
-						new Student("Anatoly", "Deineka"),
-						new Student("Alina", "Linkoln"),
-						new Student("Homer", "Simpson")));
+		List<Student> students = Arrays.asList(new Student("Anna", "Maria"),
+				new Student("Anatoly", "Deineka"),
+				new Student("Alina", "Linkoln"),
+				new Student("Homer", "Simpson"));
+		when(studentDao.getByGroup(Mockito.any(Group.class))).thenReturn(students);
 
-		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+		Exception exception = assertThrows(LackOfCapacityException.class,
 				() -> lessonService.create(lesson));
-		assertEquals(format("Capacity of the room %s is incompatible for the lesson. Size = %d seats",
+		assertEquals(format("Capacity of the room %s (%d seats) is not enough for %d students",
 				lesson.getRoom().getName(),
-				lesson.getRoom().getCapacity()), exception.getMessage());
+				lesson.getRoom().getCapacity(),
+				students.size()), exception.getMessage());
 	}
 
 	@Test
-	public void givenRoomCapacityIsCompatible_whenCreate_thenLessonIsCreating() {
+	public void givenRoomCapacityIsEnough_whenCreate_thenLessonIsCreating() {
 		Lesson lesson = buildLesson();
 		when(studentDao.getByGroup(Mockito.any(Group.class)))
 				.thenReturn(Arrays.asList(new Student("Anna", "Maria"),
@@ -164,11 +175,11 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenTeacherCourseIsNotCompatible_whenCreate_thenThrowException() {
+	public void givenTeacherIsNotCompetentInCourse_whenCreate_thenThrowException() {
 		Lesson lesson = buildLesson();
 		lesson.setCourse(new Course("Law"));
 
-		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+		Exception exception = assertThrows(NotCompetentTeacherException.class,
 				() -> lessonService.create(lesson));
 		assertEquals(format("The teacher %s %s is incompetent to lecture course %s for the lesson",
 				lesson.getTeacher().getName(),
@@ -177,13 +188,13 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenCourseRoomIsNotCompatible_whenCreate_thenThrowException() {
+	public void givenRoomIsNotAssignedForLessonCourse_whenCreate_thenThrowException() {
 		Lesson lesson = buildLesson();
 		lesson.setRoom(new Room("333"));
 
-		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+		Exception exception = assertThrows(IncompatibleRoomException.class,
 				() -> lessonService.create(lesson));
-		assertEquals(format("Course %s can not be lectured in the room %s",
+		assertEquals(format("Course %s cannot be lectured in the room %s",
 				lesson.getCourse().getName(),
 				lesson.getRoom().getName()), exception.getMessage());
 	}
@@ -194,7 +205,8 @@ public class LessonServiceTest {
 		lesson.setDate(LocalDate.parse("2021-01-23"));
 
 		Exception exception = assertThrows(IncompatibleDateException.class, () -> lessonService.create(lesson));
-		assertEquals("The date the lesson appointed at is at the weekend", exception.getMessage());
+		assertEquals(format("The date the lesson appointed at is at the weekend (%s)", lesson.getDate().toString()),
+				exception.getMessage());
 	}
 
 	@Test
@@ -203,7 +215,8 @@ public class LessonServiceTest {
 		lesson.setDate(LocalDate.parse("2021-01-24"));
 
 		Exception exception = assertThrows(IncompatibleDateException.class, () -> lessonService.create(lesson));
-		assertEquals("The date the lesson appointed at is at the weekend", exception.getMessage());
+		assertEquals(format("The date the lesson appointed at is at the weekend (%s)", lesson.getDate().toString()),
+				exception.getMessage());
 	}
 
 	@Test
@@ -245,12 +258,13 @@ public class LessonServiceTest {
 		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(), actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
-		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+		Exception exception = assertThrows(NotAvailableTeacherException.class,
 				() -> lessonService.update(actual));
-		assertEquals(
-				format("Teacher %s %s is not available for the lesson",
-						actual.getTeacher().getName(),
-						actual.getTeacher().getSurname()),
+		assertEquals(format("Teacher %s %s is busy at the time %s, %s",
+				actual.getTeacher().getName(),
+				actual.getTeacher().getSurname(),
+				actual.getTimeframe().getStartTime().toString(),
+				actual.getDate().toString()),
 				exception.getMessage());
 	}
 
@@ -278,9 +292,12 @@ public class LessonServiceTest {
 		when(lessonDao.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
-		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+		Exception exception = assertThrows(NotAvailableRoomException.class,
 				() -> lessonService.update(actual));
-		assertEquals(format("Room %s is not available for the lesson", actual.getRoom().getName()),
+		assertEquals(format("Room %s is occupied at the time %s, %s",
+				actual.getRoom().getName(),
+				actual.getTimeframe().getStartTime().toString(),
+				actual.getDate().toString()),
 				exception.getMessage());
 	}
 
@@ -308,9 +325,10 @@ public class LessonServiceTest {
 		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
-		Exception exception = assertThrows(IncompatibleRelationEntityException.class,
+		Exception exception = assertThrows(NotAvailableGroupException.class,
 				() -> lessonService.update(actual));
-		assertEquals("Groups is not available for the lesson", exception.getMessage());
+		assertEquals("Other lesson was scheduled for the group AA-11 at the time 08:00, 2021-01-21",
+				exception.getMessage());
 	}
 
 	@Test

@@ -4,7 +4,6 @@ package com.foxminded.university.service.exception;
 public class NotFoundEntityException extends RuntimeException {
 
 	public NotFoundEntityException() {
-		super();
 	}
 
 	public NotFoundEntityException(String message, Throwable cause) {

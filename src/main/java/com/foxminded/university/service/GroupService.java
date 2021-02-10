@@ -9,13 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Group;
-import com.foxminded.university.service.exception.AlreadyExistsEntityException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotUniqueNameException;
 
 @Service
 public class GroupService {
@@ -71,21 +72,20 @@ public class GroupService {
 	}
 
 	private void verify(Group group) {
-		if (group.getName() == null) {
+		verifyFields(group);
+		verifyNameIsUnique(group);
+	}
+
+	private void verifyFields(Group group) {
+		if (StringUtils.isEmpty(group.getName())) {
 			throw new IllegalFieldEntityException("The name of the group is absent");
-		} else if (group.getName().isEmpty()) {
-			throw new IllegalFieldEntityException("The name of the group is empty");
-		} else if (!isNameUnique(group)) {
-			throw new AlreadyExistsEntityException(format("The group with name %s already exists", group.getName()));
 		}
 	}
 
-	private boolean isNameUnique(Group group) {
+	private void verifyNameIsUnique(Group group) {
 		Optional<Group> groupByName = groupDao.findByName(group.getName());
-		if (groupByName.isPresent()) {
-			return groupByName.get().getId().equals(group.getId());
-		} else {
-			return true;
+		if (groupByName.isPresent() && !groupByName.get().getId().equals(group.getId())) {
+			throw new NotUniqueNameException(format("The group with name %s already exists", group.getName()));
 		}
 	}
 }

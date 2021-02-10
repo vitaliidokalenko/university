@@ -24,9 +24,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
-import com.foxminded.university.service.exception.AlreadyExistsEntityException;
+import com.foxminded.university.service.exception.IllegalDurationException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.IllegalTimeLineException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotUniqueSequenceException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -86,7 +88,7 @@ public class TimeframeServiceTest {
 		Timeframe timeframe = buildTimeframe();
 		timeframe.setStartTime(LocalTime.parse("10:00"));
 
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> timeframeService.create(timeframe));
+		Exception exception = assertThrows(IllegalTimeLineException.class, () -> timeframeService.create(timeframe));
 		assertEquals("Start time of the timeframe is after end time", exception.getMessage());
 	}
 
@@ -95,7 +97,7 @@ public class TimeframeServiceTest {
 		Timeframe timeframe = buildTimeframe();
 		timeframe.setStartTime(LocalTime.parse("08:01"));
 
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> timeframeService.create(timeframe));
+		Exception exception = assertThrows(IllegalDurationException.class, () -> timeframeService.create(timeframe));
 		assertEquals(format("Duration of the timeframe is not valid. It must be %smin.", DURATION.toMinutes()),
 				exception.getMessage());
 	}
@@ -153,7 +155,7 @@ public class TimeframeServiceTest {
 		retrieved.setId(2L);
 		when(timeframeDao.findBySequence(actual.getSequence())).thenReturn(Optional.of(retrieved));
 
-		Exception exception = assertThrows(AlreadyExistsEntityException.class, () -> timeframeService.create(actual));
+		Exception exception = assertThrows(NotUniqueSequenceException.class, () -> timeframeService.create(actual));
 		assertEquals(format("The timeframe with sequence: %d already exists", actual.getSequence()),
 				exception.getMessage());
 	}

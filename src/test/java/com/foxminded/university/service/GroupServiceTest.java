@@ -22,9 +22,9 @@ import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
-import com.foxminded.university.service.exception.AlreadyExistsEntityException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotUniqueNameException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -62,7 +62,7 @@ public class GroupServiceTest {
 		group.setName("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> groupService.create(group));
-		assertEquals("The name of the group is empty", exception.getMessage());
+		assertEquals("The name of the group is absent", exception.getMessage());
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class GroupServiceTest {
 		retrieved.setId(2L);
 		when(groupDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
-		Exception exception = assertThrows(AlreadyExistsEntityException.class, () -> groupService.create(actual));
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> groupService.create(actual));
 		assertEquals(format("The group with name %s already exists", actual.getName()), exception.getMessage());
 	}
 
@@ -141,7 +141,7 @@ public class GroupServiceTest {
 		retrieved.setId(2L);
 		when(groupDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
-		Exception exception = assertThrows(AlreadyExistsEntityException.class, () -> groupService.update(actual));
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> groupService.update(actual));
 		assertEquals(format("The group with name %s already exists", actual.getName()), exception.getMessage());
 	}
 

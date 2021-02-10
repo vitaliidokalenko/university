@@ -4,7 +4,6 @@ package com.foxminded.university.service.exception;
 public class IncompatibleDateException extends RuntimeException {
 
 	public IncompatibleDateException() {
-		super();
 	}
 
 	public IncompatibleDateException(String message, Throwable cause) {

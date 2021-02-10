@@ -9,12 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Room;
-import com.foxminded.university.service.exception.AlreadyExistsEntityException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotUniqueNameException;
 
 @Service
 public class RoomService {
@@ -64,23 +65,22 @@ public class RoomService {
 	}
 
 	private void verify(Room room) {
-		if (room.getName() == null) {
+		verifyFields(room);
+		verifyNameIsUnique(room);
+	}
+
+	private void verifyFields(Room room) {
+		if (StringUtils.isEmpty(room.getName())) {
 			throw new IllegalFieldEntityException("The name of the room is absent");
-		} else if (room.getName().isEmpty()) {
-			throw new IllegalFieldEntityException("The name of the room is empty");
-		} else if (!isNameUnique(room)) {
-			throw new AlreadyExistsEntityException(format("The room with name %s already exists", room.getName()));
 		} else if (room.getCapacity() < 1) {
 			throw new IllegalFieldEntityException(format("Capacity of the room %s is less than 1", room.getName()));
 		}
 	}
 
-	private boolean isNameUnique(Room room) {
+	private void verifyNameIsUnique(Room room) {
 		Optional<Room> roomByName = roomDao.findByName(room.getName());
-		if (roomByName.isPresent()) {
-			return roomByName.get().getId().equals(room.getId());
-		} else {
-			return true;
+		if (roomByName.isPresent() && !roomByName.get().getId().equals(room.getId())) {
+			throw new NotUniqueNameException(format("The room with name %s already exists", room.getName()));
 		}
 	}
 }

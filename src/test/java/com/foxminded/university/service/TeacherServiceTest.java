@@ -61,7 +61,7 @@ public class TeacherServiceTest {
 		teacher.setName("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("The name of the teacher is empty", exception.getMessage());
+		assertEquals("The name of the teacher is absent", exception.getMessage());
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class TeacherServiceTest {
 		teacher.setSurname("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("The surname of the teacher is empty", exception.getMessage());
+		assertEquals("The surname of the teacher is absent", exception.getMessage());
 	}
 
 	@Test

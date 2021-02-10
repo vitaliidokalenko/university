@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.model.Teacher;
@@ -64,14 +65,14 @@ public class TeacherService {
 	}
 
 	private void verify(Teacher teacher) {
-		if (teacher.getName() == null) {
+		verifyFields(teacher);
+	}
+
+	private void verifyFields(Teacher teacher) {
+		if (StringUtils.isEmpty(teacher.getName())) {
 			throw new IllegalFieldEntityException("The name of the teacher is absent");
-		} else if (teacher.getSurname() == null) {
+		} else if (StringUtils.isEmpty(teacher.getSurname())) {
 			throw new IllegalFieldEntityException("The surname of the teacher is absent");
-		} else if (teacher.getName().isEmpty()) {
-			throw new IllegalFieldEntityException("The name of the teacher is empty");
-		} else if (teacher.getSurname().isEmpty()) {
-			throw new IllegalFieldEntityException("The surname of the teacher is empty");
 		} else if (teacher.getGender() == null) {
 			throw new IllegalFieldEntityException(
 					format("Gender of the teacher %s %s is absent", teacher.getName(), teacher.getSurname()));
