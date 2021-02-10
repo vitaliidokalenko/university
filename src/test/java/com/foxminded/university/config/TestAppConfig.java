@@ -6,7 +6,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @Configuration
 @Import(AppConfig.class)
-@TestPropertySource("database.properties")
+@TestPropertySource("test.properties")
 public class TestAppConfig {
 
 }
