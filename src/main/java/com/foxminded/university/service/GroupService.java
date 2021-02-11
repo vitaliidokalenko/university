@@ -78,7 +78,7 @@ public class GroupService {
 
 	private void verifyFields(Group group) {
 		if (StringUtils.isEmpty(group.getName())) {
-			throw new IllegalFieldEntityException("The name of the group is absent");
+			throw new IllegalFieldEntityException("Empty group name");
 		}
 	}
 

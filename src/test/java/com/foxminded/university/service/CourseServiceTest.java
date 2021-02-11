@@ -47,30 +47,30 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNull_whenCreate_thenThrowException() {
+	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Course course = buildCourse();
 		course.setName(null);
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> courseService.create(course));
-		assertEquals("The name of the course is absent", exception.getMessage());
+		assertEquals("Empty course name", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsEmpty_whenCreate_thenThrowException() {
+	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Course course = buildCourse();
 		course.setName("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> courseService.create(course));
-		assertEquals("The name of the course is absent", exception.getMessage());
+		assertEquals("Empty course name", exception.getMessage());
 	}
 
 	@Test
-	public void givenRoomsIsEmpty_whenCreate_thenThrowException() {
+	public void givenRoomsIsEmpty_whenCreate_thenIncompleteEntityExceptionThrown() {
 		Course course = buildCourse();
 		course.setRooms(new HashSet<>());
 
 		Exception exception = assertThrows(IncompleteEntityException.class, () -> courseService.create(course));
-		assertEquals(format("There are no rooms assigned to the course: %s", course.getName()), exception.getMessage());
+		assertEquals(format("No rooms assigned to the course: %s", course.getName()), exception.getMessage());
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenThrowException() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenNotFoundEntityExceptionThrown() {
 		when(courseDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> courseService.deleteById(1L));
@@ -120,7 +120,7 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenCreate_thenThrowException() {
+	public void givenNameIsNotUnique_whenCreate_thenNotUniqueNameExceptionThrown() {
 		Course actual = buildCourse();
 		Course retrieved = buildCourse();
 		retrieved.setId(2L);
@@ -152,7 +152,7 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenUpdate_thenThrowException() {
+	public void givenNameIsNotUnique_whenUpdate_thenNotUniqueNameExceptionThrown() {
 		Course actual = buildCourse();
 		Course retrieved = buildCourse();
 		retrieved.setId(2L);

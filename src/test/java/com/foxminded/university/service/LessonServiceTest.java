@@ -32,14 +32,14 @@ import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
-import com.foxminded.university.service.exception.IncompatibleDateException;
-import com.foxminded.university.service.exception.IncompatibleRoomException;
-import com.foxminded.university.service.exception.LackOfCapacityException;
 import com.foxminded.university.service.exception.NotAvailableGroupException;
 import com.foxminded.university.service.exception.NotAvailableRoomException;
 import com.foxminded.university.service.exception.NotAvailableTeacherException;
-import com.foxminded.university.service.exception.NotCompetentTeacherException;
+import com.foxminded.university.service.exception.NotCompetentTeacherForCourseException;
+import com.foxminded.university.service.exception.NotEnoughRoomCapacityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotSuitableRoomForCourseException;
+import com.foxminded.university.service.exception.NotWeekDayException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -63,7 +63,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenTeacherIsNotAvailable_whenCreate_thenThrowException() {
+	public void givenTeacherIsNotAvailable_whenCreate_thenNotAvailableTeacherExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
@@ -92,7 +92,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenRoomIsNotAvailable_whenCreate_thenThrowExceptin() {
+	public void givenRoomIsNotAvailable_whenCreate_thenNotAvailableRoomExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
@@ -121,7 +121,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenGroupIsNotAvailable_whenCreate_thenThrowException() {
+	public void givenGroupIsNotAvailable_whenCreate_thenNotAvailableGroupExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
@@ -146,7 +146,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenRoomCapacityIsNotEnough_whenCreate_thenThrowException() {
+	public void givenRoomCapacityIsNotEnough_whenCreate_thenNotEnoughRoomCapacityExceptionThrown() {
 		Lesson lesson = buildLesson();
 		List<Student> students = Arrays.asList(new Student("Anna", "Maria"),
 				new Student("Anatoly", "Deineka"),
@@ -154,7 +154,7 @@ public class LessonServiceTest {
 				new Student("Homer", "Simpson"));
 		when(studentDao.getByGroup(Mockito.any(Group.class))).thenReturn(students);
 
-		Exception exception = assertThrows(LackOfCapacityException.class,
+		Exception exception = assertThrows(NotEnoughRoomCapacityException.class,
 				() -> lessonService.create(lesson));
 		assertEquals(format("Capacity of the room %s (%d seats) is not enough for %d students",
 				lesson.getRoom().getName(),
@@ -175,24 +175,24 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenTeacherIsNotCompetentInCourse_whenCreate_thenThrowException() {
+	public void givenTeacherIsNotCompetentInCourse_whenCreate_thenNotCompetentTeacherForCourseExceptionThrown() {
 		Lesson lesson = buildLesson();
 		lesson.setCourse(new Course("Law"));
 
-		Exception exception = assertThrows(NotCompetentTeacherException.class,
+		Exception exception = assertThrows(NotCompetentTeacherForCourseException.class,
 				() -> lessonService.create(lesson));
-		assertEquals(format("The teacher %s %s is incompetent to lecture course %s for the lesson",
+		assertEquals(format("The teacher %s %s is incompetent to lecture course %s",
 				lesson.getTeacher().getName(),
 				lesson.getTeacher().getSurname(),
 				lesson.getCourse()), exception.getMessage());
 	}
 
 	@Test
-	public void givenRoomIsNotAssignedForLessonCourse_whenCreate_thenThrowException() {
+	public void givenRoomIsNotAssignedForLessonCourse_whenCreate_thenNotSuitableRoomForCourseExceptionThrown() {
 		Lesson lesson = buildLesson();
 		lesson.setRoom(new Room("333"));
 
-		Exception exception = assertThrows(IncompatibleRoomException.class,
+		Exception exception = assertThrows(NotSuitableRoomForCourseException.class,
 				() -> lessonService.create(lesson));
 		assertEquals(format("Course %s cannot be lectured in the room %s",
 				lesson.getCourse().getName(),
@@ -200,22 +200,22 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenDateIsOnSaturday_whenCreate_thenThrowException() {
+	public void givenDateIsOnSaturday_whenCreate_thenNotWeekDayExceptionThrown() {
 		Lesson lesson = buildLesson();
 		lesson.setDate(LocalDate.parse("2021-01-23"));
 
-		Exception exception = assertThrows(IncompatibleDateException.class, () -> lessonService.create(lesson));
-		assertEquals(format("The date the lesson appointed at is at the weekend (%s)", lesson.getDate().toString()),
+		Exception exception = assertThrows(NotWeekDayException.class, () -> lessonService.create(lesson));
+		assertEquals(format("Lesson cannot be appointed at the weekend (%s)", lesson.getDate().toString()),
 				exception.getMessage());
 	}
 
 	@Test
-	public void givenDateIsOnSunday_whenCreate_thenThrowException() {
+	public void givenDateIsOnSunday_whenCreate_thenNotWeekDayExceptionThrown() {
 		Lesson lesson = buildLesson();
 		lesson.setDate(LocalDate.parse("2021-01-24"));
 
-		Exception exception = assertThrows(IncompatibleDateException.class, () -> lessonService.create(lesson));
-		assertEquals(format("The date the lesson appointed at is at the weekend (%s)", lesson.getDate().toString()),
+		Exception exception = assertThrows(NotWeekDayException.class, () -> lessonService.create(lesson));
+		assertEquals(format("Lesson cannot be appointed at the weekend (%s)", lesson.getDate().toString()),
 				exception.getMessage());
 	}
 
@@ -250,7 +250,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenTeacherIsNotAvailable_whenUpdate_thenThrowException() {
+	public void givenTeacherIsNotAvailable_whenUpdate_thenNotAvailableTeacherExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
@@ -284,7 +284,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenRoomIsNotAvailable_whenUpdate_thenThrowException() {
+	public void givenRoomIsNotAvailable_whenUpdate_thenNotAvailableRoomExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
@@ -317,7 +317,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenGroupIsNotAvailable_whenUpdate_thenThrowException() {
+	public void givenGroupIsNotAvailable_whenUpdate_thenNotAvailableGroupExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
@@ -355,7 +355,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenThrowException() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenNotFoundEntityExceptionThrown() {
 		when(lessonDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> lessonService.deleteById(1L));

@@ -70,14 +70,13 @@ public class TeacherService {
 
 	private void verifyFields(Teacher teacher) {
 		if (StringUtils.isEmpty(teacher.getName())) {
-			throw new IllegalFieldEntityException("The name of the teacher is absent");
+			throw new IllegalFieldEntityException("Empty teacher name");
 		} else if (StringUtils.isEmpty(teacher.getSurname())) {
-			throw new IllegalFieldEntityException("The surname of the teacher is absent");
+			throw new IllegalFieldEntityException("Empty teacher surname");
 		} else if (teacher.getGender() == null) {
-			throw new IllegalFieldEntityException(
-					format("Gender of the teacher %s %s is absent", teacher.getName(), teacher.getSurname()));
+			throw new IllegalFieldEntityException("Empty teacher gender");
 		} else if (teacher.getCourses().isEmpty()) {
-			throw new IncompleteEntityException(format("There are no courses assigned to the teacher %s %s",
+			throw new IncompleteEntityException(format("No courses assigned to the teacher %s %s",
 					teacher.getName(),
 					teacher.getSurname()));
 		}

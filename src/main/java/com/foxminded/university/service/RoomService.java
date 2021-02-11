@@ -71,7 +71,7 @@ public class RoomService {
 
 	private void verifyFields(Room room) {
 		if (StringUtils.isEmpty(room.getName())) {
-			throw new IllegalFieldEntityException("The name of the room is absent");
+			throw new IllegalFieldEntityException("Empty room name");
 		} else if (room.getCapacity() < 1) {
 			throw new IllegalFieldEntityException(format("Capacity of the room %s is less than 1", room.getName()));
 		}

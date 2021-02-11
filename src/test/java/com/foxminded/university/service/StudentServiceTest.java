@@ -62,56 +62,54 @@ public class StudentServiceTest {
 		student.setGender(null);
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals(format("Gender of the student %s %s is absent", student.getName(), student.getSurname()),
-				exception.getMessage());
+		assertEquals("Empty student gender", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsNull_whenCreate_thenThrowException() {
+	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Student student = buildStudent();
 		student.setName(null);
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("The name of the student is absent", exception.getMessage());
+		assertEquals("Empty student name", exception.getMessage());
 	}
 
 	@Test
-	public void givenSurnameIsNull_whenCreate_thenThrowException() {
+	public void givenSurnameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Student student = buildStudent();
 		student.setSurname(null);
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("The surname of the student is absent", exception.getMessage());
+		assertEquals("Empty student surname", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsEmpty_whenCreate_thenThrowException() {
+	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Student student = buildStudent();
 		student.setName("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("The name of the student is absent", exception.getMessage());
+		assertEquals("Empty student name", exception.getMessage());
 	}
 
 	@Test
-	public void givenSurnameIsEmpty_whenCreate_thenThrowException() {
+	public void givenSurnameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Student student = buildStudent();
 		student.setSurname("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("The surname of the student is absent", exception.getMessage());
+		assertEquals("Empty student surname", exception.getMessage());
 	}
 
 	@Test
-	public void givenGroupSizeIsNotEnuogh_whenCreate_thenThrowException() {
+	public void givenGroupSizeIsNotEnuogh_whenCreate_thenGroupOverflowExceptionThrown() {
 		Student student = buildStudent();
 		when(studentDao.getByGroup(student.getGroup()))
 				.thenReturn(Arrays.asList(new Student("Serhii", "Gerega"), new Student("Anatoly", "Soprano")));
 
 		Exception exception = assertThrows(GroupOverflowException.class,
 				() -> studentService.create(student));
-		assertEquals(format(
-				"The size of the group %s is %d students. It is not enough to include new student in",
+		assertEquals(format("The group %s is overflow (size = %d)",
 				student.getGroup().getName(),
 				GROUP_SIZE), exception.getMessage());
 	}
@@ -155,7 +153,7 @@ public class StudentServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenThrowException() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenNotFoundEntityExceptionThrown() {
 		when(studentDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> studentService.deleteById(1L));

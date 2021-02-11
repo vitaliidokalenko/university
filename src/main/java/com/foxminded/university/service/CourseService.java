@@ -72,10 +72,10 @@ public class CourseService {
 
 	private void verifyFields(Course course) {
 		if (StringUtils.isEmpty(course.getName())) {
-			throw new IllegalFieldEntityException("The name of the course is absent");
+			throw new IllegalFieldEntityException("Empty course name");
 		} else if (course.getRooms().isEmpty()) {
 			throw new IncompleteEntityException(
-					format("There are no rooms assigned to the course: %s", course.getName()));
+					format("No rooms assigned to the course: %s", course.getName()));
 		}
 	}
 

@@ -18,15 +18,15 @@ import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
-import com.foxminded.university.service.exception.IncompatibleDateException;
-import com.foxminded.university.service.exception.IncompatibleRoomException;
 import com.foxminded.university.service.exception.IncompleteEntityException;
-import com.foxminded.university.service.exception.LackOfCapacityException;
 import com.foxminded.university.service.exception.NotAvailableGroupException;
 import com.foxminded.university.service.exception.NotAvailableRoomException;
 import com.foxminded.university.service.exception.NotAvailableTeacherException;
-import com.foxminded.university.service.exception.NotCompetentTeacherException;
+import com.foxminded.university.service.exception.NotCompetentTeacherForCourseException;
+import com.foxminded.university.service.exception.NotEnoughRoomCapacityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotSuitableRoomForCourseException;
+import com.foxminded.university.service.exception.NotWeekDayException;
 
 @Service
 public class LessonService {
@@ -90,17 +90,17 @@ public class LessonService {
 
 	private void verifyFields(Lesson lesson) {
 		if (lesson.getCourse() == null) {
-			throw new IncompleteEntityException("There is not any course assigned to the lesson");
+			throw new IncompleteEntityException("No course assigned to the lesson");
 		} else if (lesson.getDate() == null) {
-			throw new IncompleteEntityException("There is not any date assigned to the lesson");
+			throw new IncompleteEntityException("No date assigned to the lesson");
 		} else if (lesson.getGroups().isEmpty()) {
-			throw new IncompleteEntityException("There is not any group assigned to the lesson");
+			throw new IncompleteEntityException("No groups assigned to the lesson");
 		} else if (lesson.getRoom() == null) {
-			throw new IncompleteEntityException("There is not any room assigned to the lesson");
+			throw new IncompleteEntityException("No room assigned to the lesson");
 		} else if (lesson.getTeacher() == null) {
-			throw new IncompleteEntityException("There is not any teacher assigned to the lesson");
+			throw new IncompleteEntityException("No teacher assigned to the lesson");
 		} else if (lesson.getTimeframe() == null) {
-			throw new IncompleteEntityException("There is not any timeframe assigned to the lesson");
+			throw new IncompleteEntityException("No timeframe assigned to the lesson");
 		}
 	}
 
@@ -150,7 +150,7 @@ public class LessonService {
 				.mapToInt(Collection::size)
 				.sum();
 		if (count > lesson.getRoom().getCapacity()) {
-			throw new LackOfCapacityException(
+			throw new NotEnoughRoomCapacityException(
 					format("Capacity of the room %s (%d seats) is not enough for %d students",
 							lesson.getRoom().getName(),
 							lesson.getRoom().getCapacity(),
@@ -160,8 +160,8 @@ public class LessonService {
 
 	private void verifyTeacherIsCompetentInCourse(Lesson lesson) {
 		if (!lesson.getTeacher().getCourses().contains(lesson.getCourse())) {
-			throw new NotCompetentTeacherException(
-					format("The teacher %s %s is incompetent to lecture course %s for the lesson",
+			throw new NotCompetentTeacherForCourseException(
+					format("The teacher %s %s is incompetent to lecture course %s",
 							lesson.getTeacher().getName(),
 							lesson.getTeacher().getSurname(),
 							lesson.getCourse()));
@@ -170,7 +170,7 @@ public class LessonService {
 
 	private void verifyRoomIsAssignedForLessonCourse(Lesson lesson) {
 		if (!lesson.getCourse().getRooms().contains(lesson.getRoom())) {
-			throw new IncompatibleRoomException(format("Course %s cannot be lectured in the room %s",
+			throw new NotSuitableRoomForCourseException(format("Course %s cannot be lectured in the room %s",
 					lesson.getCourse().getName(),
 					lesson.getRoom().getName()));
 		}
@@ -178,9 +178,9 @@ public class LessonService {
 
 	private void verifyNotAtWeekend(Lesson lesson) {
 		DayOfWeek day = lesson.getDate().getDayOfWeek();
-		if (day.equals(SATURDAY) || day.equals(SUNDAY)) {
-			throw new IncompatibleDateException(
-					format("The date the lesson appointed at is at the weekend (%s)", lesson.getDate().toString()));
+		if (day == SATURDAY || day == SUNDAY) {
+			throw new NotWeekDayException(
+					format("Lesson cannot be appointed at the weekend (%s)", lesson.getDate().toString()));
 		}
 	}
 }

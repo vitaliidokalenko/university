@@ -1,6 +1,5 @@
 package com.foxminded.university.service;
 
-import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -46,49 +45,48 @@ public class TeacherServiceTest {
 	}
 
 	@Test
-	public void givenGenderIsNull_whenCreate_thenThrowException() {
+	public void givenGenderIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Teacher teacher = buildTeacher();
 		teacher.setGender(null);
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals(format("Gender of the teacher %s %s is absent", teacher.getName(), teacher.getSurname()),
-				exception.getMessage());
+		assertEquals("Empty teacher gender", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsEmpty_whenCreate_thenThrowException() {
+	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Teacher teacher = buildTeacher();
 		teacher.setName("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("The name of the teacher is absent", exception.getMessage());
+		assertEquals("Empty teacher name", exception.getMessage());
 	}
 
 	@Test
-	public void givenSurnameIsEmpty_whenCreate_thenThrowException() {
+	public void givenSurnameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Teacher teacher = buildTeacher();
 		teacher.setSurname("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("The surname of the teacher is absent", exception.getMessage());
+		assertEquals("Empty teacher surname", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsNull_whenCreate_thenThrowException() {
+	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Teacher teacher = buildTeacher();
 		teacher.setName(null);
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("The name of the teacher is absent", exception.getMessage());
+		assertEquals("Empty teacher name", exception.getMessage());
 	}
 
 	@Test
-	public void givenSurnameIsNull_whenCreate_thenThrowException() {
+	public void givenSurnameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Teacher teacher = buildTeacher();
 		teacher.setSurname(null);
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("The surname of the teacher is absent", exception.getMessage());
+		assertEquals("Empty teacher surname", exception.getMessage());
 	}
 
 	@Test
@@ -130,7 +128,7 @@ public class TeacherServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenThrowException() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenNotFoundEntityExceptionThrown() {
 		when(teacherDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> teacherService.deleteById(1L));

@@ -76,21 +76,19 @@ public class StudentService {
 
 	private void verifyFields(Student student) {
 		if (StringUtils.isEmpty(student.getName())) {
-			throw new IllegalFieldEntityException("The name of the student is absent");
+			throw new IllegalFieldEntityException("Empty student name");
 		} else if (StringUtils.isEmpty(student.getSurname())) {
-			throw new IllegalFieldEntityException("The surname of the student is absent");
+			throw new IllegalFieldEntityException("Empty student surname");
 		} else if (student.getGender() == null) {
-			throw new IllegalFieldEntityException(
-					format("Gender of the student %s %s is absent", student.getName(), student.getSurname()));
+			throw new IllegalFieldEntityException("Empty student gender");
 		}
 	}
 
 	private void verifyGroupIsFull(Student student) {
 		if (studentDao.getByGroup(student.getGroup()).stream().count() >= groupSize) {
-			throw new GroupOverflowException(
-					format("The size of the group %s is %d students. It is not enough to include new student in",
-							student.getGroup().getName(),
-							groupSize));
+			throw new GroupOverflowException(format("The group %s is overflow (size = %d)",
+					student.getGroup().getName(),
+					groupSize));
 		}
 	}
 }

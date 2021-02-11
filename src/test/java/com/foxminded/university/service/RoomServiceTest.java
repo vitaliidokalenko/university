@@ -44,7 +44,7 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenCapacityLessThanOne_whenCreate_thenThrowException() {
+	public void givenCapacityLessThanOne_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Room room = buildRoom();
 		room.setCapacity(0);
 
@@ -53,21 +53,21 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenNameIsEmpty_whenCreate_thenThrowException() {
+	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Room room = buildRoom();
 		room.setName("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> roomService.create(room));
-		assertEquals("The name of the room is absent", exception.getMessage());
+		assertEquals("Empty room name", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsNull_whenCreate_thenThrowException() {
+	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Room room = buildRoom();
 		room.setName(null);
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> roomService.create(room));
-		assertEquals("The name of the room is absent", exception.getMessage());
+		assertEquals("Empty room name", exception.getMessage());
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenThrowException() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenNotFoundEntityExceptionThrown() {
 		when(roomDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> roomService.deleteById(1L));
@@ -117,7 +117,7 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenCreate_thenThrowException() {
+	public void givenNameIsNotUnique_whenCreate_thenNotUniqueNameExceptionThrown() {
 		Room room = buildRoom();
 		Room retrieved = buildRoom();
 		retrieved.setId(2L);
@@ -138,7 +138,7 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenUpdate_thenThrowException() {
+	public void givenNameIsNotUnique_whenUpdate_thenNotUniqueNameExceptionThrown() {
 		Room room = buildRoom();
 		Room retrieved = buildRoom();
 		retrieved.setId(2L);

@@ -15,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
-import com.foxminded.university.service.exception.IllegalDurationException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
-import com.foxminded.university.service.exception.IllegalTimeLineException;
+import com.foxminded.university.service.exception.IncorrectDurationException;
+import com.foxminded.university.service.exception.IncorrectTimelineException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueSequenceException;
 
@@ -80,18 +80,18 @@ public class TimeframeService {
 
 	private void verifyFields(Timeframe timeframe) {
 		if (timeframe.getSequence() < 1) {
-			throw new IllegalFieldEntityException("Sequence of the timeframe is less than 1");
+			throw new IllegalFieldEntityException("Timeframe sequence less than 1");
 		} else if (timeframe.getStartTime() == null) {
-			throw new IllegalFieldEntityException("Start time of the timeframe is absent");
+			throw new IllegalFieldEntityException("Empty timeframe start time");
 		} else if (timeframe.getEndTime() == null) {
-			throw new IllegalFieldEntityException("End time of the timeframe is absent");
+			throw new IllegalFieldEntityException("Empty timeframe end time");
 		}
 	}
 
 	private void verifyDuration(Timeframe timeframe) {
 		if (!Duration.between(timeframe.getStartTime(), timeframe.getEndTime()).equals(duration)) {
-			throw new IllegalDurationException(
-					format("Duration of the timeframe is not valid. It must be %smin.", duration.toMinutes()));
+			throw new IncorrectDurationException(
+					format("Not valid timeframe duration. It must be %smin.", duration.toMinutes()));
 		}
 	}
 
@@ -105,7 +105,7 @@ public class TimeframeService {
 
 	private void verifyTimeLineIsProper(Timeframe timeframe) {
 		if (timeframe.getStartTime().isAfter(timeframe.getEndTime())) {
-			throw new IllegalTimeLineException("Start time of the timeframe is after end time");
+			throw new IncorrectTimelineException("Start time is after end time");
 		}
 	}
 }

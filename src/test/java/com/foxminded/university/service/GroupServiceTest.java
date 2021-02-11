@@ -48,21 +48,21 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNull_whenCreate_thenThrowException() {
+	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Group group = buildGroup();
 		group.setName(null);
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> groupService.create(group));
-		assertEquals("The name of the group is absent", exception.getMessage());
+		assertEquals("Empty group name", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsEmpty_whenCreate_thenThrowException() {
+	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Group group = buildGroup();
 		group.setName("");
 
 		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> groupService.create(group));
-		assertEquals("The name of the group is absent", exception.getMessage());
+		assertEquals("Empty group name", exception.getMessage());
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenThrowException() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenNotFoundEntityExceptionThrown() {
 		when(groupDao.findById(1L)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> groupService.deleteById(1L));
@@ -114,7 +114,7 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenCreate_thenThrowException() {
+	public void givenNameIsNotUnique_whenCreate_thenNotUniqueNameExceptionThrown() {
 		Group actual = buildGroup();
 		Group retrieved = buildGroup();
 		retrieved.setId(2L);
@@ -135,7 +135,7 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenUpdate_thenThrowException() {
+	public void givenNameIsNotUnique_whenUpdate_thenNotUniqueNameExceptionThrown() {
 		Group actual = buildGroup();
 		Group retrieved = buildGroup();
 		retrieved.setId(2L);
