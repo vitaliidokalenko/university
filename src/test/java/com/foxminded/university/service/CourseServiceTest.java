@@ -1,7 +1,8 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +22,10 @@ import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.IncompleteEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotUniqueNameException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -42,33 +47,30 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNull_whenCreate_thenCourseIsNotCreating() {
+	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Course course = buildCourse();
 		course.setName(null);
 
-		courseService.create(course);
-
-		verify(courseDao, never()).create(course);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> courseService.create(course));
+		assertEquals("Empty course name", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsEmpty_whenCreate_thenCourseIsNotCreating() {
+	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Course course = buildCourse();
 		course.setName("");
 
-		courseService.create(course);
-
-		verify(courseDao, never()).create(course);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> courseService.create(course));
+		assertEquals("Empty course name", exception.getMessage());
 	}
 
 	@Test
-	public void givenRoomsIsEmpty_whenCreate_thenCourseIsNotCreating() {
+	public void givenRoomsIsEmpty_whenCreate_thenIncompleteEntityExceptionThrown() {
 		Course course = buildCourse();
 		course.setRooms(new HashSet<>());
 
-		courseService.create(course);
-
-		verify(courseDao, never()).create(course);
+		Exception exception = assertThrows(IncompleteEntityException.class, () -> courseService.create(course));
+		assertEquals(format("No rooms assigned to the course: %s", course.getName()), exception.getMessage());
 	}
 
 	@Test
@@ -110,24 +112,22 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenCourseIsNotDeleting() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenNotFoundEntityExceptionThrown() {
 		when(courseDao.findById(1L)).thenReturn(Optional.empty());
 
-		courseService.deleteById(1L);
-
-		verify(courseDao, never()).deleteById(1L);
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> courseService.deleteById(1L));
+		assertEquals("Cannot find course by id: 1", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenCreate_thenCourseIsNotCreating() {
+	public void givenNameIsNotUnique_whenCreate_thenNotUniqueNameExceptionThrown() {
 		Course actual = buildCourse();
 		Course retrieved = buildCourse();
 		retrieved.setId(2L);
 		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
-		courseService.create(actual);
-
-		verify(courseDao, never()).create(actual);
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> courseService.create(actual));
+		assertEquals(format("The course with name %s already exists", actual.getName()), exception.getMessage());
 	}
 
 	@Test
@@ -152,15 +152,14 @@ public class CourseServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenUpdate_thenCourseIsNotUpdating() {
+	public void givenNameIsNotUnique_whenUpdate_thenNotUniqueNameExceptionThrown() {
 		Course actual = buildCourse();
 		Course retrieved = buildCourse();
 		retrieved.setId(2L);
 		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
-		courseService.update(actual);
-
-		verify(courseDao, never()).update(actual);
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> courseService.update(actual));
+		assertEquals(format("The course with name %s already exists", actual.getName()), exception.getMessage());
 	}
 
 	private Course buildCourse() {

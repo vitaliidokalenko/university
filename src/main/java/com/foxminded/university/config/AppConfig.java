@@ -17,18 +17,18 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 @Configuration
 @ComponentScan("com.foxminded.university")
-@PropertySource("database.properties")
+@PropertySource("application.properties")
 public class AppConfig {
 
 	private static final String SCHEMA = "schema.sql";
 
-	@Value("${driver}")
+	@Value("${db.driver}")
 	private String driver;
-	@Value("${url}")
+	@Value("${db.url}")
 	private String url;
-	@Value("${username}")
+	@Value("${db.username}")
 	private String username;
-	@Value("${password}")
+	@Value("${db.password}")
 	private String password;
 
 	@Bean

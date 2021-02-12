@@ -1,7 +1,8 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,14 @@ import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
+import com.foxminded.university.service.exception.NotAvailableGroupException;
+import com.foxminded.university.service.exception.NotAvailableRoomException;
+import com.foxminded.university.service.exception.NotAvailableTeacherException;
+import com.foxminded.university.service.exception.NotCompetentTeacherForCourseException;
+import com.foxminded.university.service.exception.NotEnoughRoomCapacityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotSuitableRoomForCourseException;
+import com.foxminded.university.service.exception.NotWeekDayException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -54,25 +63,28 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenTeacherIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
+	public void givenTeacherIsNotAvailable_whenCreate_thenNotAvailableTeacherExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
-		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
-				actual.getDate(),
-				actual.getTimeframe())).thenReturn(Optional.of(lessonByCriteria));
+		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(), actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.create(actual);
-
-		verify(lessonDao, never()).create(actual);
+		Exception exception = assertThrows(NotAvailableTeacherException.class,
+				() -> lessonService.create(actual));
+		assertEquals(format("Teacher %s %s is busy at the time %s, %s",
+				actual.getTeacher().getName(),
+				actual.getTeacher().getSurname(),
+				actual.getTimeframe().getStartTime().toString(),
+				actual.getDate().toString()),
+				exception.getMessage());
 	}
 
 	@Test
 	public void givenTeacherIsAvailable_whenCreate_thenLessonIsCreating() {
 		Lesson actual = buildLesson();
-		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
-				actual.getDate(),
-				actual.getTimeframe())).thenReturn(Optional.empty());
+		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(), actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.empty());
 
 		lessonService.create(actual);
 
@@ -80,17 +92,20 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenRoomIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
+	public void givenRoomIsNotAvailable_whenCreate_thenNotAvailableRoomExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
-		when(lessonDao
-				.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
-						.thenReturn(Optional.of(lessonByCriteria));
+		when(lessonDao.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.create(actual);
-
-		verify(lessonDao, never()).create(actual);
+		Exception exception = assertThrows(NotAvailableRoomException.class,
+				() -> lessonService.create(actual));
+		assertEquals(format("Room %s is occupied at the time %s, %s",
+				actual.getRoom().getName(),
+				actual.getTimeframe().getStartTime().toString(),
+				actual.getDate().toString()),
+				exception.getMessage());
 	}
 
 	@Test
@@ -106,16 +121,17 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenGroupIsNotAvailable_whenCreate_thenLessonIsNotCreating() {
+	public void givenGroupIsNotAvailable_whenCreate_thenNotAvailableGroupExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
 		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.create(actual);
-
-		verify(lessonDao, never()).create(actual);
+		Exception exception = assertThrows(NotAvailableGroupException.class,
+				() -> lessonService.create(actual));
+		assertEquals("Other lesson was scheduled for the group AA-11 at the time 08:00, 2021-01-21",
+				exception.getMessage());
 	}
 
 	@Test
@@ -130,21 +146,24 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenRoomCapacityIsNotCompatible_whenCreate_thenLessonIsNotCreating() {
+	public void givenRoomCapacityIsNotEnough_whenCreate_thenNotEnoughRoomCapacityExceptionThrown() {
 		Lesson lesson = buildLesson();
-		when(studentDao.getByGroup(Mockito.any(Group.class)))
-				.thenReturn(Arrays.asList(new Student("Anna", "Maria"),
-						new Student("Anatoly", "Deineka"),
-						new Student("Alina", "Linkoln"),
-						new Student("Homer", "Simpson")));
+		List<Student> students = Arrays.asList(new Student("Anna", "Maria"),
+				new Student("Anatoly", "Deineka"),
+				new Student("Alina", "Linkoln"),
+				new Student("Homer", "Simpson"));
+		when(studentDao.getByGroup(Mockito.any(Group.class))).thenReturn(students);
 
-		lessonService.create(lesson);
-
-		verify(lessonDao, never()).create(lesson);
+		Exception exception = assertThrows(NotEnoughRoomCapacityException.class,
+				() -> lessonService.create(lesson));
+		assertEquals(format("Capacity of the room %s (%d seats) is not enough for %d students",
+				lesson.getRoom().getName(),
+				lesson.getRoom().getCapacity(),
+				students.size()), exception.getMessage());
 	}
 
 	@Test
-	public void givenRoomCapacityIsCompatible_whenCreate_thenLessonIsCreating() {
+	public void givenRoomCapacityIsEnough_whenCreate_thenLessonIsCreating() {
 		Lesson lesson = buildLesson();
 		when(studentDao.getByGroup(Mockito.any(Group.class)))
 				.thenReturn(Arrays.asList(new Student("Anna", "Maria"),
@@ -156,43 +175,48 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenTeacherCourseIsNotCompatible_whenCreate_thenLessonIsNotCreating() {
+	public void givenTeacherIsNotCompetentInCourse_whenCreate_thenNotCompetentTeacherForCourseExceptionThrown() {
 		Lesson lesson = buildLesson();
 		lesson.setCourse(new Course("Law"));
 
-		lessonService.create(lesson);
-
-		verify(lessonDao, never()).create(lesson);
+		Exception exception = assertThrows(NotCompetentTeacherForCourseException.class,
+				() -> lessonService.create(lesson));
+		assertEquals(format("The teacher %s %s is incompetent to lecture course %s",
+				lesson.getTeacher().getName(),
+				lesson.getTeacher().getSurname(),
+				lesson.getCourse()), exception.getMessage());
 	}
 
 	@Test
-	public void givenCourseRoomIsNotCompatible_whenCreate_thenLessonIsNotCreating() {
+	public void givenRoomIsNotAssignedForLessonCourse_whenCreate_thenNotSuitableRoomForCourseExceptionThrown() {
 		Lesson lesson = buildLesson();
 		lesson.setRoom(new Room("333"));
 
-		lessonService.create(lesson);
-
-		verify(lessonDao, never()).create(lesson);
+		Exception exception = assertThrows(NotSuitableRoomForCourseException.class,
+				() -> lessonService.create(lesson));
+		assertEquals(format("Course %s cannot be lectured in the room %s",
+				lesson.getCourse().getName(),
+				lesson.getRoom().getName()), exception.getMessage());
 	}
 
 	@Test
-	public void givenDateIsOnSaturday_whenCreate_thenLessonIsNotCreating() {
+	public void givenDateIsOnSaturday_whenCreate_thenNotWeekDayExceptionThrown() {
 		Lesson lesson = buildLesson();
 		lesson.setDate(LocalDate.parse("2021-01-23"));
 
-		lessonService.create(lesson);
-
-		verify(lessonDao, never()).create(lesson);
+		Exception exception = assertThrows(NotWeekDayException.class, () -> lessonService.create(lesson));
+		assertEquals(format("Lesson cannot be appointed at the weekend (%s)", lesson.getDate().toString()),
+				exception.getMessage());
 	}
 
 	@Test
-	public void givenDateIsOnSunday_whenCreate_thenLessonIsNotCreating() {
+	public void givenDateIsOnSunday_whenCreate_thenNotWeekDayExceptionThrown() {
 		Lesson lesson = buildLesson();
 		lesson.setDate(LocalDate.parse("2021-01-24"));
 
-		lessonService.create(lesson);
-
-		verify(lessonDao, never()).create(lesson);
+		Exception exception = assertThrows(NotWeekDayException.class, () -> lessonService.create(lesson));
+		assertEquals(format("Lesson cannot be appointed at the weekend (%s)", lesson.getDate().toString()),
+				exception.getMessage());
 	}
 
 	@Test
@@ -226,18 +250,22 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenTeacherIsNotAvailable_whenUpdate_thenLessonIsNotUpdating() {
+	public void givenTeacherIsNotAvailable_whenUpdate_thenNotAvailableTeacherExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
 		actual.setId(1L);
-		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
-				actual.getDate(),
-				actual.getTimeframe())).thenReturn(Optional.of(lessonByCriteria));
+		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(), actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.update(actual);
-
-		verify(lessonDao, never()).update(actual);
+		Exception exception = assertThrows(NotAvailableTeacherException.class,
+				() -> lessonService.update(actual));
+		assertEquals(format("Teacher %s %s is busy at the time %s, %s",
+				actual.getTeacher().getName(),
+				actual.getTeacher().getSurname(),
+				actual.getTimeframe().getStartTime().toString(),
+				actual.getDate().toString()),
+				exception.getMessage());
 	}
 
 	@Test
@@ -256,18 +284,21 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenRoomIsNotAvailable_whenUpdate_thenLessonIsNotUpdating() {
+	public void givenRoomIsNotAvailable_whenUpdate_thenNotAvailableRoomExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
 		actual.setId(1L);
-		when(lessonDao
-				.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
-						.thenReturn(Optional.of(lessonByCriteria));
+		when(lessonDao.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
+				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.update(actual);
-
-		verify(lessonDao, never()).update(actual);
+		Exception exception = assertThrows(NotAvailableRoomException.class,
+				() -> lessonService.update(actual));
+		assertEquals(format("Room %s is occupied at the time %s, %s",
+				actual.getRoom().getName(),
+				actual.getTimeframe().getStartTime().toString(),
+				actual.getDate().toString()),
+				exception.getMessage());
 	}
 
 	@Test
@@ -286,7 +317,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenGroupIsNotAvailable_whenUpdate_thenLessonIsNotUpdating() {
+	public void givenGroupIsNotAvailable_whenUpdate_thenNotAvailableGroupExceptionThrown() {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
@@ -294,9 +325,10 @@ public class LessonServiceTest {
 		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
-		lessonService.update(actual);
-
-		verify(lessonDao, never()).update(actual);
+		Exception exception = assertThrows(NotAvailableGroupException.class,
+				() -> lessonService.update(actual));
+		assertEquals("Other lesson was scheduled for the group AA-11 at the time 08:00, 2021-01-21",
+				exception.getMessage());
 	}
 
 	@Test
@@ -323,12 +355,11 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenLessonIsNotDeleting() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenNotFoundEntityExceptionThrown() {
 		when(lessonDao.findById(1L)).thenReturn(Optional.empty());
 
-		lessonService.deleteById(1L);
-
-		verify(lessonDao, never()).deleteById(1L);
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> lessonService.deleteById(1L));
+		assertEquals("Cannot find lesson by id: 1", exception.getMessage());
 	}
 
 	private Lesson buildLesson() {
@@ -347,7 +378,7 @@ public class LessonServiceTest {
 		teacher.setCourses(new HashSet<>(Arrays.asList(course)));
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Lesson lesson = new Lesson();

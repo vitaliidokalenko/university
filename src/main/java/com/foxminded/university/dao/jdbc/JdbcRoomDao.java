@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.RoomDao;
+import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.dao.jdbc.mapper.RoomMapper;
 import com.foxminded.university.model.Room;
 
@@ -39,13 +41,17 @@ public class JdbcRoomDao implements RoomDao {
 	@Override
 	public void create(Room room) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		jdbcTemplate.update(connection -> {
-			PreparedStatement statement = connection.prepareStatement(CREATE_ROOM_QUERY, new String[] { ROOM_ID });
-			statement.setString(1, room.getName());
-			statement.setInt(2, room.getCapacity());
-			return statement;
-		}, keyHolder);
-		room.setId(keyHolder.getKey().longValue());
+		try {
+			jdbcTemplate.update(connection -> {
+				PreparedStatement statement = connection.prepareStatement(CREATE_ROOM_QUERY, new String[] { ROOM_ID });
+				statement.setString(1, room.getName());
+				statement.setInt(2, room.getCapacity());
+				return statement;
+			}, keyHolder);
+			room.setId(keyHolder.getKey().longValue());
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not create room: " + room, e);
+		}
 	}
 
 	@Override
@@ -54,27 +60,45 @@ public class JdbcRoomDao implements RoomDao {
 			return Optional.of(jdbcTemplate.queryForObject(FIND_ROOM_BY_ID_QUERY, new Object[] { roomId }, roomMapper));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get room by id: " + roomId, e);
 		}
 	}
 
 	@Override
 	public List<Room> getAll() {
-		return jdbcTemplate.query(GET_ROOMS_QUERY, roomMapper);
+		try {
+			return jdbcTemplate.query(GET_ROOMS_QUERY, roomMapper);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get rooms", e);
+		}
 	}
 
 	@Override
 	public void update(Room room) {
-		jdbcTemplate.update(UPDATE_ROOM_QUERY, room.getName(), room.getCapacity(), room.getId());
+		try {
+			jdbcTemplate.update(UPDATE_ROOM_QUERY, room.getName(), room.getCapacity(), room.getId());
+		} catch (DataAccessException e) {
+			throw new DaoException("Cold not update room: " + room, e);
+		}
 	}
 
 	@Override
 	public void deleteById(Long roomId) {
-		jdbcTemplate.update(DELETE_ROOM_BY_ID_QUERY, roomId);
+		try {
+			jdbcTemplate.update(DELETE_ROOM_BY_ID_QUERY, roomId);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not delete room by id: " + roomId, e);
+		}
 	}
 
 	@Override
 	public List<Room> getByCourseId(Long courseId) {
-		return jdbcTemplate.query(GET_ROOMS_BY_COURSE_ID_QUERY, new Object[] { courseId }, roomMapper);
+		try {
+			return jdbcTemplate.query(GET_ROOMS_BY_COURSE_ID_QUERY, new Object[] { courseId }, roomMapper);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get rooms by course id: " + courseId, e);
+		}
 	}
 
 	@Override
@@ -83,6 +107,8 @@ public class JdbcRoomDao implements RoomDao {
 			return Optional.of(jdbcTemplate.queryForObject(FIND_ROOM_BY_NAME_QUERY, new Object[] { name }, roomMapper));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get room by name: " + name, e);
 		}
 	}
 }

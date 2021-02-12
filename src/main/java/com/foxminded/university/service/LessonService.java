@@ -1,5 +1,6 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
 import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
 
@@ -8,15 +9,29 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.StudentDao;
+import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
+import com.foxminded.university.service.exception.IncompleteEntityException;
+import com.foxminded.university.service.exception.NotAvailableGroupException;
+import com.foxminded.university.service.exception.NotAvailableRoomException;
+import com.foxminded.university.service.exception.NotAvailableTeacherException;
+import com.foxminded.university.service.exception.NotCompetentTeacherForCourseException;
+import com.foxminded.university.service.exception.NotEnoughRoomCapacityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotSuitableRoomForCourseException;
+import com.foxminded.university.service.exception.NotWeekDayException;
 
 @Service
 public class LessonService {
+
+	private static final Logger logger = LoggerFactory.getLogger(LessonService.class);
 
 	private LessonDao lessonDao;
 	private StudentDao studentDao;
@@ -28,106 +43,144 @@ public class LessonService {
 
 	@Transactional
 	public void create(Lesson lesson) {
-		if (isLessonValid(lesson)) {
-			lessonDao.create(lesson);
-		}
+		logger.debug("Creating lesson: {}", lesson);
+		verify(lesson);
+		lessonDao.create(lesson);
 	}
 
 	@Transactional
 	public Optional<Lesson> findById(Long id) {
+		logger.debug("Finding lesson by id: {}", id);
 		return lessonDao.findById(id);
 	}
 
 	@Transactional
 	public List<Lesson> getAll() {
+		logger.debug("Getting lessons");
 		return lessonDao.getAll();
 	}
 
 	@Transactional
 	public void update(Lesson lesson) {
-		if (isLessonValid(lesson)) {
-			lessonDao.update(lesson);
-		}
+		logger.debug("Updating lesson: {}", lesson);
+		verify(lesson);
+		lessonDao.update(lesson);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
-		if (isPresentById(id)) {
+		logger.debug("Deleting lesson by id: {}", id);
+		if (lessonDao.findById(id).isPresent()) {
 			lessonDao.deleteById(id);
+		} else {
+			throw new NotFoundEntityException(format("Cannot find lesson by id: %d", id));
 		}
 	}
 
-	private boolean isLessonValid(Lesson lesson) {
-		return lesson.getCourse() != null
-				&& lesson.getDate() != null
-				&& !lesson.getGroups().isEmpty()
-				&& lesson.getRoom() != null
-				&& lesson.getTeacher() != null
-				&& lesson.getTimeframe() != null
-				&& isTeacherAvailable(lesson)
-				&& isRoomAvailable(lesson)
-				&& isGroupAvailable(lesson)
-				&& isRoomCapacityCompatible(lesson)
-				&& isTeacherCourseCompatible(lesson)
-				&& isCourseRoomCompatible(lesson)
-				&& !isAtWeekend(lesson);
+	private void verify(Lesson lesson) {
+		verifyFields(lesson);
+		verifyTeacherIsAvailable(lesson);
+		verifyRoomIsAvailable(lesson);
+		verifyGroups(lesson);
+		verifyRoomCapacityIsEnough(lesson);
+		verifyTeacherIsCompetentInCourse(lesson);
+		verifyRoomIsAssignedForLessonCourse(lesson);
+		verifyNotAtWeekend(lesson);
 	}
 
-	private boolean isTeacherAvailable(Lesson lesson) {
+	private void verifyFields(Lesson lesson) {
+		if (lesson.getCourse() == null) {
+			throw new IncompleteEntityException("No course assigned to the lesson");
+		} else if (lesson.getDate() == null) {
+			throw new IncompleteEntityException("No date assigned to the lesson");
+		} else if (lesson.getGroups().isEmpty()) {
+			throw new IncompleteEntityException("No groups assigned to the lesson");
+		} else if (lesson.getRoom() == null) {
+			throw new IncompleteEntityException("No room assigned to the lesson");
+		} else if (lesson.getTeacher() == null) {
+			throw new IncompleteEntityException("No teacher assigned to the lesson");
+		} else if (lesson.getTimeframe() == null) {
+			throw new IncompleteEntityException("No timeframe assigned to the lesson");
+		}
+	}
+
+	private void verifyTeacherIsAvailable(Lesson lesson) {
 		Optional<Lesson> lessonByCriteria = lessonDao
 				.getByTeacherAndDateAndTimeframe(lesson.getTeacher(), lesson.getDate(), lesson.getTimeframe());
-		if (lessonByCriteria.isPresent()) {
-			return lessonByCriteria.get().getId().equals(lesson.getId());
-		} else {
-			return true;
+		if (lessonByCriteria.isPresent() && !lessonByCriteria.get().getId().equals(lesson.getId())) {
+			throw new NotAvailableTeacherException(format("Teacher %s %s is busy at the time %s, %s",
+					lesson.getTeacher().getName(),
+					lesson.getTeacher().getSurname(),
+					lesson.getTimeframe().getStartTime().toString(),
+					lesson.getDate().toString()));
 		}
 	}
 
-	private boolean isRoomAvailable(Lesson lesson) {
+	private void verifyRoomIsAvailable(Lesson lesson) {
 		Optional<Lesson> lessonByCriteria = lessonDao
 				.getByRoomAndDateAndTimeframe(lesson.getRoom(), lesson.getDate(), lesson.getTimeframe());
-		if (lessonByCriteria.isPresent()) {
-			return lessonByCriteria.get().getId().equals(lesson.getId());
-		} else {
-			return true;
+		if (lessonByCriteria.isPresent() && !lessonByCriteria.get().getId().equals(lesson.getId())) {
+			throw new NotAvailableRoomException(format("Room %s is occupied at the time %s, %s",
+					lesson.getRoom().getName(),
+					lesson.getTimeframe().getStartTime().toString(),
+					lesson.getDate().toString()));
 		}
 	}
 
-	private boolean isGroupAvailable(Lesson lesson) {
-		return lesson.getGroups()
-				.stream()
-				.map(g -> lessonDao.getByGroupIdAndDateAndTimeframe(g.getId(), lesson.getDate(), lesson.getTimeframe()))
-				.filter(Optional::isPresent)
-				.allMatch(l -> l.get().getId().equals(lesson.getId()));
+	private void verifyGroups(Lesson lesson) {
+		lesson.getGroups().forEach(g -> verifyGroupIsAvailable(g, lesson));
 	}
 
-	private boolean isRoomCapacityCompatible(Lesson lesson) {
-		return lesson.getGroups()
+	private void verifyGroupIsAvailable(Group group, Lesson lesson) {
+		Optional<Lesson> lessonByCriteria = lessonDao
+				.getByGroupIdAndDateAndTimeframe(group.getId(), lesson.getDate(), lesson.getTimeframe());
+		if (lessonByCriteria.isPresent() && !lessonByCriteria.get().getId().equals(lesson.getId())) {
+			throw new NotAvailableGroupException(
+					format("Other lesson was scheduled for the group %s at the time %s, %s",
+							group.getName(),
+							lesson.getTimeframe().getStartTime().toString(),
+							lesson.getDate().toString()));
+		}
+	}
+
+	private void verifyRoomCapacityIsEnough(Lesson lesson) {
+		int count = lesson.getGroups()
 				.stream()
 				.map(studentDao::getByGroup)
 				.mapToInt(Collection::size)
-				.sum()
-				<= lesson.getRoom().getCapacity();
+				.sum();
+		if (count > lesson.getRoom().getCapacity()) {
+			throw new NotEnoughRoomCapacityException(
+					format("Capacity of the room %s (%d seats) is not enough for %d students",
+							lesson.getRoom().getName(),
+							lesson.getRoom().getCapacity(),
+							count));
+		}
 	}
 
-	public boolean isTeacherCourseCompatible(Lesson lesson) {
-		return lesson.getTeacher()
-				.getCourses()
-				.contains(lesson.getCourse());
+	private void verifyTeacherIsCompetentInCourse(Lesson lesson) {
+		if (!lesson.getTeacher().getCourses().contains(lesson.getCourse())) {
+			throw new NotCompetentTeacherForCourseException(
+					format("The teacher %s %s is incompetent to lecture course %s",
+							lesson.getTeacher().getName(),
+							lesson.getTeacher().getSurname(),
+							lesson.getCourse()));
+		}
 	}
 
-	private boolean isCourseRoomCompatible(Lesson lesson) {
-		return lesson.getCourse()
-				.getRooms()
-				.contains(lesson.getRoom());
+	private void verifyRoomIsAssignedForLessonCourse(Lesson lesson) {
+		if (!lesson.getCourse().getRooms().contains(lesson.getRoom())) {
+			throw new NotSuitableRoomForCourseException(format("Course %s cannot be lectured in the room %s",
+					lesson.getCourse().getName(),
+					lesson.getRoom().getName()));
+		}
 	}
 
-	private boolean isAtWeekend(Lesson lesson) {
+	private void verifyNotAtWeekend(Lesson lesson) {
 		DayOfWeek day = lesson.getDate().getDayOfWeek();
-		return day.equals(SATURDAY) || day.equals(SUNDAY);
-	}
-
-	private boolean isPresentById(Long id) {
-		return lessonDao.findById(id).isPresent();
+		if (day == SATURDAY || day == SUNDAY) {
+			throw new NotWeekDayException(
+					format("Lesson cannot be appointed at the weekend (%s)", lesson.getDate().toString()));
+		}
 	}
 }

@@ -47,17 +47,17 @@ public class JdbcLessonDaoTest {
 	public void givenLessons_whenGetAll_thenGetRightListOfLessons() {
 		Timeframe timeframe1 = new Timeframe();
 		timeframe1.setId(1L);
-		timeframe1.setSequance(1);
+		timeframe1.setSequence(1);
 		timeframe1.setStartTime(LocalTime.parse("08:00"));
 		timeframe1.setEndTime(LocalTime.parse("09:20"));
 		Timeframe timeframe2 = new Timeframe();
 		timeframe2.setId(2L);
-		timeframe2.setSequance(2);
+		timeframe2.setSequence(2);
 		timeframe2.setStartTime(LocalTime.parse("09:40"));
 		timeframe2.setEndTime(LocalTime.parse("11:00"));
 		Timeframe timeframe3 = new Timeframe();
 		timeframe3.setId(3L);
-		timeframe3.setSequance(3);
+		timeframe3.setSequence(3);
 		timeframe3.setStartTime(LocalTime.parse("11:20"));
 		timeframe3.setEndTime(LocalTime.parse("12:40"));
 		Course course1 = new Course("Law");
@@ -130,7 +130,7 @@ public class JdbcLessonDaoTest {
 	public void givenLesson_whenCreate_thenLessonIsAddedToTable() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Course course = new Course("Law");
@@ -167,7 +167,7 @@ public class JdbcLessonDaoTest {
 	public void givenLessonWithGroups_whenCreate_thenRightDataIsAddedToLessonsGroupsTable() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Course course = new Course("Law");
@@ -204,7 +204,7 @@ public class JdbcLessonDaoTest {
 	public void givenId_whenFindById_thenGetRightLesson() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Course course = new Course("Law");
@@ -239,7 +239,7 @@ public class JdbcLessonDaoTest {
 	public void givenUpdatedFields_whenUpdate_thenLessonTableIsUdated() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(2L);
-		timeframe.setSequance(2);
+		timeframe.setSequence(2);
 		timeframe.setStartTime(LocalTime.parse("09:40"));
 		timeframe.setEndTime(LocalTime.parse("11:00"));
 		Course course = new Course("Music");
@@ -274,7 +274,7 @@ public class JdbcLessonDaoTest {
 	public void givenUpdatedGroups_whenUpdate_thenLessonsGroupsTableIsUdated() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(2L);
-		timeframe.setSequance(2);
+		timeframe.setSequence(2);
 		timeframe.setStartTime(LocalTime.parse("09:40"));
 		timeframe.setEndTime(LocalTime.parse("11:00"));
 		Course course = new Course("Music");
@@ -320,7 +320,7 @@ public class JdbcLessonDaoTest {
 	public void givenGroupIdAndDateAndTimeframe_whenGetByGroupIdAndDateAndTimeframe_thenGetRightLesson() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Room room1 = new Room("A111");
@@ -361,7 +361,7 @@ public class JdbcLessonDaoTest {
 	public void givenTimeframe_whenGetByTimeframe_thenGetRightListOfLessons() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Room room1 = new Room("A111");
@@ -401,7 +401,7 @@ public class JdbcLessonDaoTest {
 	public void givenCourse_whenGetByCourse_thenGetRightListOfLessons() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Course course = new Course("Law");
@@ -441,7 +441,7 @@ public class JdbcLessonDaoTest {
 	public void givenTeacherAndDateAndTimeframe_whenGetByTeacherAndDateAndTimeframe_thenGetRightLesson() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Course course = new Course("Law");
@@ -482,7 +482,7 @@ public class JdbcLessonDaoTest {
 	public void givenRoomAndDateAndTimeframe_whenGetByRoomAndDateAndTimeframe_thenGetRightLesson() {
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
-		timeframe.setSequance(1);
+		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Room room1 = new Room("A111");

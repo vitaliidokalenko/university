@@ -1,7 +1,8 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,6 +22,9 @@ import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotUniqueNameException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -44,23 +48,21 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNull_whenCreate_thenGroupIsCreating() {
+	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Group group = buildGroup();
 		group.setName(null);
 
-		groupService.create(group);
-
-		verify(groupDao, never()).create(group);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> groupService.create(group));
+		assertEquals("Empty group name", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsEmpty_whenCreate_thenGroupIsCreating() {
+	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Group group = buildGroup();
 		group.setName("");
 
-		groupService.create(group);
-
-		verify(groupDao, never()).create(group);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> groupService.create(group));
+		assertEquals("Empty group name", exception.getMessage());
 	}
 
 	@Test
@@ -104,24 +106,22 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenGroupIsNotDeleting() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenNotFoundEntityExceptionThrown() {
 		when(groupDao.findById(1L)).thenReturn(Optional.empty());
 
-		groupService.deleteById(1L);
-
-		verify(groupDao, never()).deleteById(1L);
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> groupService.deleteById(1L));
+		assertEquals("Cannot find group by id: 1", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenCreate_thenGroupIsNotCreating() {
+	public void givenNameIsNotUnique_whenCreate_thenNotUniqueNameExceptionThrown() {
 		Group actual = buildGroup();
 		Group retrieved = buildGroup();
 		retrieved.setId(2L);
 		when(groupDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
-		groupService.create(actual);
-
-		verify(groupDao, never()).create(actual);
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> groupService.create(actual));
+		assertEquals(format("The group with name %s already exists", actual.getName()), exception.getMessage());
 	}
 
 	@Test
@@ -135,15 +135,14 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenUpdate_thenGroupIsNotUpdating() {
+	public void givenNameIsNotUnique_whenUpdate_thenNotUniqueNameExceptionThrown() {
 		Group actual = buildGroup();
 		Group retrieved = buildGroup();
 		retrieved.setId(2L);
 		when(groupDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
-		groupService.update(actual);
-
-		verify(groupDao, never()).update(actual);
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> groupService.update(actual));
+		assertEquals(format("The group with name %s already exists", actual.getName()), exception.getMessage());
 	}
 
 	@Test

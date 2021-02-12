@@ -1,7 +1,8 @@
 package com.foxminded.university.service;
 
+import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +20,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Room;
+import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotUniqueNameException;
 
 @SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
@@ -40,33 +44,30 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenCapacityLessThanOne_whenCreate_thenRoomIsNotCreating() {
+	public void givenCapacityLessThanOne_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Room room = buildRoom();
 		room.setCapacity(0);
 
-		roomService.create(room);
-
-		verify(roomDao, never()).create(room);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> roomService.create(room));
+		assertEquals(format("Capacity of the room %s is less than 1", room.getName()), exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsEmpty_whenCreate_thenRoomIsNotCreating() {
+	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Room room = buildRoom();
 		room.setName("");
 
-		roomService.create(room);
-
-		verify(roomDao, never()).create(room);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> roomService.create(room));
+		assertEquals("Empty room name", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsNull_whenCreate_thenRoomIsNotCreating() {
+	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
 		Room room = buildRoom();
 		room.setName(null);
 
-		roomService.create(room);
-
-		verify(roomDao, never()).create(room);
+		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> roomService.create(room));
+		assertEquals("Empty room name", exception.getMessage());
 	}
 
 	@Test
@@ -108,24 +109,22 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenEntityIsNotPresent_whenDeleteById_thenRoomIsNotDeleting() {
+	public void givenEntityIsNotPresent_whenDeleteById_thenNotFoundEntityExceptionThrown() {
 		when(roomDao.findById(1L)).thenReturn(Optional.empty());
 
-		roomService.deleteById(1L);
-
-		verify(roomDao, never()).deleteById(1L);
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> roomService.deleteById(1L));
+		assertEquals("Cannot find room by id: 1", exception.getMessage());
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenCreate_thenRoomIsNotCreating() {
+	public void givenNameIsNotUnique_whenCreate_thenNotUniqueNameExceptionThrown() {
 		Room room = buildRoom();
 		Room retrieved = buildRoom();
 		retrieved.setId(2L);
 		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
 
-		roomService.create(room);
-
-		verify(roomDao, never()).create(room);
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> roomService.create(room));
+		assertEquals(format("The room with name %s already exists", room.getName()), exception.getMessage());
 	}
 
 	@Test
@@ -139,15 +138,14 @@ public class RoomServiceTest {
 	}
 
 	@Test
-	public void givenNameIsNotUnique_whenUpdate_thenRoomIsNotUpdating() {
+	public void givenNameIsNotUnique_whenUpdate_thenNotUniqueNameExceptionThrown() {
 		Room room = buildRoom();
 		Room retrieved = buildRoom();
 		retrieved.setId(2L);
 		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
 
-		roomService.update(room);
-
-		verify(roomDao, never()).update(room);
+		Exception exception = assertThrows(NotUniqueNameException.class, () -> roomService.update(room));
+		assertEquals(format("The room with name %s already exists", room.getName()), exception.getMessage());
 	}
 
 	@Test

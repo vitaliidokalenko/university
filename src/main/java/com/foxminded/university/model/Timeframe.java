@@ -6,7 +6,7 @@ import java.util.Objects;
 public class Timeframe {
 
 	private Long id;
-	private int sequance;
+	private int sequence;
 	private LocalTime startTime;
 	private LocalTime endTime;
 
@@ -18,12 +18,12 @@ public class Timeframe {
 		this.id = id;
 	}
 
-	public int getSequance() {
-		return sequance;
+	public int getSequence() {
+		return sequence;
 	}
 
-	public void setSequance(int sequance) {
-		this.sequance = sequance;
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
 	}
 
 	public LocalTime getStartTime() {
@@ -44,7 +44,7 @@ public class Timeframe {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(endTime, id, sequance, startTime);
+		return Objects.hash(endTime, id, sequence, startTime);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class Timeframe {
 		Timeframe other = (Timeframe) obj;
 		return Objects.equals(endTime, other.endTime)
 				&& Objects.equals(id, other.id)
-				&& sequance == other.sequance
+				&& sequence == other.sequence
 				&& Objects.equals(startTime, other.startTime);
 	}
 }

@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.LessonDao;
+import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.dao.jdbc.mapper.LessonMapper;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Group;
@@ -54,19 +56,24 @@ public class JdbcLessonDao implements LessonDao {
 	@Override
 	public void create(Lesson lesson) {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		jdbcTemplate.update(connection -> {
-			PreparedStatement statement = connection.prepareStatement(CREATE_LESSON_QUERY, new String[] { LESSON_ID });
-			statement.setObject(1, lesson.getDate());
-			statement.setLong(2, lesson.getTimeframe().getId());
-			statement.setLong(3, lesson.getCourse().getId());
-			statement.setLong(4, lesson.getTeacher().getId());
-			statement.setLong(5, lesson.getRoom().getId());
-			return statement;
-		}, keyHolder);
-		lesson.setId(keyHolder.getKey().longValue());
-		lesson.getGroups()
-				.stream()
-				.forEach(g -> jdbcTemplate.update(CREATE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
+		try {
+			jdbcTemplate.update(connection -> {
+				PreparedStatement statement = connection.prepareStatement(CREATE_LESSON_QUERY,
+						new String[] { LESSON_ID });
+				statement.setObject(1, lesson.getDate());
+				statement.setLong(2, lesson.getTimeframe().getId());
+				statement.setLong(3, lesson.getCourse().getId());
+				statement.setLong(4, lesson.getTeacher().getId());
+				statement.setLong(5, lesson.getRoom().getId());
+				return statement;
+			}, keyHolder);
+			lesson.setId(keyHolder.getKey().longValue());
+			lesson.getGroups()
+					.stream()
+					.forEach(g -> jdbcTemplate.update(CREATE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not create lesson: " + lesson, e);
+		}
 	}
 
 	@Override
@@ -76,36 +83,50 @@ public class JdbcLessonDao implements LessonDao {
 					.of(jdbcTemplate.queryForObject(FIND_LESSON_BY_ID_QUERY, new Object[] { lessonId }, lessonMapper));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get lesson by id: " + lessonId, e);
 		}
 	}
 
 	@Override
 	public List<Lesson> getAll() {
-		return jdbcTemplate.query(GET_LESSONS_QUERY, lessonMapper);
+		try {
+			return jdbcTemplate.query(GET_LESSONS_QUERY, lessonMapper);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get lessons", e);
+		}
 	}
 
 	@Override
 	public void update(Lesson lesson) {
-		jdbcTemplate.update(UPDATE_LESSON_QUERY,
-				lesson.getDate(),
-				lesson.getTimeframe().getId(),
-				lesson.getCourse().getId(),
-				lesson.getTeacher().getId(),
-				lesson.getRoom().getId(),
-				lesson.getId());
-		List<Group> groups = groupDao.getByLessonId(lesson.getId());
-		groups.stream()
-				.filter(g -> !lesson.getGroups().contains(g))
-				.forEach(g -> jdbcTemplate.update(DELETE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
-		lesson.getGroups()
-				.stream()
-				.filter(g -> !groups.contains(g))
-				.forEach(g -> jdbcTemplate.update(CREATE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
+		try {
+			jdbcTemplate.update(UPDATE_LESSON_QUERY,
+					lesson.getDate(),
+					lesson.getTimeframe().getId(),
+					lesson.getCourse().getId(),
+					lesson.getTeacher().getId(),
+					lesson.getRoom().getId(),
+					lesson.getId());
+			List<Group> groups = groupDao.getByLessonId(lesson.getId());
+			groups.stream()
+					.filter(g -> !lesson.getGroups().contains(g))
+					.forEach(g -> jdbcTemplate.update(DELETE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
+			lesson.getGroups()
+					.stream()
+					.filter(g -> !groups.contains(g))
+					.forEach(g -> jdbcTemplate.update(CREATE_LESSON_GROUP_QUERY, lesson.getId(), g.getId()));
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not update lesson: " + lesson, e);
+		}
 	}
 
 	@Override
 	public void deleteById(Long lessonId) {
-		jdbcTemplate.update(DELETE_LESSON_BY_ID_QUERY, lessonId);
+		try {
+			jdbcTemplate.update(DELETE_LESSON_BY_ID_QUERY, lessonId);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not delete lesson by id: " + lessonId, e);
+		}
 	}
 
 	@Override
@@ -116,18 +137,30 @@ public class JdbcLessonDao implements LessonDao {
 					lessonMapper));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DaoException(
+					"Could not get lesson by group id: " + groupId + ", date: " + date + ", timeframe: " + timeframe,
+					e);
 		}
 	}
 
 	@Override
 	public List<Lesson> getByTimeframe(Timeframe timeframe) {
-		return jdbcTemplate
-				.query(GET_LESSONS_BY_TIMEFRAME_ID_QUERY, new Object[] { timeframe.getId() }, lessonMapper);
+		try {
+			return jdbcTemplate
+					.query(GET_LESSONS_BY_TIMEFRAME_ID_QUERY, new Object[] { timeframe.getId() }, lessonMapper);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get lessons by timeframe: " + timeframe, e);
+		}
 	}
 
 	@Override
 	public List<Lesson> getByCourse(Course course) {
-		return jdbcTemplate.query(GET_LESSONS_BY_COURSE_ID_QUERY, new Object[] { course.getId() }, lessonMapper);
+		try {
+			return jdbcTemplate.query(GET_LESSONS_BY_COURSE_ID_QUERY, new Object[] { course.getId() }, lessonMapper);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get lessons by course: " + course, e);
+		}
 	}
 
 	@Override
@@ -139,6 +172,9 @@ public class JdbcLessonDao implements LessonDao {
 							lessonMapper));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DaoException(
+					"Could not get lesson by teacher: " + teacher + ", date: " + date + ", timeframe: " + timeframe, e);
 		}
 	}
 
@@ -151,6 +187,9 @@ public class JdbcLessonDao implements LessonDao {
 							lessonMapper));
 		} catch (EmptyResultDataAccessException e) {
 			return Optional.empty();
+		} catch (DataAccessException e) {
+			throw new DaoException(
+					"Could not get lesson by room: " + room + ", date: " + date + ", timeframe: " + timeframe, e);
 		}
 	}
 }
