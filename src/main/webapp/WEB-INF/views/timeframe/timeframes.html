@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Timeframes</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<div class="container">
+		<p class="h3 text-secondary">Timeframes</p>
+		<p>
+			<a class="btn btn-success" href="#" role="button">+Add timeframe</a>
+		</p>
+		<table class="table table-responsive table-striped table-borderless table-sm align-middle">
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Sequence</th>
+					<th>Start time</th>
+					<th>End time</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="timeframe : ${timeframes}">
+					<td th:text="${timeframe.id}" />
+					<td th:text="${timeframe.sequence}" />
+					<td th:text="${timeframe.startTime}" />
+					<td th:text="${timeframe.endTime}" />
+					<td>
+						<div class="btn-group" role="group">
+							<a th:href="@{/timeframes/{id}(id=${timeframe.id})}">
+								<button type="button" class="btn btn-info">Detail</button>
+							</a>
+							<a href="#">
+								<button type="button" class="btn btn-warning">Edit</button>
+							</a>
+							<a href="#">
+								<button type="button" class="btn btn-danger">Delete</button>
+							</a>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

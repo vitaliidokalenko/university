@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Student</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<div class="container">
+		<p class="h3 text-secondary">Student</p>
+		<dl class="row">
+			<dt class="col-sm-2">Id</dt>
+			<dd class="col-sm-10" th:text="${student.id}" />
+			<dt class="col-sm-2">Name</dt>
+			<dd class="col-sm-10" th:text="${student.name}" />
+			<dt class="col-sm-2">Surname</dt>
+			<dd class="col-sm-10" th:text="${student.surname}" />
+			<dt class="col-sm-2">Group</dt>
+			<dd class="col-sm-10" th:text="${student.group} ? ${student.group.name}" />
+			<dt class="col-sm-2">Phone</dt>
+			<dd class="col-sm-10" th:text="${student.phone}" />
+			<dt class="col-sm-2">Email</dt>
+			<dd class="col-sm-10" th:text="${student.email}" />
+			<dt class="col-sm-2">Address</dt>
+			<dd class="col-sm-10" th:text="${student.address}" />
+			<dt class="col-sm-2">Birth date</dt>
+			<dd class="col-sm-10" th:text="${student.birthDate}" />
+			<dt class="col-sm-2">Gender</dt>
+			<dd class="col-sm-10" th:text="${student.gender}" />
+			<dt class="col-sm-2">Courses</dt>
+			<dd class="col-sm-10">
+				<div class="list-group list-group-flush" th:each="course : ${student.courses}">
+					<a th:href="@{/courses/{id}(id=${course.id})}" class="list-group-item list-group-item-action"
+						th:text="${course.name}"></a>
+				</div>
+			</dd>
+		</dl>
+		<div class="btn-group" role="group">
+			<a href="#">
+				<button type="button" class="btn btn-warning">Edit</button>
+			</a>
+			<a href="#">
+				<button type="button" class="btn btn-danger">Delete</button>
+			</a>
+		</div>
+	</div>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

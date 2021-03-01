@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Timeframe</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<div class="container">
+		<p class="h3 text-secondary">Timeframe</p>
+		<dl class="row">
+			<dt class="col-sm-2">Id</dt>
+			<dd class="col-sm-10" th:text="${timeframe.id}" />
+			<dt class="col-sm-2">Sequence</dt>
+			<dd class="col-sm-10" th:text="${timeframe.sequence}" />
+			<dt class="col-sm-2">Start time</dt>
+			<dd class="col-sm-10" th:text="${timeframe.startTime}" />
+			<dt class="col-sm-2">End time</dt>
+			<dd class="col-sm-10" th:text="${timeframe.endTime}" />
+		</dl>
+		<div class="btn-group" role="group">
+			<a href="#">
+				<button type="button" class="btn btn-warning">Edit</button>
+			</a>
+			<a href="#">
+				<button type="button" class="btn btn-danger">Delete</button>
+			</a>
+		</div>
+	</div>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

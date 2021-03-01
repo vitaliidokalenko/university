@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Lesson</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<div class="container">
+		<p class="h3 text-secondary">Lesson</p>
+		<dl class="row">
+			<dt class="col-sm-2">Id</dt>
+			<dd class="col-sm-10" th:text="${lesson.id}" />
+			<dt class="col-sm-2">Date</dt>
+			<dd class="col-sm-10" th:text="${lesson.date}" />
+			<dt class="col-sm-2">Start time</dt>
+			<dd class="col-sm-10" th:text="${lesson.timeframe.startTime}" />
+			<dt class="col-sm-2">End time</dt>
+			<dd class="col-sm-10" th:text="${lesson.timeframe.endTime}" />
+			<dt class="col-sm-2">Groups</dt>
+			<dd class="col-sm-10">
+				<ul class="list-unstyled" th:each="group : ${lesson.groups}">
+					<li><a th:href="@{/groups/{id}(id=${group.id})}" th:text="${group.name}"></a></li>
+				</ul>
+			</dd>
+			<dt class="col-sm-2">Teacher</dt>
+			<dd class="col-sm-10">
+				<a th:href="@{/teachers/{id}(id=${lesson.teacher.id})}">
+					<span th:text="${lesson.teacher.name}"></span> <span th:text="${lesson.teacher.surname}"></span>
+				</a>
+			</dd>
+			<dt class="col-sm-2">Course</dt>
+			<dd class="col-sm-10">
+				<a th:href="@{/courses/{id}(id=${lesson.course.id})}" th:text="${lesson.course.name}"></a>
+			</dd>
+			<dt class="col-sm-2">Room</dt>
+			<dd class="col-sm-10">
+				<a th:href="@{/rooms/{id}(id=${lesson.room.id})}" th:text="${lesson.room.name}"></a>
+			</dd>
+		</dl>
+		<div class="btn-group" role="group">
+			<a href="#">
+				<button type="button" class="btn btn-warning">Edit</button>
+			</a>
+			<a href="#">
+				<button type="button" class="btn btn-danger">Delete</button>
+			</a>
+		</div>
+	</div>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>
