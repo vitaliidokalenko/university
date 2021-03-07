@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>University</title>
+<title th:text="${exception}"></title>
 <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 </head>
 <body>
@@ -12,6 +12,8 @@
 				<div class="col-md-12 text-center">
 					<span class="display-1 d-block">404</span>
 					<div class="mb-4 lead">The page you are looking for was not found.</div>
+					<p class="text-danger" th:text="${exception}"></p>
+					<p class="text-danger" th:text="${message}"></p>
 					<a th:href="@{/}" class="btn btn-link">Back to Home</a>
 				</div>
 			</div>
