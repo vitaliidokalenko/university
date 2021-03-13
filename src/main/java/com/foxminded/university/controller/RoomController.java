@@ -2,7 +2,6 @@ package com.foxminded.university.controller;
 
 import static java.lang.String.format;
 
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.springframework.data.domain.Page;
@@ -36,12 +35,10 @@ public class RoomController {
 	}
 
 	@GetMapping("/{id}")
-	public String findById(@PathVariable("id") Long id, Model model) {
-		Optional<Room> room = roomService.findById(id);
-		if (!room.isPresent()) {
-			throw new NotFoundEntityException(format("Cannot find room by id: %d", id));
-		}
-		model.addAttribute("room", room.get());
+	public String findById(@PathVariable Long id, Model model) {
+		Room room = roomService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find room by id: %d", id)));
+		model.addAttribute("room", room);
 		return "room/room";
 	}
 }

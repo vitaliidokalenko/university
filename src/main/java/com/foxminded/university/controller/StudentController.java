@@ -2,7 +2,6 @@ package com.foxminded.university.controller;
 
 import static java.lang.String.format;
 
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.springframework.data.domain.Page;
@@ -36,12 +35,10 @@ public class StudentController {
 	}
 
 	@GetMapping("/{id}")
-	public String findById(@PathVariable("id") Long id, Model model) {
-		Optional<Student> student = studentService.findById(id);
-		if (!student.isPresent()) {
-			throw new NotFoundEntityException(format("Cannot find student by id: %d", id));
-		}
-		model.addAttribute("student", student.get());
+	public String findById(@PathVariable Long id, Model model) {
+		Student student = studentService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find student by id: %d", id)));
+		model.addAttribute("student", student);
 		return "student/student";
 	}
 }

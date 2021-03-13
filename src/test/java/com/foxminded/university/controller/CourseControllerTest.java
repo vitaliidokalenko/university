@@ -24,6 +24,7 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.service.CourseService;
@@ -40,7 +41,7 @@ public class CourseControllerTest {
 	@BeforeEach
 	void setUpp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(courseController)
-				.setControllerAdvice(new ExceptionHandlingController())
+				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
@@ -62,7 +63,7 @@ public class CourseControllerTest {
 		Optional<Course> expected = Optional.of(buildCourse());
 		when(courseService.findById(1L)).thenReturn(expected);
 
-		mockMvc.perform(get("/courses/1"))
+		mockMvc.perform(get("/courses/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("course/course"))
 				.andExpect(model().attribute("course", expected.get()));
@@ -72,7 +73,7 @@ public class CourseControllerTest {
 	public void givenCourseIsNotPresent_whenFindById_thenRequestForwardedErrorView() throws Exception {
 		when(courseService.findById(1L)).thenReturn(Optional.empty());
 
-		mockMvc.perform(get("/courses/1"))
+		mockMvc.perform(get("/courses/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(model().attribute("exception", "NotFoundEntityException"))
 				.andExpect(model().attribute("message", "Cannot find course by id: 1"))

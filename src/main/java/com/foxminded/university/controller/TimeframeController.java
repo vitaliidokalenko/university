@@ -2,7 +2,6 @@ package com.foxminded.university.controller;
 
 import static java.lang.String.format;
 
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.springframework.data.domain.Page;
@@ -36,12 +35,10 @@ public class TimeframeController {
 	}
 
 	@GetMapping("/{id}")
-	public String findById(@PathVariable("id") Long id, Model model) {
-		Optional<Timeframe> timeframe = timeframeService.findById(id);
-		if (!timeframe.isPresent()) {
-			throw new NotFoundEntityException(format("Cannot find timeframe by id: %d", id));
-		}
-		model.addAttribute("timeframe", timeframe.get());
+	public String findById(@PathVariable Long id, Model model) {
+		Timeframe timeframe = timeframeService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find timeframe by id: %d", id)));
+		model.addAttribute("timeframe", timeframe);
 		return "timeframe/timeframe";
 	}
 }

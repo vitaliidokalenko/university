@@ -24,6 +24,7 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.TimeframeService;
 
@@ -39,7 +40,7 @@ public class TimeframeControllerTest {
 	@BeforeEach
 	void setUpp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(timeframeController)
-				.setControllerAdvice(new ExceptionHandlingController())
+				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
@@ -61,7 +62,7 @@ public class TimeframeControllerTest {
 		Optional<Timeframe> expected = Optional.of(buildTimeframe());
 		when(timeframeService.findById(1L)).thenReturn(expected);
 
-		mockMvc.perform(get("/timeframes/1"))
+		mockMvc.perform(get("/timeframes/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("timeframe/timeframe"))
 				.andExpect(model().attribute("timeframe", expected.get()));
@@ -71,7 +72,7 @@ public class TimeframeControllerTest {
 	public void givenTimeframeIsNotPresent_whenFindById_thenRequestForwardedErrorView() throws Exception {
 		when(timeframeService.findById(1L)).thenReturn(Optional.empty());
 
-		mockMvc.perform(get("/timeframes/1"))
+		mockMvc.perform(get("/timeframes/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(model().attribute("exception", "NotFoundEntityException"))
 				.andExpect(model().attribute("message", "Cannot find timeframe by id: 1"))

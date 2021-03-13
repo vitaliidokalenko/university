@@ -1,4 +1,4 @@
-package com.foxminded.university.controller;
+package com.foxminded.university.controller.exception;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
 @ControllerAdvice
-public class ExceptionHandlingController {
+public class ControllerExceptionHandler {
 
-	private static final Logger logger = LoggerFactory.getLogger(ExceptionHandlingController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ControllerExceptionHandler.class);
 
 	@ExceptionHandler(Exception.class)
 	public ModelAndView handleException(HttpServletRequest request, Exception e) {

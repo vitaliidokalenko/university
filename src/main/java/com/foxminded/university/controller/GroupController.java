@@ -2,7 +2,6 @@ package com.foxminded.university.controller;
 
 import static java.lang.String.format;
 
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.springframework.data.domain.Page;
@@ -36,12 +35,10 @@ public class GroupController {
 	}
 
 	@GetMapping("/{id}")
-	public String findById(@PathVariable("id") Long id, Model model) {
-		Optional<Group> group = groupService.findById(id);
-		if (!group.isPresent()) {
-			throw new NotFoundEntityException(format("Cannot find group by id: %d", id));
-		}
-		model.addAttribute("group", group.get());
+	public String findById(@PathVariable Long id, Model model) {
+		Group group = groupService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find group by id: %d", id)));
+		model.addAttribute("group", group);
 		return "group/group";
 	}
 }
