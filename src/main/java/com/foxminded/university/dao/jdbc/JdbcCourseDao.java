@@ -8,6 +8,9 @@ import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -33,6 +36,8 @@ public class JdbcCourseDao implements CourseDao {
 	private static final String GET_COURSES_BY_STUDENT_ID_QUERY = "SELECT * FROM courses JOIN students_courses ON students_courses.course_id = courses.id WHERE student_id = ?";
 	private static final String GET_COURSES_BY_TEACHER_ID_QUERY = "SELECT * FROM courses JOIN teachers_courses ON teachers_courses.course_id = courses.id WHERE teacher_id = ?";
 	private static final String FIND_COURSE_BY_NAME_QUERY = "SELECT * FROM courses WHERE name = ?";
+	private static final String COUNT_COURSES_QUERY = "SELECT count(*) FROM courses";
+	private static final String GET_COURSES_ORDERED_BY_NAME_WITH_LIMIT_AND_OFFSET_QUERY = "SELECT * FROM courses ORDER BY name LIMIT ? OFFSET ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcRoomDao roomDao;
@@ -148,6 +153,28 @@ public class JdbcCourseDao implements CourseDao {
 			return Optional.empty();
 		} catch (DataAccessException e) {
 			throw new DaoException("Could not get course by name: " + name, e);
+		}
+	}
+
+	@Override
+	public int count() {
+		try {
+			return jdbcTemplate.queryForObject(COUNT_COURSES_QUERY, Integer.class);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get amount of courses", e);
+		}
+	}
+
+	@Override
+	public Page<Course> getAllPage(Pageable pageable) {
+		try {
+			List<Course> courses = jdbcTemplate.query(
+					GET_COURSES_ORDERED_BY_NAME_WITH_LIMIT_AND_OFFSET_QUERY,
+					new Object[] { pageable.getPageSize(), pageable.getOffset() },
+					courseMapper);
+			return new PageImpl<>(courses, pageable, count());
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get courses", e);
 		}
 	}
 }

@@ -18,14 +18,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
-import com.foxminded.university.service.exception.IncorrectDurationException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
+import com.foxminded.university.service.exception.IncorrectDurationException;
 import com.foxminded.university.service.exception.IncorrectTimelineException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueSequenceException;
@@ -158,6 +161,16 @@ public class TimeframeServiceTest {
 		Exception exception = assertThrows(NotUniqueSequenceException.class, () -> timeframeService.create(actual));
 		assertEquals(format("The timeframe with sequence: %d already exists", actual.getSequence()),
 				exception.getMessage());
+	}
+
+	@Test
+	public void whenGetAllPage_thenGetRightTimeframes() {
+		Page<Timeframe> expected = new PageImpl<>(Arrays.asList(buildTimeframe()));
+		when(timeframeDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+
+		Page<Timeframe> actual = timeframeService.getAllPage(PageRequest.of(0, 1));
+
+		assertEquals(expected, actual);
 	}
 
 	private Timeframe buildTimeframe() {

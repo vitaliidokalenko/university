@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -46,6 +48,12 @@ public class CourseService {
 	public List<Course> getAll() {
 		logger.debug("Getting courses");
 		return courseDao.getAll();
+	}
+
+	@Transactional
+	public Page<Course> getAllPage(Pageable pageable) {
+		logger.debug("Getting pageable courses");
+		return courseDao.getAllPage(pageable);
 	}
 
 	@Transactional

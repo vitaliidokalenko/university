@@ -16,10 +16,10 @@ public class ExceptionHandlingController {
 	@ExceptionHandler(Exception.class)
 	public ModelAndView handleException(HttpServletRequest request, Exception e) {
 		logger.error("Request: {} raised {}", request.getRequestURL(), e);
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("exception", e.getClass().getSimpleName());
-		mav.addObject("message", e.getMessage());
-		mav.setViewName("error");
-		return mav;
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("exception", e.getClass().getSimpleName());
+		modelAndView.addObject("message", e.getMessage());
+		modelAndView.setViewName("error");
+		return modelAndView;
 	}
 }

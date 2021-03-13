@@ -26,7 +26,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="lesson : ${lessons}">
+				<tr th:each="lesson : ${lessonsPage}">
 					<td th:text="${lesson.id}" />
 					<td th:text="${lesson.date}" />
 					<td th:text="${lesson.timeframe.startTime}" />
@@ -52,6 +52,12 @@
 				</tr>
 			</tbody>
 		</table>
+	</div>
+	<div class="container">
+		<ul class="pagination" th:if="${lessonsPage.totalPages > 1}">
+			<li class="page-item" th:each="pageNumber : ${numbers}"><a class="page-link"
+					th:href="@{'/lessons?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
+		</ul>
 	</div>
 	<div th:replace="fragments/footer::footer"></div>
 </body>

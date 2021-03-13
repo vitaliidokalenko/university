@@ -14,6 +14,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -96,7 +98,7 @@ public class JdbcLessonDaoTest {
 		groups.add(group2);
 		Lesson lesson1 = new Lesson();
 		lesson1.setId(1L);
-		lesson1.setDate(LocalDate.parse("2020-12-12"));
+		lesson1.setDate(LocalDate.parse("2020-12-11"));
 		lesson1.setTimeframe(timeframe1);
 		lesson1.setCourse(course1);
 		lesson1.setTeacher(teacher1);
@@ -112,7 +114,7 @@ public class JdbcLessonDaoTest {
 		lesson2.setGroups(groups);
 		Lesson lesson3 = new Lesson();
 		lesson3.setId(3L);
-		lesson3.setDate(LocalDate.parse("2020-12-12"));
+		lesson3.setDate(LocalDate.parse("2020-12-13"));
 		lesson3.setTimeframe(timeframe3);
 		lesson3.setCourse(course3);
 		lesson3.setTeacher(teacher3);
@@ -222,7 +224,7 @@ public class JdbcLessonDaoTest {
 		group2.setId(2L);
 		Lesson expected = new Lesson();
 		expected.setId(1L);
-		expected.setDate(LocalDate.parse("2020-12-12"));
+		expected.setDate(LocalDate.parse("2020-12-11"));
 		expected.setTimeframe(timeframe);
 		expected.setCourse(course);
 		expected.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
@@ -516,5 +518,91 @@ public class JdbcLessonDaoTest {
 				.getByRoomAndDateAndTimeframe(room1, LocalDate.parse("2020-12-12"), timeframe);
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataLessons.sql")
+	public void whenCount_thenGetRightAmountOfLessons() {
+		int expected = countRowsInTable(jdbcTemplate, LESSONS_TABLE_NAME);
+
+		int actual = lessonDao.count();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataLessons.sql")
+	public void givenPageSize_whenGetAllPage_thenGetRightLessons() {
+		Timeframe timeframe1 = new Timeframe();
+		timeframe1.setId(1L);
+		timeframe1.setSequence(1);
+		timeframe1.setStartTime(LocalTime.parse("08:00"));
+		timeframe1.setEndTime(LocalTime.parse("09:20"));
+		Timeframe timeframe2 = new Timeframe();
+		timeframe2.setId(2L);
+		timeframe2.setSequence(2);
+		timeframe2.setStartTime(LocalTime.parse("09:40"));
+		timeframe2.setEndTime(LocalTime.parse("11:00"));
+		Timeframe timeframe3 = new Timeframe();
+		timeframe3.setId(3L);
+		timeframe3.setSequence(3);
+		timeframe3.setStartTime(LocalTime.parse("11:20"));
+		timeframe3.setEndTime(LocalTime.parse("12:40"));
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
+		Teacher teacher1 = new Teacher("Victor", "Doncov");
+		teacher1.setId(1L);
+		teacher1.setBirthDate(LocalDate.parse("1991-01-01"));
+		teacher1.setGender(Gender.MALE);
+		Teacher teacher2 = new Teacher("Aleksandra", "Ivanova");
+		teacher2.setId(2L);
+		teacher2.setBirthDate(LocalDate.parse("1992-02-02"));
+		teacher2.setGender(Gender.FEMALE);
+		Teacher teacher3 = new Teacher("Anatoly", "Sviridov");
+		teacher3.setId(3L);
+		teacher3.setBirthDate(LocalDate.parse("1993-03-03"));
+		teacher3.setGender(Gender.MALE);
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Room room3 = new Room("C333");
+		room3.setId(3L);
+		room3.setCapacity(30);
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Set<Group> groups = new HashSet<>();
+		groups.add(group1);
+		groups.add(group2);
+		Lesson lesson1 = new Lesson();
+		lesson1.setId(1L);
+		lesson1.setDate(LocalDate.parse("2020-12-11"));
+		lesson1.setTimeframe(timeframe1);
+		lesson1.setCourse(course1);
+		lesson1.setTeacher(teacher1);
+		lesson1.setRoom(room1);
+		lesson1.setGroups(groups);
+		Lesson lesson2 = new Lesson();
+		lesson2.setId(2L);
+		lesson2.setDate(LocalDate.parse("2020-12-12"));
+		lesson2.setTimeframe(timeframe2);
+		lesson2.setCourse(course2);
+		lesson2.setTeacher(teacher2);
+		lesson2.setRoom(room2);
+		lesson2.setGroups(groups);
+		List<Lesson> expected = Arrays.asList(lesson1, lesson2);
+		int pageSize = 2;
+
+		Page<Lesson> actual = lessonDao.getAllPage(PageRequest.of(0, pageSize));
+
+		assertEquals(expected, actual.getContent());
 	}
 }

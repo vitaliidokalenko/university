@@ -10,9 +10,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -44,18 +48,20 @@ public class LessonControllerTest {
 	void setUpp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(lessonController)
 				.setControllerAdvice(new ExceptionHandlingController())
+				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightListOfLessons() throws Exception {
-		List<Lesson> expected = Arrays.asList(buildLesson());
-		when(lessonService.getAll()).thenReturn(expected);
+	public void whenGetAll_thenGetRightLessonsPage() throws Exception {
+		Page<Lesson> expected = new PageImpl<>(Arrays.asList(buildLesson()));
+		when(lessonService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
-		mockMvc.perform(get("/lessons"))
+		mockMvc.perform(get("/lessons").param("page", "0").param("size", "1"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("lesson/lessons"))
-				.andExpect(model().attribute("lessons", expected));
+				.andExpect(model().attribute("lessonsPage", expected))
+				.andExpect(model().attribute("numbers", IntStream.rangeClosed(1, expected.getTotalPages()).toArray()));
 	}
 
 	@Test

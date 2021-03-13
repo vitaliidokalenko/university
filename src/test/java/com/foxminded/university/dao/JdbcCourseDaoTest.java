@@ -11,6 +11,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -237,5 +239,39 @@ public class JdbcCourseDaoTest {
 		Course actual = courseDao.findByName("Law").orElse(null);
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataCourses.sql")
+	public void whenCount_thenGetRightAmountOfCourses() {
+		int expected = countRowsInTable(jdbcTemplate, COURSES_TABLE_NAME);
+
+		int actual = courseDao.count();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataCourses.sql")
+	public void givenPageSize_whenGetAllPage_thenGetRightCourses() {
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Set<Room> rooms = new HashSet<>(Arrays.asList(room1, room2));
+		Course course1 = new Course("Biology");
+		course1.setId(2L);
+		course1.setRooms(rooms);
+		Course course2 = new Course("Law");
+		course2.setId(1L);
+		course2.setRooms(rooms);
+		List<Course> expected = Arrays.asList(course1, course2);
+		int pageSize = 2;
+
+		Page<Course> actual = courseDao.getAllPage(PageRequest.of(0, pageSize));
+
+		assertEquals(expected, actual.getContent());
 	}
 }

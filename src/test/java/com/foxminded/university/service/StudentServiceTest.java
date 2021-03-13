@@ -17,6 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -158,6 +161,16 @@ public class StudentServiceTest {
 
 		Exception exception = assertThrows(NotFoundEntityException.class, () -> studentService.deleteById(1L));
 		assertEquals("Cannot find student by id: 1", exception.getMessage());
+	}
+
+	@Test
+	public void whenGetAllPage_thenGetRightStudents() {
+		Page<Student> expected = new PageImpl<>(Arrays.asList(buildStudent()));
+		when(studentDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+
+		Page<Student> actual = studentService.getAllPage(PageRequest.of(0, 1));
+
+		assertEquals(expected, actual);
 	}
 
 	private Student buildStudent() {

@@ -9,6 +9,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,12 @@ public class TimeframeService {
 	public List<Timeframe> getAll() {
 		logger.debug("Getting timeframes");
 		return timeframeDao.getAll();
+	}
+
+	@Transactional
+	public Page<Timeframe> getAllPage(Pageable pageable) {
+		logger.debug("Getting pageable timeframes");
+		return timeframeDao.getAllPage(pageable);
 	}
 
 	@Transactional

@@ -22,7 +22,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="room : ${rooms}">
+				<tr th:each="room : ${roomsPage}">
 					<td th:text="${room.id}" />
 					<td th:text="${room.name}" />
 					<td th:text="${room.capacity}" />
@@ -42,6 +42,12 @@
 				</tr>
 			</tbody>
 		</table>
+	</div>
+	<div class="container">
+		<ul class="pagination" th:if="${roomsPage.totalPages > 1}">
+			<li class="page-item" th:each="pageNumber : ${numbers}"><a class="page-link"
+					th:href="@{'/rooms?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
+		</ul>
 	</div>
 	<div th:replace="fragments/footer::footer"></div>
 </body>

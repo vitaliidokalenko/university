@@ -8,6 +8,9 @@ import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -28,6 +31,8 @@ public class JdbcTimeframeDao implements TimeframeDao {
 	private static final String DELETE_TIMEFRAME_BY_ID_QUERY = "DELETE FROM timeframes WHERE id = ?";
 	private static final String UPDATE_TIMEFRAME_QUERY = "UPDATE timeframes SET sequence = ?, start_time = ?, end_time = ? WHERE id = ?";
 	private static final String FIND_TIMEFRAME_BY_SEQUENCE_QUERY = "SELECT * FROM timeframes WHERE sequence = ?";
+	private static final String COUNT_TIMEFRAMES_QUERY = "SELECT count(*) FROM timeframes";
+	private static final String GET_TIMEFRAMES_ORDERED_BY_SEQUENCE_WITH_LIMIT_AND_OFFSET_QUERY = "SELECT * FROM timeframes ORDER BY sequence LIMIT ? OFFSET ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private TimeframeMapper timeframeMapper;
@@ -107,6 +112,28 @@ public class JdbcTimeframeDao implements TimeframeDao {
 			return Optional.empty();
 		} catch (DataAccessException e) {
 			throw new DaoException("Could not get timeframe by sequence: " + sequence, e);
+		}
+	}
+
+	@Override
+	public int count() {
+		try {
+			return jdbcTemplate.queryForObject(COUNT_TIMEFRAMES_QUERY, Integer.class);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get amount of timeframes", e);
+		}
+	}
+
+	@Override
+	public Page<Timeframe> getAllPage(Pageable pageable) {
+		try {
+			List<Timeframe> timeframes = jdbcTemplate.query(
+					GET_TIMEFRAMES_ORDERED_BY_SEQUENCE_WITH_LIMIT_AND_OFFSET_QUERY,
+					new Object[] { pageable.getPageSize(), pageable.getOffset() },
+					timeframeMapper);
+			return new PageImpl<>(timeframes, pageable, count());
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get timeframes", e);
 		}
 	}
 }

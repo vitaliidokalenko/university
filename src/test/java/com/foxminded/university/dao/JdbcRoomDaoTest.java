@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -113,7 +115,7 @@ public class JdbcRoomDaoTest {
 
 		assertEquals(expected, actual);
 	}
-	
+
 	@Test
 	@Sql("/dataRooms.sql")
 	public void givenId_whenFindByName_thenGetRightRoom() {
@@ -124,5 +126,32 @@ public class JdbcRoomDaoTest {
 		Room actual = roomDao.findByName("A111").orElse(null);
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataRooms.sql")
+	public void whenCount_thenGetRightAmountOfRooms() {
+		int expected = countRowsInTable(jdbcTemplate, ROOMS_TABLE_NAME);
+
+		int actual = roomDao.count();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataRooms.sql")
+	public void givenPageSize_whenGetAllPage_thenGetRightRooms() {
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		List<Room> expected = Arrays.asList(room1, room2);
+		int pageSize = 2;
+
+		Page<Room> actual = roomDao.getAllPage(PageRequest.of(0, pageSize));
+
+		assertEquals(expected, actual.getContent());
 	}
 }

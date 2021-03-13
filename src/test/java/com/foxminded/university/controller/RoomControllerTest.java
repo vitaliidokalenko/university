@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +16,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -35,18 +39,20 @@ public class RoomControllerTest {
 	void setUpp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(roomController)
 				.setControllerAdvice(new ExceptionHandlingController())
+				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightListOfRooms() throws Exception {
-		List<Room> expected = Arrays.asList(buildRoom());
-		when(roomService.getAll()).thenReturn(expected);
+	public void whenGetAll_thenGetRightRoomsPage() throws Exception {
+		Page<Room> expected = new PageImpl<>(Arrays.asList(buildRoom()));
+		when(roomService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
-		mockMvc.perform(get("/rooms"))
+		mockMvc.perform(get("/rooms").param("page", "0").param("size", "1"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("room/rooms"))
-				.andExpect(model().attribute("rooms", expected));
+				.andExpect(model().attribute("roomsPage", expected))
+				.andExpect(model().attribute("numbers", IntStream.rangeClosed(1, expected.getTotalPages()).toArray()));
 	}
 
 	@Test

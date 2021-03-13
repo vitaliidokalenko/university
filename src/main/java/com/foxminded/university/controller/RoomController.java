@@ -3,7 +3,10 @@ package com.foxminded.university.controller;
 import static java.lang.String.format;
 
 import java.util.Optional;
+import java.util.stream.IntStream;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +28,10 @@ public class RoomController {
 	}
 
 	@GetMapping
-	public String getAll(Model model) {
-		model.addAttribute("rooms", roomService.getAll());
+	public String getAll(Pageable pageable, Model model) {
+		Page<Room> roomsPage = roomService.getAllPage(pageable);
+		model.addAttribute("roomsPage", roomsPage);
+		model.addAttribute("numbers", IntStream.rangeClosed(1, roomsPage.getTotalPages()).toArray());
 		return "room/rooms";
 	}
 

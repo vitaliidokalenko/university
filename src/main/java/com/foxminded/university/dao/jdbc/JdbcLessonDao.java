@@ -9,6 +9,9 @@ import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -42,6 +45,8 @@ public class JdbcLessonDao implements LessonDao {
 	private static final String GET_LESSONS_BY_COURSE_ID_QUERY = "SELECT * FROM lessons WHERE course_id = ?";
 	private static final String GET_LESSON_BY_TEACHER_ID_AND_DATE_AND_TIMEFRAME_ID_QUERY = "SELECT * FROM lessons WHERE teacher_id = ? AND date = ? AND timeframe_id = ?";
 	private static final String GET_LESSON_BY_ROOM_ID_AND_DATE_AND_TIMEFRAME_ID_QUERY = "SELECT * FROM lessons WHERE room_id = ? AND date = ? AND timeframe_id = ?";
+	private static final String COUNT_LESSONS_QUERY = "SELECT count(*) FROM lessons";
+	private static final String GET_LESSONS_ORDERED_BY_DATE_WITH_LIMIT_AND_OFFSET_QUERY = "SELECT * FROM lessons ORDER BY date LIMIT ? OFFSET ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcGroupDao groupDao;
@@ -190,6 +195,28 @@ public class JdbcLessonDao implements LessonDao {
 		} catch (DataAccessException e) {
 			throw new DaoException(
 					"Could not get lesson by room: " + room + ", date: " + date + ", timeframe: " + timeframe, e);
+		}
+	}
+
+	@Override
+	public int count() {
+		try {
+			return jdbcTemplate.queryForObject(COUNT_LESSONS_QUERY, Integer.class);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get amount of lessons", e);
+		}
+	}
+
+	@Override
+	public Page<Lesson> getAllPage(Pageable pageable) {
+		try {
+			List<Lesson> lessons = jdbcTemplate.query(
+					GET_LESSONS_ORDERED_BY_DATE_WITH_LIMIT_AND_OFFSET_QUERY,
+					new Object[] { pageable.getPageSize(), pageable.getOffset() },
+					lessonMapper);
+			return new PageImpl<>(lessons, pageable, count());
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get lessons", e);
 		}
 	}
 }

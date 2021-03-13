@@ -23,7 +23,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="timeframe : ${timeframes}">
+				<tr th:each="timeframe : ${timeframesPage}">
 					<td th:text="${timeframe.id}" />
 					<td th:text="${timeframe.sequence}" />
 					<td th:text="${timeframe.startTime}" />
@@ -44,6 +44,12 @@
 				</tr>
 			</tbody>
 		</table>
+	</div>
+	<div class="container">
+		<ul class="pagination" th:if="${timeframesPage.totalPages > 1}">
+			<li class="page-item" th:each="pageNumber : ${numbers}"><a class="page-link"
+					th:href="@{'/timeframes?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
+		</ul>
 	</div>
 	<div th:replace="fragments/footer::footer"></div>
 </body>

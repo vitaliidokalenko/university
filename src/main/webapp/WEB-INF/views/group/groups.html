@@ -21,7 +21,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="group : ${groups}">
+				<tr th:each="group : ${groupsPage}">
 					<td th:text="${group.id}" />
 					<td th:text="${group.name}" />
 					<td>
@@ -40,6 +40,12 @@
 				</tr>
 			</tbody>
 		</table>
+	</div>
+	<div class="container">
+		<ul class="pagination" th:if="${groupsPage.totalPages > 1}">
+			<li class="page-item" th:each="pageNumber : ${numbers}"><a class="page-link"
+					th:href="@{'/groups?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
+		</ul>
 	</div>
 	<div th:replace="fragments/footer::footer"></div>
 </body>

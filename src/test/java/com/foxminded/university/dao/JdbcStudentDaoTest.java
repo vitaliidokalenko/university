@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -260,5 +262,47 @@ public class JdbcStudentDaoTest {
 		List<Student> actual = studentDao.getByCourseId(2L);
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataStudents.sql")
+	public void whenCount_thenGetRightAmountOfStudents() {
+		int expected = countRowsInTable(jdbcTemplate, STUDENTS_TABLE_NAME);
+
+		int actual = studentDao.count();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataStudents.sql")
+	public void givenPageSize_whenGetAllPage_thenGetRightStudents() {
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		Course course3 = new Course("Music");
+		course3.setId(3L);
+		Student student1 = new Student("Anna", "Dvorecka");
+		student1.setId(1L);
+		student1.setGroup(group1);
+		student1.setBirthDate(LocalDate.parse("2001-01-01"));
+		student1.setGender(Gender.FEMALE);
+		student1.setCourses(new HashSet<>(Arrays.asList(course1, course2, course3)));
+		Student student2 = new Student("Sergii", "Koklush");
+		student2.setId(2L);
+		student2.setGroup(group2);
+		student2.setBirthDate(LocalDate.parse("2002-02-02"));
+		student2.setGender(Gender.MALE);
+		List<Student> expected = Arrays.asList(student1, student2);
+		int pageSize = 2;
+
+		Page<Student> actual = studentDao.getAllPage(PageRequest.of(0, pageSize));
+
+		assertEquals(expected, actual.getContent());
 	}
 }

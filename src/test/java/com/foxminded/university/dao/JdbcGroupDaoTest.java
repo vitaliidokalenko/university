@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -115,5 +117,30 @@ public class JdbcGroupDaoTest {
 		Group actual = groupDao.findByName("AA-11").orElse(null);
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataGroups.sql")
+	public void whenCount_thenGetRightAmountOfGroups() {
+		int expected = countRowsInTable(jdbcTemplate, GROUPS_TABLE_NAME);
+
+		int actual = groupDao.count();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataGroups.sql")
+	public void givenPageSize_whenGetAllPage_thenGetRightGroups() {
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		List<Group> expected = Arrays.asList(group1, group2);
+		int pageSize = 2;
+
+		Page<Group> actual = groupDao.getAllPage(PageRequest.of(0, pageSize));
+
+		assertEquals(expected, actual.getContent());
 	}
 }

@@ -8,8 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -38,18 +42,20 @@ public class TeacherControllerTest {
 	void setUpp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(teacherController)
 				.setControllerAdvice(new ExceptionHandlingController())
+				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightListOfTeachers() throws Exception {
-		List<Teacher> expected = Arrays.asList(buildTeacher());
-		when(teacherService.getAll()).thenReturn(expected);
+	public void whenGetAll_thenGetRightTeachersPage() throws Exception {
+		Page<Teacher> expected = new PageImpl<>(Arrays.asList(buildTeacher()));
+		when(teacherService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
-		mockMvc.perform(get("/teachers"))
+		mockMvc.perform(get("/teachers").param("page", "0").param("size", "1"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("teacher/teachers"))
-				.andExpect(model().attribute("teachers", expected));
+				.andExpect(model().attribute("teachersPage", expected))
+				.andExpect(model().attribute("numbers", IntStream.rangeClosed(1, expected.getTotalPages()).toArray()));
 	}
 
 	@Test

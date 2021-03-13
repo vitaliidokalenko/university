@@ -22,7 +22,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="course : ${courses}">
+				<tr th:each="course : ${coursesPage}">
 					<td th:text="${course.id}" />
 					<td th:text="${course.name}" />
 					<td th:text="${course.description}" />
@@ -42,6 +42,12 @@
 				</tr>
 			</tbody>
 		</table>
+	</div>
+	<div class="container">
+		<ul class="pagination" th:if="${coursesPage.totalPages > 1}">
+			<li class="page-item" th:each="pageNumber : ${numbers}"><a class="page-link"
+					th:href="@{'/courses?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
+		</ul>
 	</div>
 	<div th:replace="fragments/footer::footer"></div>
 </body>

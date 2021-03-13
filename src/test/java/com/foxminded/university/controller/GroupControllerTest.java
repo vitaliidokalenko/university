@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +16,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -36,18 +40,20 @@ public class GroupControllerTest {
 	void setUpp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(groupController)
 				.setControllerAdvice(new ExceptionHandlingController())
+				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightListOfGroups() throws Exception {
-		List<Group> expected = Arrays.asList(buildGroup());
-		when(groupService.getAll()).thenReturn(expected);
+	public void whenGetAll_thenGetRightGroupsPage() throws Exception {
+		Page<Group> expected = new PageImpl<>(Arrays.asList(buildGroup()));
+		when(groupService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
-		mockMvc.perform(get("/groups"))
+		mockMvc.perform(get("/groups").param("page", "0").param("size", "1"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("group/groups"))
-				.andExpect(model().attribute("groups", expected));
+				.andExpect(model().attribute("groupsPage", expected))
+				.andExpect(model().attribute("numbers", IntStream.rangeClosed(1, expected.getTotalPages()).toArray()));
 	}
 
 	@Test
