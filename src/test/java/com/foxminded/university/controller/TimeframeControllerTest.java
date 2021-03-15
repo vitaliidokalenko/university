@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,8 +52,7 @@ public class TimeframeControllerTest {
 		mockMvc.perform(get("/timeframes").param("page", "0").param("size", "1"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("timeframe/timeframes"))
-				.andExpect(model().attribute("timeframesPage", expected))
-				.andExpect(model().attribute("numbers", IntStream.rangeClosed(1, expected.getTotalPages()).toArray()));
+				.andExpect(model().attribute("timeframesPage", expected));
 	}
 
 	@Test

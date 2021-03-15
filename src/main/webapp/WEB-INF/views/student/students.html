@@ -51,8 +51,8 @@
 	</div>
 	<div class="container">
 		<ul class="pagination" th:if="${studentsPage.totalPages > 1}">
-			<li class="page-item" th:each="pageNumber : ${numbers}"><a class="page-link"
-					th:href="@{'/students?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
+			<li class="page-item" th:each="pageNumber : ${#numbers.sequence(1,studentsPage.getTotalPages())}"><a
+					class="page-link" th:href="@{'/students?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
 		</ul>
 	</div>
 	<div th:replace="fragments/footer::footer"></div>

@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,8 +60,7 @@ public class LessonControllerTest {
 		mockMvc.perform(get("/lessons").param("page", "0").param("size", "1"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("lesson/lessons"))
-				.andExpect(model().attribute("lessonsPage", expected))
-				.andExpect(model().attribute("numbers", IntStream.rangeClosed(1, expected.getTotalPages()).toArray()));
+				.andExpect(model().attribute("lessonsPage", expected));
 	}
 
 	@Test

@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,8 +55,7 @@ public class StudentControllerTest {
 		mockMvc.perform(get("/students").param("page", "0").param("size", "1"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("student/students"))
-				.andExpect(model().attribute("studentsPage", expected))
-				.andExpect(model().attribute("numbers", IntStream.rangeClosed(1, expected.getTotalPages()).toArray()));
+				.andExpect(model().attribute("studentsPage", expected));
 	}
 
 	@Test

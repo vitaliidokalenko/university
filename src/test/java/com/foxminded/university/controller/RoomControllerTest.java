@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,8 +51,7 @@ public class RoomControllerTest {
 		mockMvc.perform(get("/rooms").param("page", "0").param("size", "1"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("room/rooms"))
-				.andExpect(model().attribute("roomsPage", expected))
-				.andExpect(model().attribute("numbers", IntStream.rangeClosed(1, expected.getTotalPages()).toArray()));
+				.andExpect(model().attribute("roomsPage", expected));
 	}
 
 	@Test

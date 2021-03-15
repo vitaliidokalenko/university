@@ -18,6 +18,7 @@
 					<th>Id</th>
 					<th>Date</th>
 					<th>Start time</th>
+					<th>End time</th>
 					<th>Groups</th>
 					<th>Teacher</th>
 					<th>Course</th>
@@ -30,6 +31,7 @@
 					<td th:text="${lesson.id}" />
 					<td th:text="${lesson.date}" />
 					<td th:text="${lesson.timeframe.startTime}" />
+					<td th:text="${lesson.timeframe.endTime}" />
 					<td>
 						<div th:each="group : ${lesson.groups}" th:text="${group.name}"></div>
 					</td>
@@ -55,8 +57,8 @@
 	</div>
 	<div class="container">
 		<ul class="pagination" th:if="${lessonsPage.totalPages > 1}">
-			<li class="page-item" th:each="pageNumber : ${numbers}"><a class="page-link"
-					th:href="@{'/lessons?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
+			<li class="page-item" th:each="pageNumber : ${#numbers.sequence(1,lessonsPage.getTotalPages())}"><a
+					class="page-link" th:href="@{'/lessons?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
 		</ul>
 	</div>
 	<div th:replace="fragments/footer::footer"></div>

@@ -2,8 +2,6 @@ package com.foxminded.university.controller;
 
 import static java.lang.String.format;
 
-import java.util.stream.IntStream;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -30,7 +28,6 @@ public class TeacherController {
 	public String getAll(Pageable pageable, Model model) {
 		Page<Teacher> teachersPage = teacherService.getAllPage(pageable);
 		model.addAttribute("teachersPage", teachersPage);
-		model.addAttribute("numbers", IntStream.rangeClosed(1, teachersPage.getTotalPages()).toArray());
 		return "teacher/teachers";
 	}
 
