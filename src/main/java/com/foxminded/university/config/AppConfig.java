@@ -1,7 +1,5 @@
 package com.foxminded.university.config;
 
-import java.util.Scanner;
-
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +14,8 @@ import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 @Configuration
-@ComponentScan("com.foxminded.university")
-@PropertySource("application.properties")
+@ComponentScan("com.foxminded.university.dao")
+@PropertySource("classpath:application.properties")
 public class AppConfig {
 
 	private static final String SCHEMA = "schema.sql";
@@ -54,10 +52,5 @@ public class AppConfig {
 	@Bean
 	public JdbcTemplate jdbcTemplate() {
 		return new JdbcTemplate(dataSource());
-	}
-
-	@Bean
-	Scanner scanner() {
-		return new Scanner(System.in);
 	}
 }

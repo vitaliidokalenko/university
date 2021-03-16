@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Teachers</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<div class="container">
+		<p class="h3 text-secondary">Teachers</p>
+		<p>
+			<a class="btn btn-success" href="#" role="button">+Add teacher</a>
+		</p>
+		<table class="table table-responsive table-striped table-borderless table-sm align-middle">
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Name</th>
+					<th>Surname</th>
+					<th>Rank</th>
+					<th>Phone</th>
+					<th>Email</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="teacher : ${teachersPage}">
+					<td th:text="${teacher.id}" />
+					<td th:text="${teacher.name}" />
+					<td th:text="${teacher.surname}" />
+					<td th:text="${teacher.rank}" />
+					<td th:text="${teacher.phone}" />
+					<td th:text="${teacher.email}" />
+					<td>
+						<div class="btn-group" role="group">
+							<a th:href="@{/teachers/{id}(id=${teacher.id})}">
+								<button type="button" class="btn btn-info">Detail</button>
+							</a>
+							<a href="#">
+								<button type="button" class="btn btn-warning">Edit</button>
+							</a>
+							<a href="#">
+								<button type="button" class="btn btn-danger">Delete</button>
+							</a>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="container">
+		<ul class="pagination" th:if="${teachersPage.totalPages > 1}">
+			<li class="page-item" th:each="pageNumber : ${#numbers.sequence(1,teachersPage.getTotalPages())}"><a
+					class="page-link" th:href="@{'/teachers?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
+		</ul>
+	</div>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

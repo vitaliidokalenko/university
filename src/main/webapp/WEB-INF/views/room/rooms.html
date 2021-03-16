@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Rooms</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<div class="container">
+		<p class="h3 text-secondary">Rooms</p>
+		<p>
+			<a class="btn btn-success" href="#" role="button">+Add room</a>
+		</p>
+		<table class="table table-responsive table-striped table-borderless table-sm align-middle">
+			<thead>
+				<tr>
+					<th scope="col">Id</th>
+					<th scope="col">Name</th>
+					<th scope="col">Capacity</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="room : ${roomsPage}">
+					<td th:text="${room.id}" />
+					<td th:text="${room.name}" />
+					<td th:text="${room.capacity}" />
+					<td>
+						<div class="btn-group" role="group">
+							<a th:href="@{/rooms/{id}(id=${room.id})}">
+								<button type="button" class="btn btn-info">Detail</button>
+							</a>
+							<a href="#">
+								<button type="button" class="btn btn-warning">Edit</button>
+							</a>
+							<a href="#">
+								<button type="button" class="btn btn-danger">Delete</button>
+							</a>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="container">
+		<ul class="pagination" th:if="${roomsPage.totalPages > 1}">
+			<li class="page-item" th:each="pageNumber : ${#numbers.sequence(1,roomsPage.getTotalPages())}"><a
+					class="page-link" th:href="@{'/rooms?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
+		</ul>
+	</div>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Lessons</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<div class="container">
+		<p class="h3 text-secondary">Lessons</p>
+		<p>
+			<a class="btn btn-success" href="#" role="button">+Add lesson</a>
+		</p>
+		<table class="table table-responsive table-striped table-borderless table-sm align-middle">
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Date</th>
+					<th>Start time</th>
+					<th>End time</th>
+					<th>Groups</th>
+					<th>Teacher</th>
+					<th>Course</th>
+					<th>Room</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="lesson : ${lessonsPage}">
+					<td th:text="${lesson.id}" />
+					<td th:text="${lesson.date}" />
+					<td th:text="${lesson.timeframe.startTime}" />
+					<td th:text="${lesson.timeframe.endTime}" />
+					<td>
+						<div th:each="group : ${lesson.groups}" th:text="${group.name}"></div>
+					</td>
+					<td><span th:text="${lesson.teacher.name}"></span> <span th:text="${lesson.teacher.surname}"></span></td>
+					<td th:text="${lesson.course.name}" />
+					<td th:text="${lesson.room.name}" />
+					<td>
+						<div class="btn-group" role="group">
+							<a th:href="@{/lessons/{id}(id=${lesson.id})}">
+								<button type="button" class="btn btn-info">Detail</button>
+							</a>
+							<a href="#">
+								<button type="button" class="btn btn-warning">Edit</button>
+							</a>
+							<a href="#">
+								<button type="button" class="btn btn-danger">Delete</button>
+							</a>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="container">
+		<ul class="pagination" th:if="${lessonsPage.totalPages > 1}">
+			<li class="page-item" th:each="pageNumber : ${#numbers.sequence(1,lessonsPage.getTotalPages())}"><a
+					class="page-link" th:href="@{'/lessons?page=' + ${pageNumber}}" th:text="${pageNumber}"></a></li>
+		</ul>
+	</div>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

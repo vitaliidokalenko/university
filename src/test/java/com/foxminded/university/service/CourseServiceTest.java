@@ -16,6 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
@@ -160,6 +163,16 @@ public class CourseServiceTest {
 
 		Exception exception = assertThrows(NotUniqueNameException.class, () -> courseService.update(actual));
 		assertEquals(format("The course with name %s already exists", actual.getName()), exception.getMessage());
+	}
+
+	@Test
+	public void whenGetAllPage_thenGetRightCourses() {
+		Page<Course> expected = new PageImpl<>(Arrays.asList(buildCourse()));
+		when(courseDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+
+		Page<Course> actual = courseService.getAllPage(PageRequest.of(0, 1));
+
+		assertEquals(expected, actual);
 	}
 
 	private Course buildCourse() {

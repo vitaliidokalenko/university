@@ -8,6 +8,9 @@ import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -33,6 +36,8 @@ public class JdbcTeacherDao implements TeacherDao {
 	private static final String DELETE_TEACHER_COURSE_QUERY = "DELETE FROM teachers_courses WHERE teacher_id = ? AND course_id =?";
 	private static final String GET_TEACHERS_BY_COURSE_ID_QUERY = "SELECT * FROM teachers "
 			+ "JOIN teachers_courses ON teachers_courses.teacher_id = teachers.id WHERE course_id = ?";
+	private static final String COUNT_TEACHERS_QUERY = "SELECT count(*) FROM teachers";
+	private static final String GET_TEACHERS_ORDERED_BY_NAME_WITH_LIMIT_AND_OFFSET_QUERY = "SELECT * FROM teachers ORDER BY name, surname LIMIT ? OFFSET ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcCourseDao courseDao;
@@ -132,6 +137,28 @@ public class JdbcTeacherDao implements TeacherDao {
 			return jdbcTemplate.query(GET_TEACHERS_BY_COURSE_ID_QUERY, new Object[] { courseId }, teacherMapper);
 		} catch (DataAccessException e) {
 			throw new DaoException("Could not get teachers by course id: " + courseId, e);
+		}
+	}
+
+	@Override
+	public int count() {
+		try {
+			return jdbcTemplate.queryForObject(COUNT_TEACHERS_QUERY, Integer.class);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get amount of teachers", e);
+		}
+	}
+
+	@Override
+	public Page<Teacher> getAllPage(Pageable pageable) {
+		try {
+			List<Teacher> teachers = jdbcTemplate.query(
+					GET_TEACHERS_ORDERED_BY_NAME_WITH_LIMIT_AND_OFFSET_QUERY,
+					new Object[] { pageable.getPageSize(), pageable.getOffset() },
+					teacherMapper);
+			return new PageImpl<>(teachers, pageable, count());
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get teachers", e);
 		}
 	}
 }

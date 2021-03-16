@@ -8,6 +8,9 @@ import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -29,6 +32,8 @@ public class JdbcRoomDao implements RoomDao {
 	private static final String GET_ROOMS_BY_COURSE_ID_QUERY = "SELECT * FROM rooms "
 			+ "JOIN courses_rooms ON courses_rooms.room_id = rooms.id WHERE course_id = ?";
 	private static final String FIND_ROOM_BY_NAME_QUERY = "SELECT * FROM rooms WHERE name = ?";
+	private static final String COUNT_ROOMS_QUERY = "SELECT count(*) FROM rooms";
+	private static final String GET_ROOMS_ORDERED_BY_NAME_WITH_LIMIT_AND_OFFSET_QUERY = "SELECT * FROM rooms ORDER BY name LIMIT ? OFFSET ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private RoomMapper roomMapper;
@@ -109,6 +114,28 @@ public class JdbcRoomDao implements RoomDao {
 			return Optional.empty();
 		} catch (DataAccessException e) {
 			throw new DaoException("Could not get room by name: " + name, e);
+		}
+	}
+
+	@Override
+	public int count() {
+		try {
+			return jdbcTemplate.queryForObject(COUNT_ROOMS_QUERY, Integer.class);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get amount of rooms", e);
+		}
+	}
+
+	@Override
+	public Page<Room> getAllPage(Pageable pageable) {
+		try {
+			List<Room> rooms = jdbcTemplate.query(
+					GET_ROOMS_ORDERED_BY_NAME_WITH_LIMIT_AND_OFFSET_QUERY,
+					new Object[] { pageable.getPageSize(), pageable.getOffset() },
+					roomMapper);
+			return new PageImpl<>(rooms, pageable, count());
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get rooms", e);
 		}
 	}
 }

@@ -15,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
@@ -157,6 +160,16 @@ public class RoomServiceTest {
 		roomService.update(room);
 
 		verify(roomDao).update(room);
+	}
+
+	@Test
+	public void whenGetAllPage_thenGetRightRooms() {
+		Page<Room> expected = new PageImpl<>(Arrays.asList(buildRoom()));
+		when(roomDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+
+		Page<Room> actual = roomService.getAllPage(PageRequest.of(0, 1));
+
+		assertEquals(expected, actual);
 	}
 
 	private Room buildRoom() {

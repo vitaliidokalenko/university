@@ -12,6 +12,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -199,5 +201,34 @@ public class JdbcTeacherDaoTest {
 		List<Teacher> actual = teacherDao.getByCourseId(2L);
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataTeachers.sql")
+	public void whenCount_thenGetRightAmountOfTeachers() {
+		int expected = countRowsInTable(jdbcTemplate, TEACHERS_TABLE_NAME);
+
+		int actual = teacherDao.count();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataTeachers.sql")
+	public void givenPageSize_whenGetAllPage_thenGetRightStudents() {
+		Teacher teacher1 = new Teacher("Aleksandra", "Ivanova");
+		teacher1.setId(2L);
+		teacher1.setBirthDate(LocalDate.parse("1992-02-02"));
+		teacher1.setGender(Gender.FEMALE);
+		Teacher teacher2 = new Teacher("Anatoly", "Sviridov");
+		teacher2.setId(3L);
+		teacher2.setBirthDate(LocalDate.parse("1993-03-03"));
+		teacher2.setGender(Gender.MALE);
+		List<Teacher> expected = Arrays.asList(teacher1, teacher2);
+		int pageSize = 2;
+
+		Page<Teacher> actual = teacherDao.getAllPage(PageRequest.of(0, pageSize));
+
+		assertEquals(expected, actual.getContent());
 	}
 }

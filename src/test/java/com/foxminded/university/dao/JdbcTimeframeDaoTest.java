@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -124,5 +126,36 @@ public class JdbcTimeframeDaoTest {
 		Timeframe actual = timeframeDao.findBySequence(1).orElse(null);
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataTimeframes.sql")
+	public void whenCount_thenGetRightAmountOfTimeframes() {
+		int expected = countRowsInTable(jdbcTemplate, TIMEFRAMES_TABLE_NAME);
+
+		int actual = timeframeDao.count();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/dataTimeframes.sql")
+	public void givenPageSize_whenGetAllPage_thenGetRightTimeframes() {
+		Timeframe timeframe1 = new Timeframe();
+		timeframe1.setId(1L);
+		timeframe1.setSequence(1);
+		timeframe1.setStartTime(LocalTime.parse("08:00"));
+		timeframe1.setEndTime(LocalTime.parse("09:20"));
+		Timeframe timeframe2 = new Timeframe();
+		timeframe2.setId(2L);
+		timeframe2.setSequence(2);
+		timeframe2.setStartTime(LocalTime.parse("09:40"));
+		timeframe2.setEndTime(LocalTime.parse("11:00"));
+		List<Timeframe> expected = Arrays.asList(timeframe1, timeframe2);
+		int pageSize = 2;
+
+		Page<Timeframe> actual = timeframeDao.getAllPage(PageRequest.of(0, pageSize));
+
+		assertEquals(expected, actual.getContent());
 	}
 }

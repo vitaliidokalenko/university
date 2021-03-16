@@ -8,6 +8,9 @@ import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -29,6 +32,8 @@ public class JdbcGroupDao implements GroupDao {
 	private static final String GET_GROUPS_BY_LESSON_ID_QUERY = "SELECT * FROM groups "
 			+ "JOIN lessons_groups ON lessons_groups.group_id = groups.id WHERE lesson_id = ?";
 	private static final String FIND_GROUP_BY_NAME_QUERY = "SELECT * FROM groups WHERE name = ?";
+	private static final String COUNT_GROUPS_QUERY = "SELECT count(*) FROM groups";
+	private static final String GET_GROUPS_ORDERED_BY_NAME_WITH_LIMIT_AND_OFFSET_QUERY = "SELECT * FROM groups ORDER BY name LIMIT ? OFFSET ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private GroupMapper groupMapper;
@@ -111,6 +116,28 @@ public class JdbcGroupDao implements GroupDao {
 			return Optional.empty();
 		} catch (DataAccessException e) {
 			throw new DaoException("Could not get group by name: " + name, e);
+		}
+	}
+
+	@Override
+	public int count() {
+		try {
+			return jdbcTemplate.queryForObject(COUNT_GROUPS_QUERY, Integer.class);
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get amount of groups", e);
+		}
+	}
+
+	@Override
+	public Page<Group> getAllPage(Pageable pageable) {
+		try {
+			List<Group> groups = jdbcTemplate.query(
+					GET_GROUPS_ORDERED_BY_NAME_WITH_LIMIT_AND_OFFSET_QUERY,
+					new Object[] { pageable.getPageSize(), pageable.getOffset() },
+					groupMapper);
+			return new PageImpl<>(groups, pageable, count());
+		} catch (DataAccessException e) {
+			throw new DaoException("Could not get groups", e);
 		}
 	}
 }

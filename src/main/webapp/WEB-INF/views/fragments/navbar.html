@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<body>
+	<div th:fragment="navbar">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+			<div class="container">
+				<a class="navbar-brand" th:href="@{/}">University</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse"
+					data-target="#navbarNavAltMarkup"
+					aria-controls="navbarNavAltMarkup" aria-expanded="false"
+					aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+					<div class="navbar-nav">
+						<a class="nav-item nav-link" th:href="@{/lessons}">Lessons</a>
+						<a class="nav-item nav-link" th:href="@{/courses}">Courses</a>
+						<a class="nav-item nav-link" th:href="@{/teachers}">Teachers</a>
+						<a class="nav-item nav-link" th:href="@{/groups}">Groups</a>
+						<a class="nav-item nav-link" th:href="@{/students}">Students</a>
+						<a class="nav-item nav-link" th:href="@{/rooms}">Rooms</a>
+						<a class="nav-item nav-link" th:href="@{/timeframes}">Timeframes</a>
+					</div>
+				</div>
+			</div>
+		</nav>
+		<br>
+	</div>
+</body>
+</html>

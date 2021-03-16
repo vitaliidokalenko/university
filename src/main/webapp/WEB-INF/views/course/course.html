@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Course</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<div class="container">
+		<p class="h3 text-secondary">Course</p>
+		<dl class="row">
+			<dt class="col-sm-2">Id</dt>
+			<dd class="col-sm-10" th:text="${course.id}" />
+			<dt class="col-sm-2">Name</dt>
+			<dd class="col-sm-10" th:text="${course.name}" />
+			<dt class="col-sm-2">Description</dt>
+			<dd class="col-sm-10" th:text="${course.description}" />
+			<dt class="col-sm-2">Rooms</dt>
+			<dd class="col-sm-10">
+				<div class="list-group list-group-flush" th:each="room : ${course.rooms}">
+					<a th:href="@{/rooms/{id}(id=${room.id})}" class="list-group-item list-group-item-action"
+						th:text="${room.name}"></a>
+				</div>
+			</dd>
+		</dl>
+		<div class="btn-group" role="group">
+			<a href="#">
+				<button type="button" class="btn btn-warning">Edit</button>
+			</a>
+			<a href="#">
+				<button type="button" class="btn btn-danger">Delete</button>
+			</a>
+		</div>
+	</div>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>
