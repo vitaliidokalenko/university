@@ -8,6 +8,10 @@ public class Room {
 	private String name;
 	private int capacity;
 
+	public Room() {
+
+	}
+
 	public Room(String name) {
 		this.name = name;
 	}

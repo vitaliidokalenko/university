@@ -9,6 +9,10 @@ public class Group {
 	private String name;
 	private List<Student> students;
 
+	public Group() {
+
+	}
+
 	public Group(String name) {
 		this.name = name;
 	}

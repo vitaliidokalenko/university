@@ -11,6 +11,10 @@ public class Course {
 	private String description;
 	private Set<Room> rooms = new HashSet<>();
 
+	public Course() {
+
+	}
+
 	public Course(String name) {
 		this.name = name;
 	}
@@ -64,7 +68,9 @@ public class Course {
 			return false;
 		}
 		Course other = (Course) obj;
-		return Objects.equals(description, other.description) && Objects.equals(id, other.id)
-				&& Objects.equals(name, other.name) && Objects.equals(rooms, other.rooms);
+		return Objects.equals(description, other.description)
+				&& Objects.equals(id, other.id)
+				&& Objects.equals(name, other.name)
+				&& Objects.equals(rooms, other.rooms);
 	}
 }

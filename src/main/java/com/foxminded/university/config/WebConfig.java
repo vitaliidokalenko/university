@@ -10,6 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -18,6 +19,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
+
+import com.foxminded.university.controller.formatter.CourseFormatter;
+import com.foxminded.university.controller.formatter.GroupFormatter;
+import com.foxminded.university.controller.formatter.RoomFormatter;
 
 @Configuration
 @ComponentScan("com.foxminded.university")
@@ -63,5 +68,12 @@ public class WebConfig implements WebMvcConfigurer {
 		resolver.setOneIndexedParameters(true);
 		resolver.setFallbackPageable(PageRequest.of(0, pageSize));
 		resolvers.add(resolver);
+	}
+
+	@Override
+	public void addFormatters(FormatterRegistry registry) {
+		registry.addFormatter(new RoomFormatter());
+		registry.addFormatter(new GroupFormatter());
+		registry.addFormatter(new CourseFormatter());
 	}
 }

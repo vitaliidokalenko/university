@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.foxminded.university.model.Timeframe;
@@ -37,5 +38,16 @@ public class TimeframeController {
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find timeframe by id: %d", id)));
 		model.addAttribute("timeframe", timeframe);
 		return "timeframe/timeframe";
+	}
+
+	@GetMapping("/new")
+	public String create(Timeframe timeframe, Model model) {
+		return "timeframe/create";
+	}
+
+	@PostMapping("/save")
+	public String save(Timeframe timeframe) {
+		timeframeService.create(timeframe);
+		return "redirect:/timeframes";
 	}
 }

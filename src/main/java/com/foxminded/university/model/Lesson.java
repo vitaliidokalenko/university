@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class Lesson {
 
 	private Long id;
@@ -12,6 +14,7 @@ public class Lesson {
 	private Teacher teacher;
 	private Course course;
 	private Room room;
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate date;
 	private Timeframe timeframe;
 
@@ -88,9 +91,12 @@ public class Lesson {
 			return false;
 		}
 		Lesson other = (Lesson) obj;
-		return Objects.equals(course, other.course) && Objects.equals(date, other.date)
-				&& Objects.equals(groups, other.groups) && Objects.equals(id, other.id)
-				&& Objects.equals(room, other.room) && Objects.equals(teacher, other.teacher)
+		return Objects.equals(course, other.course)
+				&& Objects.equals(date, other.date)
+				&& Objects.equals(groups, other.groups)
+				&& Objects.equals(id, other.id)
+				&& Objects.equals(room, other.room)
+				&& Objects.equals(teacher, other.teacher)
 				&& Objects.equals(timeframe, other.timeframe);
 	}
 }
