@@ -31,8 +31,8 @@
 					<div
 						style="height: 150px; border: 1px solid #ccc; overflow: auto;">
 						<div th:each="room : ${rooms}">
-							<input type="checkbox" th:id="${{room}}" th:value="${{room}}" th:field="*{rooms}" /> <label
-								th:for="${{room}}" th:text="${room.name}"></label>
+							<input type="checkbox" th:value="${room.id}" th:field="*{rooms}" /> <label
+								th:for="${#ids.prev('rooms')}" th:text="${room.name}"></label>
 						</div>
 					</div>
 				</dd>
