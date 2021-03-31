@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Edit room</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<form action="#" th:action="@{/rooms/save}" th:object="${room}" method="post">
+		<div class="container">
+			<p class="h3 text-secondary">Edit room</p>
+			<dl class="row">
+				<dt class="col-sm-2">
+					<label for="id">Id</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="text" readonly="readonly" th:field="*{id}" id="id">
+				</dd>
+				<dt class="col-sm-2">
+					<label for="name">Name</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="text" th:field="*{name}" id="name" placeholder="Name" required>
+				</dd>
+				<dt class="col-sm-2">
+					<label for="capacity">Capacity</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="number" th:field="*{capacity}" id="capacity" min="1" required>
+				</dd>
+			</dl>
+			<input class="btn btn-success" type="submit" role="button" value="Submit">
+		</div>
+	</form>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

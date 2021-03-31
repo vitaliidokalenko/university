@@ -56,10 +56,31 @@ public class StudentController {
 		return "student/create";
 	}
 
+	@GetMapping("/{id}/edit")
+	public String update(@PathVariable Long id, Model model) {
+		Student student = studentService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find student by id: %d", id)));
+		model.addAttribute("student", student);
+		model.addAttribute("courses", courseService.getAll());
+		model.addAttribute("groups", groupService.getAll());
+		model.addAttribute("genders", Gender.values());
+		return "student/edit";
+	}
+
 	@PostMapping("/save")
 	public String save(Student student) {
 		retrieveRelationsFields(student);
-		studentService.create(student);
+		if (student.getId() == null) {
+			studentService.create(student);
+		} else {
+			studentService.update(student);
+		}
+		return "redirect:/students";
+	}
+
+	@GetMapping("/{id}/delete")
+	public String delete(@PathVariable Long id) {
+		studentService.deleteById(id);
 		return "redirect:/students";
 	}
 

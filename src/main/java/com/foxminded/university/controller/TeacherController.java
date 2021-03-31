@@ -52,10 +52,30 @@ public class TeacherController {
 		return "teacher/create";
 	}
 
+	@GetMapping("/{id}/edit")
+	public String update(@PathVariable Long id, Model model) {
+		Teacher teacher = teacherService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
+		model.addAttribute("teacher", teacher);
+		model.addAttribute("courses", courseService.getAll());
+		model.addAttribute("genders", Gender.values());
+		return "teacher/edit";
+	}
+
 	@PostMapping("/save")
 	public String save(Teacher teacher) {
 		retrieveRelationsFields(teacher);
-		teacherService.create(teacher);
+		if (teacher.getId() == null) {
+			teacherService.create(teacher);
+		} else {
+			teacherService.update(teacher);
+		}
+		return "redirect:/teachers";
+	}
+
+	@GetMapping("/{id}/delete")
+	public String delete(@PathVariable Long id) {
+		teacherService.deleteById(id);
 		return "redirect:/teachers";
 	}
 

@@ -24,10 +24,10 @@
 			</dd>
 		</dl>
 		<div class="btn-group" role="group">
-			<a href="#">
+			<a th:href="@{/groups/{id}/edit(id=${group.id})}">
 				<button type="button" class="btn btn-warning">Edit</button>
 			</a>
-			<a href="#">
+			<a th:href="@{/groups/{id}/delete(id=${group.id})}">
 				<button type="button" class="btn btn-danger">Delete</button>
 			</a>
 		</div>

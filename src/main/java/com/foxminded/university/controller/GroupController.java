@@ -45,9 +45,27 @@ public class GroupController {
 		return "group/create";
 	}
 
+	@GetMapping("/{id}/edit")
+	public String update(@PathVariable Long id, Model model) {
+		Group group = groupService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find group by id: %d", id)));
+		model.addAttribute("group", group);
+		return "group/edit";
+	}
+
 	@PostMapping("/save")
 	public String save(Group group) {
-		groupService.create(group);
+		if (group.getId() == null) {
+			groupService.create(group);
+		} else {
+			groupService.update(group);
+		}
+		return "redirect:/groups";
+	}
+
+	@GetMapping("/{id}/delete")
+	public String delete(@PathVariable Long id) {
+		groupService.deleteById(id);
 		return "redirect:/groups";
 	}
 }

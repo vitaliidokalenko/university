@@ -33,10 +33,10 @@
 							<a th:href="@{/timeframes/{id}(id=${timeframe.id})}">
 								<button type="button" class="btn btn-info">Detail</button>
 							</a>
-							<a href="#">
+							<a th:href="@{/timeframes/{id}/edit(id=${timeframe.id})}">
 								<button type="button" class="btn btn-warning">Edit</button>
 							</a>
-							<a href="#">
+							<a th:href="@{/timeframes/{id}/delete(id=${timeframe.id})}">
 								<button type="button" class="btn btn-danger">Delete</button>
 							</a>
 						</div>

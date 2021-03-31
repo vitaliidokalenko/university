@@ -31,10 +31,10 @@
 							<a th:href="@{/courses/{id}(id=${course.id})}">
 								<button type="button" class="btn btn-info">Detail</button>
 							</a>
-							<a href="#">
+							<a th:href="@{/courses/{id}/edit(id=${course.id})}">
 								<button type="button" class="btn btn-warning">Edit</button>
 							</a>
-							<a href="#">
+							<a th:href="@{/courses/{id}/delete(id=${course.id})}">
 								<button type="button" class="btn btn-danger">Delete</button>
 							</a>
 						</div>

@@ -31,10 +31,10 @@
 							<a th:href="@{/rooms/{id}(id=${room.id})}">
 								<button type="button" class="btn btn-info">Detail</button>
 							</a>
-							<a href="#">
+							<a th:href="@{/rooms/{id}/edit(id=${room.id})}">
 								<button type="button" class="btn btn-warning">Edit</button>
 							</a>
-							<a href="#">
+							<a th:href="@{/rooms/{id}/delete(id=${room.id})}">
 								<button type="button" class="btn btn-danger">Delete</button>
 							</a>
 						</div>

@@ -45,9 +45,27 @@ public class TimeframeController {
 		return "timeframe/create";
 	}
 
+	@GetMapping("/{id}/edit")
+	public String update(@PathVariable Long id, Model model) {
+		Timeframe timeframe = timeframeService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find timeframe by id: %d", id)));
+		model.addAttribute("timeframe", timeframe);
+		return "timeframe/edit";
+	}
+
 	@PostMapping("/save")
 	public String save(Timeframe timeframe) {
-		timeframeService.create(timeframe);
+		if (timeframe.getId() == null) {
+			timeframeService.create(timeframe);
+		} else {
+			timeframeService.update(timeframe);
+		}
+		return "redirect:/timeframes";
+	}
+
+	@GetMapping("/{id}/delete")
+	public String delete(@PathVariable Long id) {
+		timeframeService.deleteById(id);
 		return "redirect:/timeframes";
 	}
 }

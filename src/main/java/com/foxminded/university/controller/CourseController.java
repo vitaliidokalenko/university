@@ -50,10 +50,29 @@ public class CourseController {
 		return "course/create";
 	}
 
+	@GetMapping("/{id}/edit")
+	public String update(@PathVariable Long id, Model model) {
+		Course course = courseService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find course by id: %d", id)));
+		model.addAttribute("course", course);
+		model.addAttribute("rooms", roomService.getAll());
+		return "course/edit";
+	}
+
 	@PostMapping("/save")
 	public String save(Course course) {
 		retrieveRelationsFields(course);
-		courseService.create(course);
+		if (course.getId() == null) {
+			courseService.create(course);
+		} else {
+			courseService.update(course);
+		}
+		return "redirect:/courses";
+	}
+
+	@GetMapping("/{id}/delete")
+	public String delete(@PathVariable Long id) {
+		courseService.deleteById(id);
 		return "redirect:/courses";
 	}
 

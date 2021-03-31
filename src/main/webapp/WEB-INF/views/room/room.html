@@ -18,10 +18,10 @@
 			<dd class="col-sm-10" th:text="${room.capacity}" />
 		</dl>
 		<div class="btn-group" role="group">
-			<a href="#">
+			<a th:href="@{/rooms/{id}/edit(id=${room.id})}">
 				<button type="button" class="btn btn-warning">Edit</button>
 			</a>
-			<a href="#">
+			<a th:href="@{/rooms/{id}/delete(id=${room.id})}">
 				<button type="button" class="btn btn-danger">Delete</button>
 			</a>
 		</div>

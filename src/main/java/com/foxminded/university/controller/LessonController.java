@@ -1,7 +1,6 @@
 package com.foxminded.university.controller;
 
 import static java.lang.String.format;
-
 import static java.util.stream.Collectors.toSet;
 
 import org.springframework.data.domain.Page;
@@ -69,10 +68,33 @@ public class LessonController {
 		return "lesson/create";
 	}
 
+	@GetMapping("/{id}/edit")
+	public String update(@PathVariable Long id, Model model) {
+		Lesson lesson = lessonService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find lesson by id: %d", id)));
+		model.addAttribute("lesson", lesson);
+		model.addAttribute("groups", groupService.getAll());
+		model.addAttribute("teachers", teacherService.getAll());
+		model.addAttribute("courses", courseService.getAll());
+		model.addAttribute("rooms", roomService.getAll());
+		model.addAttribute("timeframes", timeframeService.getAll());
+		return "lesson/edit";
+	}
+
 	@PostMapping("/save")
 	public String save(@ModelAttribute Lesson lesson) {
 		retrieveRelationsFields(lesson);
-		lessonService.create(lesson);
+		if (lesson.getId() == null) {
+			lessonService.create(lesson);
+		} else {
+			lessonService.update(lesson);
+		}
+		return "redirect:/lessons";
+	}
+
+	@GetMapping("/{id}/delete")
+	public String delete(@PathVariable Long id) {
+		lessonService.deleteById(id);
 		return "redirect:/lessons";
 	}
 
