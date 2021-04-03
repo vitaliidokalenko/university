@@ -24,6 +24,7 @@ import com.foxminded.university.dao.jdbc.JdbcStudentDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
+import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Student;
 
 @SpringJUnitConfig(TestAppConfig.class)
@@ -241,8 +242,12 @@ public class JdbcStudentDaoTest {
 		group2.setId(2L);
 		Course course1 = new Course("Law");
 		course1.setId(1L);
+		course1.setRooms(new HashSet<>(Arrays.asList(Room.builder().id(2L).name("B222").capacity(30).build(),
+				Room.builder().id(1L).name("A111").capacity(30).build())));
 		Course course2 = new Course("Biology");
 		course2.setId(2L);
+		course2.setRooms(new HashSet<>(Arrays.asList(Room.builder().id(3L).name("C333").capacity(30).build(),
+				Room.builder().id(2L).name("B222").capacity(30).build())));
 		Course course3 = new Course("Music");
 		course3.setId(3L);
 		Student student1 = new Student("Anna", "Dvorecka");

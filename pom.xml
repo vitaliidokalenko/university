@@ -21,6 +21,7 @@
 		<junit.jupiter.version>5.7.0</junit.jupiter.version>
 		<mockito.version>3.3.3</mockito.version>
 		<hamcrest.version>2.2</hamcrest.version>
+		<projectlombok.version>1.18.18</projectlombok.version>
 	</properties>
 	<build>
 		<plugins>
@@ -84,6 +85,11 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${projectlombok.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
