@@ -1,9 +1,12 @@
 package com.foxminded.university.controller;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalTime;
@@ -77,12 +80,65 @@ public class TimeframeControllerTest {
 				.andExpect(forwardedUrl("error"));
 	}
 
-	private Timeframe buildTimeframe() {
+	@Test
+	public void whenCreate_thenAddedNewTimeframeAttribute() throws Exception {
+
+		mockMvc.perform(get("/timeframes/new"))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("timeframe", new Timeframe()))
+				.andExpect(forwardedUrl("timeframe/create"));
+	}
+
+	@Test
+	public void whenUpdate_thenAddedRightTimeframeAttribute() throws Exception {
+		Optional<Timeframe> expected = Optional.of(buildTimeframe());
+		when(timeframeService.findById(1L)).thenReturn(expected);
+
+		mockMvc.perform(get("/timeframes/{id}/edit", 1))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("timeframe", expected.get()))
+				.andExpect(forwardedUrl("timeframe/edit"));
+	}
+
+	@Test
+	public void givenNewTimeframe_whenSave_thenTimeframeIsCreating() throws Exception {
 		Timeframe timeframe = new Timeframe();
-		timeframe.setId(1L);
-		timeframe.setSequence(1);
-		timeframe.setStartTime(LocalTime.parse("08:00"));
-		timeframe.setEndTime(LocalTime.parse("09:20"));
-		return timeframe;
+
+		mockMvc.perform(post("/timeframes/save").flashAttr("timeframe", timeframe))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/timeframes"));
+
+		verify(timeframeService).create(timeframe);
+	}
+
+	@Test
+	public void givenTimeframe_whenSave_thenTimeframeIsUpdating() throws Exception {
+		Timeframe timeframe = buildTimeframe();
+
+		mockMvc.perform(post("/timeframes/save").flashAttr("timeframe", timeframe))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/timeframes"));
+
+		verify(timeframeService).update(timeframe);
+	}
+
+	@Test
+	public void givenTimeframe_whenDelete_thenTimeframeIsDeleting() throws Exception {
+		Timeframe timeframe = buildTimeframe();
+
+		mockMvc.perform(get("/timeframes/{id}/delete", 1))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/timeframes"));
+
+		verify(timeframeService).deleteById(timeframe.getId());
+	}
+
+	private Timeframe buildTimeframe() {
+		return Timeframe.builder()
+				.id(1L)
+				.sequence(1)
+				.startTime(LocalTime.parse("08:00"))
+				.endTime(LocalTime.parse("09:20"))
+				.build();
 	}
 }

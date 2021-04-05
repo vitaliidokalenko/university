@@ -1,13 +1,17 @@
 package com.foxminded.university.controller;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,12 +31,15 @@ import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.service.CourseService;
+import com.foxminded.university.service.RoomService;
 
 @ExtendWith(MockitoExtension.class)
 public class CourseControllerTest {
 
 	@Mock
 	private CourseService courseService;
+	@Mock
+	private RoomService roomService;
 	@InjectMocks
 	private CourseController courseController;
 	private MockMvc mockMvc;
@@ -78,14 +85,84 @@ public class CourseControllerTest {
 				.andExpect(forwardedUrl("error"));
 	}
 
+	@Test
+	public void whenCreate_thenAddedNewCourseAttribute() throws Exception {
+		when(roomService.getAll()).thenReturn(buildRooms());
+
+		mockMvc.perform(get("/courses/new"))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("rooms", roomService.getAll()))
+				.andExpect(model().attribute("course", new Course()))
+				.andExpect(forwardedUrl("course/create"));
+	}
+
+	@Test
+	public void whenUpdate_thenAddedRightCourseAttribute() throws Exception {
+		Optional<Course> expected = Optional.of(buildCourse());
+		when(courseService.findById(1L)).thenReturn(expected);
+		when(roomService.getAll()).thenReturn(buildRooms());
+
+		mockMvc.perform(get("/courses/{id}/edit", 1))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("rooms", roomService.getAll()))
+				.andExpect(model().attribute("course", expected.get()))
+				.andExpect(forwardedUrl("course/edit"));
+	}
+
+	@Test
+	public void givenNewCourse_whenSave_thenCourseIsCreating() throws Exception {
+		Course course = Course.builder()
+				.name("Art")
+				.rooms(new HashSet<>(Arrays.asList(Room.builder().id(1L).build())))
+				.build();
+		when(roomService.findById(1L)).thenReturn(Optional.of(Room.builder().id(1L).name("111").capacity(30).build()));
+
+		mockMvc.perform(post("/courses/save").flashAttr("course", course))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/courses"));
+
+		verify(courseService).create(course);
+	}
+
+	@Test
+	public void givenCourse_whenSave_thenCourseIsUpdating() throws Exception {
+		Course course = Course.builder()
+				.id(1L)
+				.name("Art")
+				.rooms(new HashSet<>(Arrays.asList(Room.builder().id(1L).build())))
+				.build();
+		when(roomService.findById(1L)).thenReturn(Optional.of(Room.builder().id(1L).name("111").capacity(30).build()));
+
+		mockMvc.perform(post("/courses/save").flashAttr("course", course))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/courses"));
+
+		verify(courseService).update(course);
+	}
+
+	@Test
+	public void givenCourse_whenDelete_thenCourseIsDeleting() throws Exception {
+		Course course = buildCourse();
+
+		mockMvc.perform(get("/courses/{id}/delete", 1))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/courses"));
+
+		verify(courseService).deleteById(course.getId());
+	}
+
 	private Course buildCourse() {
-		Room room1 = new Room("111");
-		room1.setId(1L);
-		Room room2 = new Room("222");
-		room2.setId(2L);
-		Course course = new Course("Art");
-		course.setId(1L);
-		course.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
-		return course;
+		return Course.builder()
+				.id(1L)
+				.name("Art")
+				.rooms(new HashSet<>(Arrays.asList(Room.builder().id(1L).name("111").capacity(30).build(),
+						Room.builder().id(2L).name("222").capacity(30).build())))
+				.build();
+	}
+
+	private List<Room> buildRooms() {
+		return Arrays.asList(Room.builder().id(1L).name("111").capacity(30).build(),
+				Room.builder().id(2L).name("222").capacity(30).build(),
+				Room.builder().id(3L).name("333").capacity(30).build());
 	}
 }

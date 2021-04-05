@@ -1,9 +1,12 @@
 package com.foxminded.university.controller;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
@@ -76,10 +79,59 @@ public class RoomControllerTest {
 				.andExpect(forwardedUrl("error"));
 	}
 
+	@Test
+	public void whenCreate_thenAddedNewRoomAttribute() throws Exception {
+		mockMvc.perform(get("/rooms/new"))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("room", new Room()))
+				.andExpect(forwardedUrl("room/create"));
+	}
+
+	@Test
+	public void whenUpdate_thenAddedRightRoomAttribute() throws Exception {
+		Optional<Room> expected = Optional.of(buildRoom());
+		when(roomService.findById(1L)).thenReturn(expected);
+
+		mockMvc.perform(get("/rooms/{id}/edit", 1))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("room", expected.get()))
+				.andExpect(forwardedUrl("room/edit"));
+	}
+
+	@Test
+	public void givenNewRoom_whenSave_thenRoomIsCreating() throws Exception {
+		Room room = Room.builder().name("111").capacity(30).build();
+
+		mockMvc.perform(post("/rooms/save").flashAttr("room", room))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/rooms"));
+
+		verify(roomService).create(room);
+	}
+
+	@Test
+	public void givenRoom_whenSave_thenRoomIsUpdating() throws Exception {
+		Room room = Room.builder().id(1L).name("111").capacity(30).build();
+
+		mockMvc.perform(post("/rooms/save").flashAttr("room", room))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/rooms"));
+
+		verify(roomService).update(room);
+	}
+
+	@Test
+	public void givenRoom_whenDelete_thenRoomIsDeleting() throws Exception {
+		Room room = buildRoom();
+
+		mockMvc.perform(get("/rooms/{id}/delete", 1))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/rooms"));
+
+		verify(roomService).deleteById(room.getId());
+	}
+
 	private Room buildRoom() {
-		Room room = new Room("111");
-		room.setId(1L);
-		room.setCapacity(30);
-		return room;
+		return Room.builder().id(1L).name("111").capacity(30).build();
 	}
 }

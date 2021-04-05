@@ -1,13 +1,17 @@
 package com.foxminded.university.controller;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +31,7 @@ import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Teacher;
+import com.foxminded.university.service.CourseService;
 import com.foxminded.university.service.TeacherService;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +39,8 @@ public class TeacherControllerTest {
 
 	@Mock
 	private TeacherService teacherService;
+	@Mock
+	private CourseService courseService;
 	@InjectMocks
 	private TeacherController teacherController;
 	private MockMvc mockMvc;
@@ -79,15 +86,86 @@ public class TeacherControllerTest {
 				.andExpect(forwardedUrl("error"));
 	}
 
+	@Test
+	public void whenCreate_thenAddedNewTeacherAttribute() throws Exception {
+		when(courseService.getAll()).thenReturn(buildCourses());
+
+		mockMvc.perform(get("/teachers/new"))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("courses", courseService.getAll()))
+				.andExpect(model().attribute("genders", Gender.values()))
+				.andExpect(model().attribute("teacher", new Teacher()))
+				.andExpect(forwardedUrl("teacher/create"));
+	}
+
+	@Test
+	public void whenUpdate_thenAddedRightTeacherAttribute() throws Exception {
+		Optional<Teacher> expected = Optional.of(buildTeacher());
+		when(teacherService.findById(1L)).thenReturn(expected);
+		when(courseService.getAll()).thenReturn(buildCourses());
+
+		mockMvc.perform(get("/teachers/{id}/edit", 1))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("courses", courseService.getAll()))
+				.andExpect(model().attribute("genders", Gender.values()))
+				.andExpect(model().attribute("teacher", expected.get()))
+				.andExpect(forwardedUrl("teacher/edit"));
+	}
+
+	@Test
+	public void givenNewTeacher_whenSave_thenTeacherIsCreating() throws Exception {
+		Teacher teacher = Teacher.builder()
+				.courses(new HashSet<>(Arrays.asList(Course.builder().id(1L).build())))
+				.build();
+		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
+
+		mockMvc.perform(post("/teachers/save").flashAttr("teacher", teacher))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/teachers"));
+
+		verify(teacherService).create(teacher);
+	}
+
+	@Test
+	public void givenTeacher_whenSave_thenTeacherIsUpdating() throws Exception {
+		Teacher teacher = Teacher.builder()
+				.id(1L)
+				.courses(new HashSet<>(Arrays.asList(Course.builder().id(1L).build())))
+				.build();
+		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
+
+		mockMvc.perform(post("/teachers/save").flashAttr("teacher", teacher))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/teachers"));
+
+		verify(teacherService).update(teacher);
+	}
+
+	@Test
+	public void givenTeacher_whenDelete_thenTeacherIsDeleting() throws Exception {
+		Teacher teacher = buildTeacher();
+
+		mockMvc.perform(get("/teachers/{id}/delete", 1))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/teachers"));
+
+		verify(teacherService).deleteById(teacher.getId());
+	}
+
 	private Teacher buildTeacher() {
-		Course course1 = new Course("Art");
-		course1.setId(1L);
-		Course course2 = new Course("Law");
-		course2.setId(2L);
-		Teacher teacher = new Teacher("Homer", "Simpson");
-		teacher.setId(1L);
-		teacher.setCourses(new HashSet<>(Arrays.asList(course1, course2)));
-		teacher.setGender(Gender.MALE);
-		return teacher;
+		return Teacher.builder()
+				.id(1L)
+				.name("Homer")
+				.surname("Simpson")
+				.courses(new HashSet<>(Arrays.asList(Course.builder().id(1L).name("Art").build(),
+						Course.builder().id(2L).name("Law").build())))
+				.gender(Gender.MALE)
+				.build();
+	}
+
+	private List<Course> buildCourses() {
+		return Arrays.asList(Course.builder().id(1L).name("Art").build(),
+				Course.builder().id(2L).name("Law").build(),
+				Course.builder().id(3L).name("Music").build());
 	}
 }
