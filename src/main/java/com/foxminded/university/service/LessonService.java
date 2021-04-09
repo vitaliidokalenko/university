@@ -5,6 +5,7 @@ import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -83,6 +84,18 @@ public class LessonService {
 		} else {
 			throw new NotFoundEntityException(format("Cannot find lesson by id: %d", id));
 		}
+	}
+
+	@Transactional
+	public List<Lesson> getByTeacherIdAndDateBetween(Long teacherId, LocalDate startDate, LocalDate endDate) {
+		logger.debug("Getting lessons by teacher id: {} and dates: between {} and {}", teacherId, startDate, endDate);
+		return lessonDao.getByTeacherIdAndDateBetween(teacherId, startDate, endDate);
+	}
+
+	@Transactional
+	public List<Lesson> getByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate) {
+		logger.debug("Getting lessons by group id: {} and dates: between {} and {}", groupId, startDate, endDate);
+		return lessonDao.getByGroupIdAndDateBetween(groupId, startDate, endDate);
 	}
 
 	private void verify(Lesson lesson) {

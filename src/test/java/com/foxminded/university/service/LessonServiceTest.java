@@ -375,6 +375,32 @@ public class LessonServiceTest {
 		assertEquals(expected, actual);
 	}
 
+	@Test
+	public void whenGetByTeacherIdAndDateBetween_thenGetRightListOfLessons() {
+		Lesson lesson = buildLesson();
+		List<Lesson> expected = Arrays.asList(lesson);
+		when(lessonDao.getByTeacherIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21")))
+				.thenReturn(expected);
+
+		List<Lesson> actual = lessonService
+				.getByTeacherIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void whenGetByGroupIdAndDateBetween_thenGetRightListOfLessons() {
+		Lesson lesson = buildLesson();
+		List<Lesson> expected = Arrays.asList(lesson);
+		when(lessonDao.getByGroupIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21")))
+				.thenReturn(expected);
+
+		List<Lesson> actual = lessonService
+				.getByGroupIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
+
+		assertEquals(expected, actual);
+	}
+
 	private Lesson buildLesson() {
 		Room room = new Room("111");
 		room.setId(1L);

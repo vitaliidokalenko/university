@@ -15,6 +15,7 @@
 		<springframework.data.version>2.3.7.RELEASE</springframework.data.version>
 		<postgresql.version>42.2.14</postgresql.version>
 		<thymeleaf.version>3.0.12.RELEASE</thymeleaf.version>
+		<thymeleaf.extras.version>3.0.4.RELEASE</thymeleaf.extras.version>
 		<servlet.version>4.0.1</servlet.version>
 		<logback.version>1.2.3</logback.version>
 		<h2database.version>1.4.200</h2database.version>
@@ -70,6 +71,12 @@
 			<artifactId>thymeleaf-spring5</artifactId>
 			<version>${thymeleaf.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-java8time</artifactId>
+			<version>${thymeleaf.extras.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>

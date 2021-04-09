@@ -641,4 +641,102 @@ public class JdbcLessonDaoTest {
 
 		assertEquals(expected, actual.getContent());
 	}
+
+	@Test
+	@Sql("/data.sql")
+	public void givenTeacherIdAndDates_whenGetByTeacherIdAndPeriod_thenGetRightListOfLessons() {
+		Timeframe timeframe = new Timeframe();
+		timeframe.setId(1L);
+		timeframe.setSequence(1);
+		timeframe.setStartTime(LocalTime.parse("08:00"));
+		timeframe.setEndTime(LocalTime.parse("09:20"));
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Room room3 = new Room("C333");
+		room3.setId(3L);
+		room3.setCapacity(30);
+		course1.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		course2.setRooms(new HashSet<>(Arrays.asList(room3, room2)));
+		Teacher teacher = new Teacher("Victor", "Doncov");
+		teacher.setId(1L);
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
+		teacher.setGender(Gender.MALE);
+		teacher.setCourses(new HashSet<>(Arrays.asList(course2, course1)));
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Lesson lesson = new Lesson();
+		lesson.setId(1L);
+		lesson.setDate(LocalDate.parse("2020-12-12"));
+		lesson.setTimeframe(timeframe);
+		lesson.setCourse(course1);
+		lesson.setTeacher(teacher);
+		lesson.setRoom(room1);
+		lesson.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
+
+		List<Lesson> expected = Arrays.asList(lesson);
+
+		List<Lesson> actual = lessonDao
+				.getByTeacherIdAndDateBetween(teacher.getId(), LocalDate.parse("2020-12-12"), LocalDate.parse("2020-12-14"));
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	@Sql("/data.sql")
+	public void givenGroupIdAndDates_whenGetByGroupIdAndPeriod_thenGetRightListOfLessons() {
+		Timeframe timeframe = new Timeframe();
+		timeframe.setId(1L);
+		timeframe.setSequence(1);
+		timeframe.setStartTime(LocalTime.parse("08:00"));
+		timeframe.setEndTime(LocalTime.parse("09:20"));
+		Course course1 = new Course("Law");
+		course1.setId(1L);
+		Room room1 = new Room("A111");
+		room1.setId(1L);
+		room1.setCapacity(30);
+		Room room2 = new Room("B222");
+		room2.setId(2L);
+		room2.setCapacity(30);
+		Room room3 = new Room("C333");
+		room3.setId(3L);
+		room3.setCapacity(30);
+		course1.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
+		Course course2 = new Course("Biology");
+		course2.setId(2L);
+		course2.setRooms(new HashSet<>(Arrays.asList(room3, room2)));
+		Teacher teacher = new Teacher("Victor", "Doncov");
+		teacher.setId(1L);
+		teacher.setBirthDate(LocalDate.parse("1991-01-01"));
+		teacher.setGender(Gender.MALE);
+		teacher.setCourses(new HashSet<>(Arrays.asList(course2, course1)));
+		Group group1 = new Group("AA-11");
+		group1.setId(1L);
+		Group group2 = new Group("BB-22");
+		group2.setId(2L);
+		Lesson lesson1 = new Lesson();
+		lesson1.setId(1L);
+		lesson1.setDate(LocalDate.parse("2020-12-12"));
+		lesson1.setTimeframe(timeframe);
+		lesson1.setCourse(course1);
+		lesson1.setTeacher(teacher);
+		lesson1.setRoom(room1);
+		lesson1.setGroups(new HashSet<>(Arrays.asList(group1, group2)));
+
+		List<Lesson> expected = Arrays.asList(lesson1);
+
+		List<Lesson> actual = lessonDao
+				.getByGroupIdAndDateBetween(group1.getId(), LocalDate.parse("2020-12-12"), LocalDate.parse("2020-12-12"));
+
+		assertEquals(expected, actual);
+	}
 }

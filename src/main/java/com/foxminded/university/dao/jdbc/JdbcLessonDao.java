@@ -47,6 +47,9 @@ public class JdbcLessonDao implements LessonDao {
 	private static final String GET_LESSON_BY_ROOM_ID_AND_DATE_AND_TIMEFRAME_ID_QUERY = "SELECT * FROM lessons WHERE room_id = ? AND date = ? AND timeframe_id = ?";
 	private static final String COUNT_LESSONS_QUERY = "SELECT count(*) FROM lessons";
 	private static final String GET_LESSONS_ORDERED_BY_DATE_WITH_LIMIT_AND_OFFSET_QUERY = "SELECT * FROM lessons ORDER BY date LIMIT ? OFFSET ?";
+	private static final String GET_LESSONS_BY_TEACHER_ID_AND_PERIOD_QUERY = "SELECT * FROM lessons WHERE teacher_id = ? AND date BETWEEN ? AND ?";
+	private static final String GET_LESSONS_BY_GROUP_ID_AND_PERIOD_QUERY = "SELECT * FROM lessons "
+			+ "JOIN lessons_groups ON lessons_groups.lesson_id = lessons.id WHERE group_id = ? AND date BETWEEN ? AND ?";
 
 	private JdbcTemplate jdbcTemplate;
 	private JdbcGroupDao groupDao;
@@ -217,6 +220,32 @@ public class JdbcLessonDao implements LessonDao {
 			return new PageImpl<>(lessons, pageable, count());
 		} catch (DataAccessException e) {
 			throw new DaoException("Could not get lessons", e);
+		}
+	}
+
+	@Override
+	public List<Lesson> getByTeacherIdAndDateBetween(Long teacherId, LocalDate startDate, LocalDate endDate) {
+		try {
+			return jdbcTemplate.query(GET_LESSONS_BY_TEACHER_ID_AND_PERIOD_QUERY,
+					new Object[] { teacherId, startDate, endDate },
+					lessonMapper);
+		} catch (DataAccessException e) {
+			throw new DaoException(
+					"Could not get lessons by teacher id: " + teacherId + ", between " + startDate + " and " + endDate,
+					e);
+		}
+	}
+
+	@Override
+	public List<Lesson> getByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate) {
+		try {
+			return jdbcTemplate.query(GET_LESSONS_BY_GROUP_ID_AND_PERIOD_QUERY,
+					new Object[] { groupId, startDate, endDate },
+					lessonMapper);
+		} catch (DataAccessException e) {
+			throw new DaoException(
+					"Could not get lessons by group id: " + groupId + ", between " + startDate + " and " + endDate,
+					e);
 		}
 	}
 }

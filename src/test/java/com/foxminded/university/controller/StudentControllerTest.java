@@ -1,5 +1,6 @@
 package com.foxminded.university.controller;
 
+import static java.time.LocalTime.parse;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -9,10 +10,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,9 +34,14 @@ import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
+import com.foxminded.university.model.Lesson;
+import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Student;
+import com.foxminded.university.model.Teacher;
+import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.CourseService;
 import com.foxminded.university.service.GroupService;
+import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.StudentService;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +53,8 @@ public class StudentControllerTest {
 	private CourseService courseService;
 	@Mock
 	private GroupService groupService;
+	@Mock
+	private LessonService lessonService;
 	@InjectMocks
 	private StudentController studentController;
 	private MockMvc mockMvc;
@@ -164,6 +174,26 @@ public class StudentControllerTest {
 		verify(studentService).deleteById(student.getId());
 	}
 
+	@Test
+	public void givenDates_whenGetTimetable_thenGetRightLessons() throws Exception {
+		Optional<Student> student = Optional.of(buildStudent());
+		List<Lesson> expected = Arrays.asList(buildLesson());
+		LocalDate startDate = LocalDate.parse("2021-01-21");
+		LocalDate endDate = LocalDate.parse("2021-01-21");
+		when(studentService.findById(1L)).thenReturn(student);
+		when(lessonService.getByGroupIdAndDateBetween(1L, startDate, endDate))
+				.thenReturn(expected);
+
+		mockMvc.perform(
+				get("/students/{id}/timetable", 1).param("startDate", "2021-01-21").param("endDate", "2021-01-21"))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("student/timetable"))
+				.andExpect(model().attribute("student", student.get()))
+				.andExpect(model().attribute("lessons", expected))
+				.andExpect(model().attribute("startDate", startDate))
+				.andExpect(model().attribute("endDate", endDate));
+	}
+
 	private Student buildStudent() {
 		return Student.builder()
 				.id(1L)
@@ -184,5 +214,33 @@ public class StudentControllerTest {
 		return Arrays.asList(Group.builder().id(1L).name("AA-11").build(),
 				Group.builder().id(2L).name("BB-22").build(),
 				Group.builder().id(3L).name("CC-33").build());
+	}
+
+	private Lesson buildLesson() {
+		Room room = Room.builder().id(1L).name("111").capacity(30).build();
+		Course course = Course.builder().id(1L).name("Art").rooms(new HashSet<>(Arrays.asList(room))).build();
+		Set<Group> groups = new HashSet<>(Arrays.asList(Group.builder().id(1L).name("AA-11").build()));
+		Teacher teacher = Teacher.builder()
+				.id(1L)
+				.name("Homer")
+				.surname("Simpson")
+				.courses(new HashSet<>(Arrays.asList(course)))
+				.build();
+		Timeframe timeframe = Timeframe.builder()
+				.id(1L)
+				.sequence(1)
+				.startTime(parse("08:00"))
+				.endTime(parse("09:20"))
+				.build();
+		return Lesson.builder()
+				.id(1L)
+				.course(course)
+				.date(LocalDate.parse(
+						"2021-01-21"))
+				.groups(groups)
+				.room(room)
+				.teacher(teacher)
+				.timeframe(timeframe)
+				.build();
 	}
 }

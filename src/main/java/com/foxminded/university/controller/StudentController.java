@@ -3,19 +3,24 @@ package com.foxminded.university.controller;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
 
+import java.time.LocalDate;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.service.CourseService;
 import com.foxminded.university.service.GroupService;
+import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.StudentService;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
@@ -26,11 +31,14 @@ public class StudentController {
 	private final StudentService studentService;
 	private final CourseService courseService;
 	private final GroupService groupService;
+	private final LessonService lessonService;
 
-	public StudentController(StudentService studentService, CourseService courseService, GroupService groupService) {
+	public StudentController(StudentService studentService, CourseService courseService, GroupService groupService,
+			LessonService lessonService) {
 		this.studentService = studentService;
 		this.courseService = courseService;
 		this.groupService = groupService;
+		this.lessonService = lessonService;
 	}
 
 	@GetMapping
@@ -82,6 +90,20 @@ public class StudentController {
 	public String delete(@PathVariable Long id) {
 		studentService.deleteById(id);
 		return "redirect:/students";
+	}
+
+	@GetMapping("/{id}/timetable")
+	public String getTimetable(Model model, @PathVariable Long id,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+		Student student = studentService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find student by id: %d", id)));
+		model.addAttribute("student", student);
+		model.addAttribute("lessons",
+				lessonService.getByGroupIdAndDateBetween(student.getGroup().getId(), startDate, endDate));
+		model.addAttribute("startDate", startDate);
+		model.addAttribute("endDate", endDate);
+		return "student/timetable";
 	}
 
 	private void retrieveRelationsFields(Student student) {
