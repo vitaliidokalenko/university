@@ -80,13 +80,13 @@ public class StudentControllerTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightStudent() throws Exception {
-		Optional<Student> expected = Optional.of(buildStudent());
-		when(studentService.findById(1L)).thenReturn(expected);
+		Student expected = buildStudent();
+		when(studentService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/students/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("student/student"))
-				.andExpect(model().attribute("student", expected.get()));
+				.andExpect(model().attribute("student", expected));
 	}
 
 	@Test
@@ -116,8 +116,8 @@ public class StudentControllerTest {
 
 	@Test
 	public void whenUpdate_thenAddedRightStudentAttribute() throws Exception {
-		Optional<Student> expected = Optional.of(buildStudent());
-		when(studentService.findById(1L)).thenReturn(expected);
+		Student expected = buildStudent();
+		when(studentService.findById(1L)).thenReturn(Optional.of(expected));
 		when(courseService.getAll()).thenReturn(buildCourses());
 		when(groupService.getAll()).thenReturn(buildGroups());
 
@@ -126,7 +126,7 @@ public class StudentControllerTest {
 				.andExpect(model().attribute("courses", courseService.getAll()))
 				.andExpect(model().attribute("groups", groupService.getAll()))
 				.andExpect(model().attribute("genders", Gender.values()))
-				.andExpect(model().attribute("student", expected.get()))
+				.andExpect(model().attribute("student", expected))
 				.andExpect(forwardedUrl("student/edit"));
 	}
 
@@ -176,11 +176,11 @@ public class StudentControllerTest {
 
 	@Test
 	public void givenDates_whenGetTimetable_thenGetRightLessons() throws Exception {
-		Optional<Student> student = Optional.of(buildStudent());
+		Student student = buildStudent();
 		List<Lesson> expected = Arrays.asList(buildLesson());
 		LocalDate startDate = LocalDate.parse("2021-01-21");
 		LocalDate endDate = LocalDate.parse("2021-01-21");
-		when(studentService.findById(1L)).thenReturn(student);
+		when(studentService.findById(1L)).thenReturn(Optional.of(student));
 		when(lessonService.getByGroupIdAndDateBetween(1L, startDate, endDate))
 				.thenReturn(expected);
 
@@ -188,7 +188,7 @@ public class StudentControllerTest {
 				get("/students/{id}/timetable", 1).param("startDate", "2021-01-21").param("endDate", "2021-01-21"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("student/timetable"))
-				.andExpect(model().attribute("student", student.get()))
+				.andExpect(model().attribute("student", student))
 				.andExpect(model().attribute("lessons", expected))
 				.andExpect(model().attribute("startDate", startDate))
 				.andExpect(model().attribute("endDate", endDate));

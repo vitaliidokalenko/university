@@ -60,13 +60,13 @@ public class GroupControllerTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightGroup() throws Exception {
-		Optional<Group> expected = Optional.of(buildGroup());
-		when(groupService.findById(1L)).thenReturn(expected);
+		Group expected = buildGroup();
+		when(groupService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/groups/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("group/group"))
-				.andExpect(model().attribute("group", expected.get()));
+				.andExpect(model().attribute("group", expected));
 	}
 
 	@Test
@@ -90,12 +90,12 @@ public class GroupControllerTest {
 
 	@Test
 	public void whenUpdate_thenAddedRightGroupAttribute() throws Exception {
-		Optional<Group> expected = Optional.of(buildGroup());
-		when(groupService.findById(1L)).thenReturn(expected);
+		Group expected = buildGroup();
+		when(groupService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/groups/{id}/edit", 1))
 				.andExpect(status().isOk())
-				.andExpect(model().attribute("group", expected.get()))
+				.andExpect(model().attribute("group", expected))
 				.andExpect(forwardedUrl("group/edit"));
 	}
 

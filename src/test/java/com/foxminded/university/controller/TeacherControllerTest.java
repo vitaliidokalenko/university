@@ -76,13 +76,13 @@ public class TeacherControllerTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightTeacher() throws Exception {
-		Optional<Teacher> expected = Optional.of(buildTeacher());
-		when(teacherService.findById(1L)).thenReturn(expected);
+		Teacher expected = buildTeacher();
+		when(teacherService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/teachers/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("teacher/teacher"))
-				.andExpect(model().attribute("teacher", expected.get()));
+				.andExpect(model().attribute("teacher", expected));
 	}
 
 	@Test
@@ -110,15 +110,15 @@ public class TeacherControllerTest {
 
 	@Test
 	public void whenUpdate_thenAddedRightTeacherAttribute() throws Exception {
-		Optional<Teacher> expected = Optional.of(buildTeacher());
-		when(teacherService.findById(1L)).thenReturn(expected);
+		Teacher expected = buildTeacher();
+		when(teacherService.findById(1L)).thenReturn(Optional.of(expected));
 		when(courseService.getAll()).thenReturn(buildCourses());
 
 		mockMvc.perform(get("/teachers/{id}/edit", 1))
 				.andExpect(status().isOk())
 				.andExpect(model().attribute("courses", courseService.getAll()))
 				.andExpect(model().attribute("genders", Gender.values()))
-				.andExpect(model().attribute("teacher", expected.get()))
+				.andExpect(model().attribute("teacher", expected))
 				.andExpect(forwardedUrl("teacher/edit"));
 	}
 
@@ -164,11 +164,11 @@ public class TeacherControllerTest {
 
 	@Test
 	public void givenDates_whenGetTimetable_thenGetRightLessons() throws Exception {
-		Optional<Teacher> teacher = Optional.of(buildTeacher());
+		Teacher teacher = buildTeacher();
 		List<Lesson> expected = Arrays.asList(buildLesson());
 		LocalDate startDate = LocalDate.parse("2021-01-21");
 		LocalDate endDate = LocalDate.parse("2021-01-21");
-		when(teacherService.findById(1L)).thenReturn(teacher);
+		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
 		when(lessonService.getByTeacherIdAndDateBetween(1L, startDate, endDate))
 				.thenReturn(expected);
 
@@ -176,7 +176,7 @@ public class TeacherControllerTest {
 				get("/teachers/{id}/timetable", 1).param("startDate", "2021-01-21").param("endDate", "2021-01-21"))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("teacher/timetable"))
-				.andExpect(model().attribute("teacher", teacher.get()))
+				.andExpect(model().attribute("teacher", teacher))
 				.andExpect(model().attribute("lessons", expected))
 				.andExpect(model().attribute("startDate", startDate))
 				.andExpect(model().attribute("endDate", endDate));

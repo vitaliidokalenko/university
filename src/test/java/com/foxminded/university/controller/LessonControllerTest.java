@@ -84,13 +84,13 @@ public class LessonControllerTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightLesson() throws Exception {
-		Optional<Lesson> expected = Optional.of(buildLesson());
-		when(lessonService.findById(1L)).thenReturn(expected);
+		Lesson expected = buildLesson();
+		when(lessonService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/lessons/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("lesson/lesson"))
-				.andExpect(model().attribute("lesson", expected.get()));
+				.andExpect(model().attribute("lesson", expected));
 	}
 
 	@Test
@@ -125,8 +125,8 @@ public class LessonControllerTest {
 
 	@Test
 	public void whenUpdate_thenAddedRightLessonAttribute() throws Exception {
-		Optional<Lesson> expected = Optional.of(buildLesson());
-		when(lessonService.findById(1L)).thenReturn(expected);
+		Lesson expected = buildLesson();
+		when(lessonService.findById(1L)).thenReturn(Optional.of(expected));
 		when(groupService.getAll()).thenReturn(buildGroups());
 		when(teacherService.getAll()).thenReturn(buildTeachers());
 		when(courseService.getAll()).thenReturn(buildCourses());
@@ -140,7 +140,7 @@ public class LessonControllerTest {
 				.andExpect(model().attribute("courses", courseService.getAll()))
 				.andExpect(model().attribute("rooms", roomService.getAll()))
 				.andExpect(model().attribute("timeframes", timeframeService.getAll()))
-				.andExpect(model().attribute("lesson", expected.get()))
+				.andExpect(model().attribute("lesson", expected))
 				.andExpect(forwardedUrl("lesson/edit"));
 	}
 

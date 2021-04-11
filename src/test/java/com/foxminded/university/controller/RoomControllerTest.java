@@ -59,13 +59,13 @@ public class RoomControllerTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightRoom() throws Exception {
-		Optional<Room> expected = Optional.of(buildRoom());
-		when(roomService.findById(1L)).thenReturn(expected);
+		Room expected = buildRoom();
+		when(roomService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/rooms/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("room/room"))
-				.andExpect(model().attribute("room", expected.get()));
+				.andExpect(model().attribute("room", expected));
 	}
 
 	@Test
@@ -89,12 +89,12 @@ public class RoomControllerTest {
 
 	@Test
 	public void whenUpdate_thenAddedRightRoomAttribute() throws Exception {
-		Optional<Room> expected = Optional.of(buildRoom());
-		when(roomService.findById(1L)).thenReturn(expected);
+		Room expected = buildRoom();
+		when(roomService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/rooms/{id}/edit", 1))
 				.andExpect(status().isOk())
-				.andExpect(model().attribute("room", expected.get()))
+				.andExpect(model().attribute("room", expected))
 				.andExpect(forwardedUrl("room/edit"));
 	}
 

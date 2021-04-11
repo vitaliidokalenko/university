@@ -60,13 +60,13 @@ public class TimeframeControllerTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightTimeframe() throws Exception {
-		Optional<Timeframe> expected = Optional.of(buildTimeframe());
-		when(timeframeService.findById(1L)).thenReturn(expected);
+		Timeframe expected = buildTimeframe();
+		when(timeframeService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/timeframes/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("timeframe/timeframe"))
-				.andExpect(model().attribute("timeframe", expected.get()));
+				.andExpect(model().attribute("timeframe", expected));
 	}
 
 	@Test
@@ -91,12 +91,12 @@ public class TimeframeControllerTest {
 
 	@Test
 	public void whenUpdate_thenAddedRightTimeframeAttribute() throws Exception {
-		Optional<Timeframe> expected = Optional.of(buildTimeframe());
-		when(timeframeService.findById(1L)).thenReturn(expected);
+		Timeframe expected = buildTimeframe();
+		when(timeframeService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/timeframes/{id}/edit", 1))
 				.andExpect(status().isOk())
-				.andExpect(model().attribute("timeframe", expected.get()))
+				.andExpect(model().attribute("timeframe", expected))
 				.andExpect(forwardedUrl("timeframe/edit"));
 	}
 

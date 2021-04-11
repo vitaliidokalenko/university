@@ -65,13 +65,13 @@ public class CourseControllerTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightCourse() throws Exception {
-		Optional<Course> expected = Optional.of(buildCourse());
-		when(courseService.findById(1L)).thenReturn(expected);
+		Course expected = buildCourse();
+		when(courseService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/courses/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("course/course"))
-				.andExpect(model().attribute("course", expected.get()));
+				.andExpect(model().attribute("course", expected));
 	}
 
 	@Test
@@ -98,14 +98,14 @@ public class CourseControllerTest {
 
 	@Test
 	public void whenUpdate_thenAddedRightCourseAttribute() throws Exception {
-		Optional<Course> expected = Optional.of(buildCourse());
-		when(courseService.findById(1L)).thenReturn(expected);
+		Course expected = buildCourse();
+		when(courseService.findById(1L)).thenReturn(Optional.of(expected));
 		when(roomService.getAll()).thenReturn(buildRooms());
 
 		mockMvc.perform(get("/courses/{id}/edit", 1))
 				.andExpect(status().isOk())
 				.andExpect(model().attribute("rooms", roomService.getAll()))
-				.andExpect(model().attribute("course", expected.get()))
+				.andExpect(model().attribute("course", expected))
 				.andExpect(forwardedUrl("course/edit"));
 	}
 
