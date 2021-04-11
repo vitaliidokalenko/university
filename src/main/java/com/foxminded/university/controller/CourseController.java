@@ -70,7 +70,7 @@ public class CourseController {
 		return "redirect:/courses";
 	}
 
-	@GetMapping("/{id}/delete")
+	@PostMapping("/{id}/delete")
 	public String delete(@PathVariable Long id) {
 		courseService.deleteById(id);
 		return "redirect:/courses";

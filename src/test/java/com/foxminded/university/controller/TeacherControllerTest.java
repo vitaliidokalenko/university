@@ -155,7 +155,7 @@ public class TeacherControllerTest {
 	public void givenTeacher_whenDelete_thenTeacherIsDeleting() throws Exception {
 		Teacher teacher = buildTeacher();
 
-		mockMvc.perform(get("/teachers/{id}/delete", 1))
+		mockMvc.perform(post("/teachers/{id}/delete", 1))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/teachers"));
 

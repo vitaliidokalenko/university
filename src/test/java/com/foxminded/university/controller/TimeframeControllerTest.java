@@ -126,7 +126,7 @@ public class TimeframeControllerTest {
 	public void givenTimeframe_whenDelete_thenTimeframeIsDeleting() throws Exception {
 		Timeframe timeframe = buildTimeframe();
 
-		mockMvc.perform(get("/timeframes/{id}/delete", 1))
+		mockMvc.perform(post("/timeframes/{id}/delete", 1))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/timeframes"));
 

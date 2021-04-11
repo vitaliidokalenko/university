@@ -167,7 +167,7 @@ public class StudentControllerTest {
 	public void givenStudent_whenDelete_thenStudentIsDeleting() throws Exception {
 		Student student = buildStudent();
 
-		mockMvc.perform(get("/students/{id}/delete", 1))
+		mockMvc.perform(post("/students/{id}/delete", 1))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/students"));
 

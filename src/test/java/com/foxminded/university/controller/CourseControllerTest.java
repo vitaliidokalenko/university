@@ -144,7 +144,7 @@ public class CourseControllerTest {
 	public void givenCourse_whenDelete_thenCourseIsDeleting() throws Exception {
 		Course course = buildCourse();
 
-		mockMvc.perform(get("/courses/{id}/delete", 1))
+		mockMvc.perform(post("/courses/{id}/delete", 1))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/courses"));
 

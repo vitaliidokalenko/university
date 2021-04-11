@@ -124,7 +124,7 @@ public class RoomControllerTest {
 	public void givenRoom_whenDelete_thenRoomIsDeleting() throws Exception {
 		Room room = buildRoom();
 
-		mockMvc.perform(get("/rooms/{id}/delete", 1))
+		mockMvc.perform(post("/rooms/{id}/delete", 1))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/rooms"));
 

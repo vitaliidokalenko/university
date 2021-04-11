@@ -53,7 +53,7 @@ public class RoomController {
 		return "room/edit";
 	}
 
-	@GetMapping("/{id}/delete")
+	@PostMapping("/{id}/delete")
 	public String delete(@PathVariable Long id) {
 		roomService.deleteById(id);
 		return "redirect:/rooms";

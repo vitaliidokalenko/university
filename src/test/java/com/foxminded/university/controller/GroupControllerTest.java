@@ -130,7 +130,7 @@ public class GroupControllerTest {
 	public void givenGroup_whenDelete_thenGroupIsDeleting() throws Exception {
 		Group group = buildGroup();
 
-		mockMvc.perform(get("/groups/{id}/delete", 1))
+		mockMvc.perform(post("/groups/{id}/delete", 1))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/groups"));
 

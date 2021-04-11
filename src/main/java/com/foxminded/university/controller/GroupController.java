@@ -63,7 +63,7 @@ public class GroupController {
 		return "redirect:/groups";
 	}
 
-	@GetMapping("/{id}/delete")
+	@PostMapping("/{id}/delete")
 	public String delete(@PathVariable Long id) {
 		groupService.deleteById(id);
 		return "redirect:/groups";

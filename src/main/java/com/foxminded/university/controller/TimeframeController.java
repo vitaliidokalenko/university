@@ -63,7 +63,7 @@ public class TimeframeController {
 		return "redirect:/timeframes";
 	}
 
-	@GetMapping("/{id}/delete")
+	@PostMapping("/{id}/delete")
 	public String delete(@PathVariable Long id) {
 		timeframeService.deleteById(id);
 		return "redirect:/timeframes";

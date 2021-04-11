@@ -181,7 +181,7 @@ public class LessonControllerTest {
 	public void givenLesson_whenDelete_thenLessonIsDeleting() throws Exception {
 		Lesson lesson = buildLesson();
 
-		mockMvc.perform(get("/lessons/{id}/delete", 1))
+		mockMvc.perform(post("/lessons/{id}/delete", 1))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/lessons"));
 
