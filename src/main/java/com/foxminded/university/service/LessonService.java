@@ -19,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.StudentDao;
+import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
+import com.foxminded.university.model.Teacher;
 import com.foxminded.university.service.exception.IncompleteEntityException;
 import com.foxminded.university.service.exception.NotAvailableGroupException;
 import com.foxminded.university.service.exception.NotAvailableRoomException;
@@ -28,6 +30,7 @@ import com.foxminded.university.service.exception.NotAvailableTeacherException;
 import com.foxminded.university.service.exception.NotCompetentTeacherForCourseException;
 import com.foxminded.university.service.exception.NotEnoughRoomCapacityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotFoundSubstituteTeacherException;
 import com.foxminded.university.service.exception.NotSuitableRoomForCourseException;
 import com.foxminded.university.service.exception.NotWeekDayException;
 
@@ -38,10 +41,12 @@ public class LessonService {
 
 	private LessonDao lessonDao;
 	private StudentDao studentDao;
+	private TeacherDao teacherDao;
 
-	public LessonService(LessonDao lessonDao, StudentDao studentDao) {
+	public LessonService(LessonDao lessonDao, StudentDao studentDao, TeacherDao teacherDao) {
 		this.lessonDao = lessonDao;
 		this.studentDao = studentDao;
+		this.teacherDao = teacherDao;
 	}
 
 	@Transactional
@@ -96,6 +101,29 @@ public class LessonService {
 	public List<Lesson> getByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate) {
 		logger.debug("Getting lessons by group id: {} and dates: between {} and {}", groupId, startDate, endDate);
 		return lessonDao.getByGroupIdAndDateBetween(groupId, startDate, endDate);
+	}
+
+	@Transactional
+	public void replaceTeacherByDateBetween(Teacher teacher, LocalDate startDate, LocalDate endDate) {
+		logger.debug("Replacing teacher: {} {} for lessons between {} and {}",
+				teacher.getName(),
+				teacher.getSurname(),
+				startDate,
+				endDate);
+		List<Lesson> lessons = lessonDao.getByTeacherIdAndDateBetween(teacher.getId(), startDate, endDate);
+		lessons.stream()
+				.forEach(l -> l.setTeacher(teacherDao.getByCourseId(l.getCourse().getId())
+						.stream()
+						.filter(t -> !lessonDao.getByTeacherAndDateAndTimeframe(t, l.getDate(), l.getTimeframe())
+								.isPresent() && !t.getId().equals(teacher.getId()))
+						.findAny()
+						.orElseThrow(() -> new NotFoundSubstituteTeacherException(
+								format("Substitute teacher was not found for the lesson id: %d, course: %s, date: %s, start time: %s",
+										l.getId(),
+										l.getCourse().getName(),
+										l.getDate(),
+										l.getTimeframe().getStartTime())))));
+		lessons.stream().forEach(lessonDao::update);
 	}
 
 	private void verify(Lesson lesson) {

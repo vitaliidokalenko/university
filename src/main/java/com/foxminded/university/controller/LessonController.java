@@ -3,8 +3,11 @@ package com.foxminded.university.controller;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
 
+import java.time.LocalDate;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +15,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.foxminded.university.model.Lesson;
+import com.foxminded.university.model.Teacher;
 import com.foxminded.university.service.CourseService;
 import com.foxminded.university.service.GroupService;
 import com.foxminded.university.service.LessonService;
@@ -95,6 +100,16 @@ public class LessonController {
 	@GetMapping("/{id}/delete")
 	public String delete(@PathVariable Long id) {
 		lessonService.deleteById(id);
+		return "redirect:/lessons";
+	}
+
+	@PostMapping("/replace/teacher/{id}")
+	public String replaceTeacher(@PathVariable Long id,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+		Teacher teacher = teacherService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
+		lessonService.replaceTeacherByDateBetween(teacher, startDate, endDate);
 		return "redirect:/lessons";
 	}
 

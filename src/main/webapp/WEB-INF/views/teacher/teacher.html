@@ -44,11 +44,25 @@
 				<button type="button" class="btn btn-danger">Delete</button>
 			</a>
 		</div>
-		<form id="timetable"
-			th:action="@{/teachers/{id}/timetable(id=${teacher.id})}" method="get">
+		<form id="timetable" th:action="@{/teachers/{id}/timetable(id=${teacher.id})}" method="get">
 			<dl class="row">
 				<dt class="col-sm-2">
 					<input class="btn btn-secondary" id="timetable" type="submit" role="button" value="Get timetable">
+				</dt>
+				<dd class="col-sm-2">
+					<label for="startDate">Start date:</label> <input class="form-control" type="date"
+						name="startDate" id="startDate" th:value="${startDate}" required>
+				</dd>
+				<dd class="col-sm-2">
+					<label for="endDate">End date:</label> <input class="form-control" type="date" name="endDate"
+						id="endDate" th:value="${endDate}" required>
+				</dd>
+			</dl>
+		</form>
+		<form id="replace" th:action="@{/lessons/replace/teacher/{id}(id=${teacher.id})}" method="post">
+			<dl class="row">
+				<dt class="col-sm-2">
+					<input class="btn btn-secondary" id="replace" type="submit" role="button" value="Replace">
 				</dt>
 				<dd class="col-sm-2">
 					<label for="startDate">Start date:</label> <input class="form-control" type="date"

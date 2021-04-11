@@ -188,6 +188,21 @@ public class LessonControllerTest {
 		verify(lessonService).deleteById(lesson.getId());
 	}
 
+	@Test
+	public void givenTeacherAndDates_whenReplaceTeacher_thenTeacherIsReplacing() throws Exception {
+		Teacher teacher = buildTeachers().get(0);
+		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+
+		mockMvc.perform(
+				post("/lessons/replace/teacher/{id}", 1).param("startDate", "2021-01-21")
+						.param("endDate", "2021-01-21"))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/lessons"));
+
+		verify(lessonService)
+				.replaceTeacherByDateBetween(teacher, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
+	}
+
 	private Lesson buildLesson() {
 		Room room = Room.builder().id(1L).name("111").capacity(30).build();
 		Course course = Course.builder().id(1L).name("Art").rooms(new HashSet<>(Arrays.asList(room))).build();
