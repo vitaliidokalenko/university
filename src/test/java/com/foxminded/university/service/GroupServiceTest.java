@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,7 +70,7 @@ public class GroupServiceTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightGroupWithItStudents() {
 		Optional<Group> expected = Optional.of(buildGroup());
-		List<Student> students = Arrays.asList(new Student("Avraam", "Melburn"), new Student("Homer", "Mahony"));
+		List<Student> students = List.of(new Student("Avraam", "Melburn"), new Student("Homer", "Mahony"));
 		when(groupDao.findById(1L)).thenReturn(expected);
 		when(studentDao.getByGroup(expected.get())).thenReturn(students);
 
@@ -82,7 +81,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightListOfGroups() {
-		List<Group> expected = Arrays.asList(buildGroup());
+		List<Group> expected = List.of(buildGroup());
 		when(groupDao.getAll()).thenReturn(expected);
 
 		List<Group> actual = groupService.getAll();
@@ -161,7 +160,7 @@ public class GroupServiceTest {
 
 	@Test
 	public void whenGetAllPage_thenGetRightGroups() {
-		Page<Group> expected = new PageImpl<>(Arrays.asList(buildGroup()));
+		Page<Group> expected = new PageImpl<>(List.of(buildGroup()));
 		when(groupDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Group> actual = groupService.getAllPage(PageRequest.of(0, 1));

@@ -11,8 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -64,7 +62,7 @@ public class LessonControllerTest {
 	private MockMvc mockMvc;
 
 	@BeforeEach
-	void setUpp() {
+	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(lessonController)
 				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -73,7 +71,7 @@ public class LessonControllerTest {
 
 	@Test
 	public void whenGetAll_thenGetRightLessonsPage() throws Exception {
-		Page<Lesson> expected = new PageImpl<>(Arrays.asList(buildLesson()));
+		Page<Lesson> expected = new PageImpl<>(List.of(buildLesson()));
 		when(lessonService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		mockMvc.perform(get("/lessons").param("page", "0").param("size", "1"))
@@ -189,29 +187,53 @@ public class LessonControllerTest {
 	}
 
 	@Test
-	public void givenTeacherAndDates_whenReplaceTeacher_thenTeacherIsReplacing() throws Exception {
+	public void givenTeacherAndDatesAndNotSubstituteTeacherId_whenReplaceTeacher_thenTeacherIsReplacing()
+			throws Exception {
 		Teacher teacher = buildTeachers().get(0);
 		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
 
 		mockMvc.perform(
-				post("/lessons/replace/teacher/{id}", 1).param("startDate", "2021-01-21")
+				post("/lessons/replace/teacher").param("teacherId", "1")
+						.param("startDate", "2021-01-21")
 						.param("endDate", "2021-01-21"))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/lessons"));
 
-		verify(lessonService)
-				.replaceTeacherByDateBetween(teacher, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
+		verify(lessonService).replaceTeacherByDateBetween(teacher,
+				LocalDate.parse("2021-01-21"),
+				LocalDate.parse("2021-01-21"),
+				null);
+	}
+
+	@Test
+	public void givenTeacherAndDatesAndSubstituteTeacherId_whenReplaceTeacher_thenTeacherIsReplacing()
+			throws Exception {
+		Teacher teacher = buildTeachers().get(0);
+		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+
+		mockMvc.perform(
+				post("/lessons/replace/teacher").param("teacherId", "1")
+						.param("startDate", "2021-01-21")
+						.param("endDate", "2021-01-21")
+						.param("substituteTeacherId", "2"))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/lessons"));
+
+		verify(lessonService).replaceTeacherByDateBetween(teacher,
+				LocalDate.parse("2021-01-21"),
+				LocalDate.parse("2021-01-21"),
+				List.of(2L));
 	}
 
 	private Lesson buildLesson() {
 		Room room = Room.builder().id(1L).name("111").capacity(30).build();
-		Course course = Course.builder().id(1L).name("Art").rooms(new HashSet<>(Arrays.asList(room))).build();
-		Set<Group> groups = new HashSet<>(Arrays.asList(Group.builder().id(1L).name("AA-11").build()));
+		Course course = Course.builder().id(1L).name("Art").rooms(Set.of(room)).build();
+		Set<Group> groups = Set.of(Group.builder().id(1L).name("AA-11").build());
 		Teacher teacher = Teacher.builder()
 				.id(1L)
 				.name("Homer")
 				.surname("Simpson")
-				.courses(new HashSet<>(Arrays.asList(course)))
+				.courses(Set.of(course))
 				.build();
 		Timeframe timeframe = Timeframe.builder()
 				.id(1L)
@@ -231,31 +253,31 @@ public class LessonControllerTest {
 	}
 
 	private List<Group> buildGroups() {
-		return Arrays.asList(Group.builder().id(1L).name("AA-11").build(),
+		return List.of(Group.builder().id(1L).name("AA-11").build(),
 				Group.builder().id(2L).name("BB-22").build(),
 				Group.builder().id(3L).name("CC-33").build());
 	}
 
 	private List<Teacher> buildTeachers() {
-		return Arrays.asList(Teacher.builder().id(1L).name("Homer").surname("Simpson").build(),
+		return List.of(Teacher.builder().id(1L).name("Homer").surname("Simpson").build(),
 				Teacher.builder().id(2L).name("Aleksandra").surname("Ivanova").build(),
 				Teacher.builder().id(3L).name("Anatoly").surname("Sviridov").build());
 	}
 
 	private List<Course> buildCourses() {
-		return Arrays.asList(Course.builder().id(1L).name("Art").build(),
+		return List.of(Course.builder().id(1L).name("Art").build(),
 				Course.builder().id(2L).name("Law").build(),
 				Course.builder().id(3L).name("Music").build());
 	}
 
 	private List<Room> buildRooms() {
-		return Arrays.asList(Room.builder().id(1L).name("111").capacity(30).build(),
+		return List.of(Room.builder().id(1L).name("111").capacity(30).build(),
 				Room.builder().id(2L).name("222").capacity(30).build(),
 				Room.builder().id(3L).name("333").capacity(30).build());
 	}
 
 	private List<Timeframe> buildTimeframes() {
-		return Arrays.asList(
+		return List.of(
 				Timeframe.builder().id(1L).sequence(1).startTime(parse("08:00")).endTime(parse("09:20")).build(),
 				Timeframe.builder().id(2L).sequence(2).startTime(parse("09:40")).endTime(parse("11:00")).build(),
 				Timeframe.builder().id(3L).sequence(3).startTime(parse("11:20")).endTime(parse("12:40")).build());

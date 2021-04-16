@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalTime;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ public class TimeframeControllerTest {
 	private MockMvc mockMvc;
 
 	@BeforeEach
-	void setUpp() {
+	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(timeframeController)
 				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -49,7 +49,7 @@ public class TimeframeControllerTest {
 
 	@Test
 	public void whenGetAll_thenGetRightTimeframesPages() throws Exception {
-		Page<Timeframe> expected = new PageImpl<>(Arrays.asList(buildTimeframe()));
+		Page<Timeframe> expected = new PageImpl<>(List.of(buildTimeframe()));
 		when(timeframeService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		mockMvc.perform(get("/timeframes").param("page", "0").param("size", "1"))

@@ -11,8 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -56,7 +54,7 @@ public class TeacherControllerTest {
 	private MockMvc mockMvc;
 
 	@BeforeEach
-	void setUpp() {
+	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(teacherController)
 				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -65,7 +63,7 @@ public class TeacherControllerTest {
 
 	@Test
 	public void whenGetAll_thenGetRightTeachersPage() throws Exception {
-		Page<Teacher> expected = new PageImpl<>(Arrays.asList(buildTeacher()));
+		Page<Teacher> expected = new PageImpl<>(List.of(buildTeacher()));
 		when(teacherService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		mockMvc.perform(get("/teachers").param("page", "0").param("size", "1"))
@@ -125,7 +123,7 @@ public class TeacherControllerTest {
 	@Test
 	public void givenNewTeacher_whenSave_thenTeacherIsCreating() throws Exception {
 		Teacher teacher = Teacher.builder()
-				.courses(new HashSet<>(Arrays.asList(Course.builder().id(1L).build())))
+				.courses(Set.of(Course.builder().id(1L).build()))
 				.build();
 		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
 
@@ -140,7 +138,7 @@ public class TeacherControllerTest {
 	public void givenTeacher_whenSave_thenTeacherIsUpdating() throws Exception {
 		Teacher teacher = Teacher.builder()
 				.id(1L)
-				.courses(new HashSet<>(Arrays.asList(Course.builder().id(1L).build())))
+				.courses(Set.of(Course.builder().id(1L).build()))
 				.build();
 		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
 
@@ -165,7 +163,7 @@ public class TeacherControllerTest {
 	@Test
 	public void givenDates_whenGetTimetable_thenGetRightLessons() throws Exception {
 		Teacher teacher = buildTeacher();
-		List<Lesson> expected = Arrays.asList(buildLesson());
+		List<Lesson> expected = List.of(buildLesson());
 		LocalDate startDate = LocalDate.parse("2021-01-21");
 		LocalDate endDate = LocalDate.parse("2021-01-21");
 		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
@@ -182,32 +180,48 @@ public class TeacherControllerTest {
 				.andExpect(model().attribute("endDate", endDate));
 	}
 
+	@Test
+	public void whenReplace_thenRequestForwardedReplaceView() throws Exception {
+		Teacher teacher = buildTeacher();
+		Teacher substituteTeacher = buildTeacher();
+		substituteTeacher.setId(2L);
+		Set<Teacher> substituteTeachers = Set.of(substituteTeacher);
+		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+		when(teacherService.getSubstituteTeachers(teacher)).thenReturn(substituteTeachers);
+
+		mockMvc.perform(get("/teachers/{id}/replace", 1))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("teacher", teacher))
+				.andExpect(model().attribute("substituteTeachers", substituteTeachers))
+				.andExpect(forwardedUrl("teacher/replace"));
+	}
+
 	private Teacher buildTeacher() {
 		return Teacher.builder()
 				.id(1L)
 				.name("Homer")
 				.surname("Simpson")
-				.courses(new HashSet<>(Arrays.asList(Course.builder().id(1L).name("Art").build(),
-						Course.builder().id(2L).name("Law").build())))
+				.courses(Set.of(Course.builder().id(1L).name("Art").build(),
+						Course.builder().id(2L).name("Law").build()))
 				.gender(Gender.MALE)
 				.build();
 	}
 
 	private List<Course> buildCourses() {
-		return Arrays.asList(Course.builder().id(1L).name("Art").build(),
+		return List.of(Course.builder().id(1L).name("Art").build(),
 				Course.builder().id(2L).name("Law").build(),
 				Course.builder().id(3L).name("Music").build());
 	}
 
 	private Lesson buildLesson() {
 		Room room = Room.builder().id(1L).name("111").capacity(30).build();
-		Course course = Course.builder().id(1L).name("Art").rooms(new HashSet<>(Arrays.asList(room))).build();
-		Set<Group> groups = new HashSet<>(Arrays.asList(Group.builder().id(1L).name("AA-11").build()));
+		Course course = Course.builder().id(1L).name("Art").rooms(Set.of(room)).build();
+		Set<Group> groups = Set.of(Group.builder().id(1L).name("AA-11").build());
 		Teacher teacher = Teacher.builder()
 				.id(1L)
 				.name("Homer")
 				.surname("Simpson")
-				.courses(new HashSet<>(Arrays.asList(course)))
+				.courses(Set.of(course))
 				.build();
 		Timeframe timeframe = Timeframe.builder()
 				.id(1L)

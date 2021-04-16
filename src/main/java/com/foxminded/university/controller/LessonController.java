@@ -4,6 +4,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -103,13 +104,14 @@ public class LessonController {
 		return "redirect:/lessons";
 	}
 
-	@PostMapping("/replace/teacher/{id}")
-	public String replaceTeacher(@PathVariable Long id,
+	@PostMapping("/replace/teacher")
+	public String replaceTeacher(@RequestParam Long teacherId,
+			@RequestParam(value = "substituteTeacherId", required = false) List<Long> substituteTeacherIds,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		Teacher teacher = teacherService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
-		lessonService.replaceTeacherByDateBetween(teacher, startDate, endDate);
+		Teacher teacher = teacherService.findById(teacherId)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", teacherId)));
+		lessonService.replaceTeacherByDateBetween(teacher, startDate, endDate, substituteTeacherIds);
 		return "redirect:/lessons";
 	}
 

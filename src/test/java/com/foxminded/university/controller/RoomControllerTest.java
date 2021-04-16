@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ public class RoomControllerTest {
 	private MockMvc mockMvc;
 
 	@BeforeEach
-	void setUpp() {
+	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(roomController)
 				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -48,7 +48,7 @@ public class RoomControllerTest {
 
 	@Test
 	public void whenGetAll_thenGetRightRoomsPage() throws Exception {
-		Page<Room> expected = new PageImpl<>(Arrays.asList(buildRoom()));
+		Page<Room> expected = new PageImpl<>(List.of(buildRoom()));
 		when(roomService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		mockMvc.perform(get("/rooms").param("page", "0").param("size", "1"))

@@ -9,10 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +44,7 @@ public class CourseControllerTest {
 	private MockMvc mockMvc;
 
 	@BeforeEach
-	void setUpp() {
+	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(courseController)
 				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -54,7 +53,7 @@ public class CourseControllerTest {
 
 	@Test
 	public void whenGetAll_thenGetRightCoursesPage() throws Exception {
-		Page<Course> expected = new PageImpl<>(Arrays.asList(buildCourse()));
+		Page<Course> expected = new PageImpl<>(List.of(buildCourse()));
 		when(courseService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		mockMvc.perform(get("/courses").param("page", "0").param("size", "1"))
@@ -113,7 +112,7 @@ public class CourseControllerTest {
 	public void givenNewCourse_whenSave_thenCourseIsCreating() throws Exception {
 		Course course = Course.builder()
 				.name("Art")
-				.rooms(new HashSet<>(Arrays.asList(Room.builder().id(1L).build())))
+				.rooms(Set.of(Room.builder().id(1L).build()))
 				.build();
 		when(roomService.findById(1L)).thenReturn(Optional.of(Room.builder().id(1L).name("111").capacity(30).build()));
 
@@ -129,7 +128,7 @@ public class CourseControllerTest {
 		Course course = Course.builder()
 				.id(1L)
 				.name("Art")
-				.rooms(new HashSet<>(Arrays.asList(Room.builder().id(1L).build())))
+				.rooms(Set.of(Room.builder().id(1L).build()))
 				.build();
 		when(roomService.findById(1L)).thenReturn(Optional.of(Room.builder().id(1L).name("111").capacity(30).build()));
 
@@ -155,13 +154,13 @@ public class CourseControllerTest {
 		return Course.builder()
 				.id(1L)
 				.name("Art")
-				.rooms(new HashSet<>(Arrays.asList(Room.builder().id(1L).name("111").capacity(30).build(),
-						Room.builder().id(2L).name("222").capacity(30).build())))
+				.rooms(Set.of(Room.builder().id(1L).name("111").capacity(30).build(),
+						Room.builder().id(2L).name("222").capacity(30).build()))
 				.build();
 	}
 
 	private List<Room> buildRooms() {
-		return Arrays.asList(Room.builder().id(1L).name("111").capacity(30).build(),
+		return List.of(Room.builder().id(1L).name("111").capacity(30).build(),
 				Room.builder().id(2L).name("222").capacity(30).build(),
 				Room.builder().id(3L).name("333").capacity(30).build());
 	}

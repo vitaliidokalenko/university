@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ public class GroupControllerTest {
 	private MockMvc mockMvc;
 
 	@BeforeEach
-	void setUpp() {
+	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(groupController)
 				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -49,7 +49,7 @@ public class GroupControllerTest {
 
 	@Test
 	public void whenGetAll_thenGetRightGroupsPage() throws Exception {
-		Page<Group> expected = new PageImpl<>(Arrays.asList(buildGroup()));
+		Page<Group> expected = new PageImpl<>(List.of(buildGroup()));
 		when(groupService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		mockMvc.perform(get("/groups").param("page", "0").param("size", "1"))
@@ -141,7 +141,7 @@ public class GroupControllerTest {
 		return Group.builder()
 				.id(1L)
 				.name("AA-11")
-				.students(Arrays.asList(Student.builder().id(1L).name("Anatoly").surname("Chegrinets").build()))
+				.students(List.of(Student.builder().id(1L).name("Anatoly").surname("Chegrinets").build()))
 				.build();
 	}
 }

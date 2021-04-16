@@ -6,10 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,7 +69,7 @@ public class CourseServiceTest {
 	@Test
 	public void givenRoomsIsEmpty_whenCreate_thenIncompleteEntityExceptionThrown() {
 		Course course = buildCourse();
-		course.setRooms(new HashSet<>());
+		course.setRooms(Set.of());
 
 		Exception exception = assertThrows(IncompleteEntityException.class, () -> courseService.create(course));
 		assertEquals(format("No rooms assigned to the course: %s", course.getName()), exception.getMessage());
@@ -88,7 +87,7 @@ public class CourseServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightListOfCourses() {
-		List<Course> expected = Arrays.asList(buildCourse());
+		List<Course> expected = List.of(buildCourse());
 		when(courseDao.getAll()).thenReturn(expected);
 
 		List<Course> actual = courseService.getAll();
@@ -167,7 +166,7 @@ public class CourseServiceTest {
 
 	@Test
 	public void whenGetAllPage_thenGetRightCourses() {
-		Page<Course> expected = new PageImpl<>(Arrays.asList(buildCourse()));
+		Page<Course> expected = new PageImpl<>(List.of(buildCourse()));
 		when(courseDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Course> actual = courseService.getAllPage(PageRequest.of(0, 1));
@@ -182,7 +181,7 @@ public class CourseServiceTest {
 		room2.setId(2L);
 		Course course = new Course("Art");
 		course.setId(1L);
-		course.setRooms(new HashSet<>(Arrays.asList(room1, room2)));
+		course.setRooms(Set.of(room1, room2));
 		return course;
 	}
 }

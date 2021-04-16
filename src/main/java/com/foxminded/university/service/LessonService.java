@@ -3,6 +3,7 @@ package com.foxminded.university.service;
 import static java.lang.String.format;
 import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
+import static java.util.stream.Collectors.toList;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -104,26 +105,40 @@ public class LessonService {
 	}
 
 	@Transactional
-	public void replaceTeacherByDateBetween(Teacher teacher, LocalDate startDate, LocalDate endDate) {
+	public void replaceTeacherByDateBetween(Teacher teacher, LocalDate startDate, LocalDate endDate,
+			List<Long> substituteTeacherIds) {
 		logger.debug("Replacing teacher: {} {} for lessons between {} and {}",
 				teacher.getName(),
 				teacher.getSurname(),
 				startDate,
 				endDate);
 		List<Lesson> lessons = lessonDao.getByTeacherIdAndDateBetween(teacher.getId(), startDate, endDate);
-		lessons.stream()
-				.forEach(l -> l.setTeacher(teacherDao.getByCourseId(l.getCourse().getId())
-						.stream()
-						.filter(t -> !lessonDao.getByTeacherAndDateAndTimeframe(t, l.getDate(), l.getTimeframe())
-								.isPresent() && !t.getId().equals(teacher.getId()))
-						.findAny()
-						.orElseThrow(() -> new NotFoundSubstituteTeacherException(
-								format("Substitute teacher was not found for the lesson id: %d, course: %s, date: %s, start time: %s",
-										l.getId(),
-										l.getCourse().getName(),
-										l.getDate(),
-										l.getTimeframe().getStartTime())))));
+		if (substituteTeacherIds == null) {
+			lessons.forEach(l -> replaceTeacher(l, teacherDao.getByCourseId(l.getCourse().getId())));
+		} else {
+			List<Teacher> substituteTeachers = substituteTeacherIds.stream()
+					.map(id -> teacherDao.findById(id)
+							.orElseThrow(() -> new NotFoundEntityException(
+									format("Cannot find teacher by id: %d", id))))
+					.collect(toList());
+			lessons.forEach(l -> replaceTeacher(l, substituteTeachers));
+		}
 		lessons.stream().forEach(lessonDao::update);
+	}
+
+	private void replaceTeacher(Lesson lesson, List<Teacher> substituteTeachers) {
+		lesson.setTeacher(substituteTeachers.stream()
+				.filter(t -> !lessonDao.getByTeacherAndDateAndTimeframe(t, lesson.getDate(), lesson.getTimeframe())
+						.isPresent()
+						&& !t.getId().equals(lesson.getTeacher().getId())
+						&& t.getCourses().contains(lesson.getCourse()))
+				.findAny()
+				.orElseThrow(() -> new NotFoundSubstituteTeacherException(
+						format("Substitute teacher was not found for the lesson id: %d, course: %s, date: %s, start time: %s",
+								lesson.getId(),
+								lesson.getCourse().getName(),
+								lesson.getDate(),
+								lesson.getTimeframe().getStartTime()))));
 	}
 
 	private void verify(Lesson lesson) {

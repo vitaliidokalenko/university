@@ -100,6 +100,15 @@ public class TeacherController {
 		return "teacher/timetable";
 	}
 
+	@GetMapping("/{id}/replace")
+	public String replace(Model model, @PathVariable Long id) {
+		Teacher teacher = teacherService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
+		model.addAttribute("teacher", teacher);
+		model.addAttribute("substituteTeachers", teacherService.getSubstituteTeachers(teacher));
+		return "teacher/replace";
+	}
+
 	private void retrieveRelationsFields(Teacher teacher) {
 		teacher.setCourses(teacher.getCourses()
 				.stream()
