@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Add new lesson</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<form th:action="@{/lessons/save}" th:object="${lesson}" method="post">
+		<div class="container">
+			<p class="h3 text-secondary">New lesson</p>
+			<br>
+			<dl class="row">
+				<dt class="col-sm-2">
+					<label for="date">Date</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input class="form-control" type="date" id="date" th:value="*{date}" th:field="*{date}" required>
+				</dd>
+				<dt class="col-sm-2">
+					<label for="timeframe">Timeframe</label>
+				</dt>
+				<dd class="col-sm-10">
+					<select class="form-control" id="timeframe" th:field="*{timeframe.id}" required>
+						<option th:each="timeframe : ${timeframes}" th:value="${timeframe.id}"
+							th:text="${timeframe.startTime} + ' - ' + ${timeframe.endTime}"></option>
+					</select>
+				</dd>
+				<dt class="col-sm-2">Groups</dt>
+				<dd class="col-sm-10">
+					<div style="height: 150px; border: 1px solid #ccc; overflow: auto;">
+						<div th:each="group : ${groups}">
+							<input type="checkbox" th:value="${group.id}" th:field="*{groups}" /> <label
+								th:for="${#ids.prev('groups')}" th:text="${group.name}"></label>
+						</div>
+					</div>
+				</dd>
+				<dt class="col-sm-2">Teacher</dt>
+				<dd class="col-sm-10">
+					<select class="form-control" th:field="*{teacher.id}" required>
+						<option th:each="teacher : ${teachers}" th:value="${teacher.id}"
+							th:text="${teacher.name} + ' ' + ${teacher.surname}"></option>
+					</select>
+				</dd>
+				<dt class="col-sm-2">Course</dt>
+				<dd class="col-sm-10">
+					<select class="form-control" th:field="*{course.id}" required>
+						<option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.name}"></option>
+					</select>
+				</dd>
+				<dt class="col-sm-2">Room</dt>
+				<dd class="col-sm-10">
+					<select class="form-control" th:field="*{room.id}" required>
+						<option th:each="room : ${rooms}" th:value="${room.id}" th:text="${room.name}"></option>
+					</select>
+				</dd>
+			</dl>
+			<input class="btn btn-success" type="submit" role="button" value="Submit">
+		</div>
+	</form>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

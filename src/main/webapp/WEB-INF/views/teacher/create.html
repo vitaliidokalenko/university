@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Add new teacher</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<form action="#" th:action="@{/teachers/save}" th:object="${teacher}" method="post">
+		<div class="container">
+			<p class="h3 text-secondary">New teacher</p>
+			<br>
+			<dl class="row">
+				<dt class="col-sm-2">
+					<label for="name">Name</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="text" th:field="*{name}" id="name" placeholder="Name" required>
+				</dd>
+				<dt class="col-sm-2">
+					<label for="surname">Surname</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="text" th:field="*{surname}" id="surname" placeholder="Surname" required>
+				</dd>
+				<dt class="col-sm-2">
+					<label for="rank">Rank</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="text" th:field="*{rank}" id="rank" placeholder="Rank">
+				</dd>
+				<dt class="col-sm-2">Courses</dt>
+				<dd class="col-sm-10">
+					<div style="height: 150px; border: 1px solid #ccc; overflow: auto;">
+						<div th:each="course : ${courses}">
+							<input type="checkbox" th:value="${course.id}" th:field="*{courses}" /> <label
+								th:for="${#ids.prev('courses')}" th:text="${course.name}"></label>
+						</div>
+					</div>
+				</dd>
+				<dt class="col-sm-2">
+					<label for="phone">Phone</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="text" th:field="*{phone}" id="phone" placeholder="Phone">
+				</dd>
+				<dt class="col-sm-2">
+					<label for="email">Email</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="text" th:field="*{email}" id="email" placeholder="Email">
+				</dd>
+				<dt class="col-sm-2">
+					<label for="address">Address</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="text" th:field="*{address}" id="address" placeholder="Address">
+				</dd>
+				<dt class="col-sm-2">
+					<label for="birthDate">Birth date</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input class="form-control" type="date" id="birthDate" th:value="*{birthDate}"
+						th:field="*{birthDate}" required>
+				</dd>
+				<dt class="col-sm-2">Gender</dt>
+				<dd class="col-sm-10">
+					<div class="form-check form-check-inline" th:each="gender : ${genders}">
+						<input type="radio" th:field="*{gender}" th:value="${gender}" th:text="${gender}">
+					</div>
+				</dd>
+			</dl>
+			<input class="btn btn-success" type="submit" role="button" value="Submit">
+		</div>
+	</form>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

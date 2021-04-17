@@ -1,17 +1,31 @@
 package com.foxminded.university.controller;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toSet;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.foxminded.university.model.Lesson;
+import com.foxminded.university.model.Teacher;
+import com.foxminded.university.service.CourseService;
+import com.foxminded.university.service.GroupService;
 import com.foxminded.university.service.LessonService;
+import com.foxminded.university.service.RoomService;
+import com.foxminded.university.service.TeacherService;
+import com.foxminded.university.service.TimeframeService;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Controller
@@ -19,9 +33,20 @@ import com.foxminded.university.service.exception.NotFoundEntityException;
 public class LessonController {
 
 	private final LessonService lessonService;
+	private final GroupService groupService;
+	private final TeacherService teacherService;
+	private final CourseService courseService;
+	private final RoomService roomService;
+	private final TimeframeService timeframeService;
 
-	public LessonController(LessonService lessonService) {
+	public LessonController(LessonService lessonService, GroupService groupService, TeacherService teacherService,
+			CourseService courseService, RoomService roomService, TimeframeService timeframeService) {
 		this.lessonService = lessonService;
+		this.groupService = groupService;
+		this.teacherService = teacherService;
+		this.courseService = courseService;
+		this.roomService = roomService;
+		this.timeframeService = timeframeService;
 	}
 
 	@GetMapping
@@ -37,5 +62,77 @@ public class LessonController {
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find lesson by id: %d", id)));
 		model.addAttribute("lesson", lesson);
 		return "lesson/lesson";
+	}
+
+	@GetMapping("/new")
+	public String create(Model model, Lesson lesson) {
+		model.addAttribute("groups", groupService.getAll());
+		model.addAttribute("teachers", teacherService.getAll());
+		model.addAttribute("courses", courseService.getAll());
+		model.addAttribute("rooms", roomService.getAll());
+		model.addAttribute("timeframes", timeframeService.getAll());
+		return "lesson/create";
+	}
+
+	@GetMapping("/{id}/edit")
+	public String update(@PathVariable Long id, Model model) {
+		Lesson lesson = lessonService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find lesson by id: %d", id)));
+		model.addAttribute("lesson", lesson);
+		model.addAttribute("groups", groupService.getAll());
+		model.addAttribute("teachers", teacherService.getAll());
+		model.addAttribute("courses", courseService.getAll());
+		model.addAttribute("rooms", roomService.getAll());
+		model.addAttribute("timeframes", timeframeService.getAll());
+		return "lesson/edit";
+	}
+
+	@PostMapping("/save")
+	public String save(@ModelAttribute Lesson lesson) {
+		retrieveRelationsFields(lesson);
+		if (lesson.getId() == null) {
+			lessonService.create(lesson);
+		} else {
+			lessonService.update(lesson);
+		}
+		return "redirect:/lessons";
+	}
+
+	@PostMapping("/{id}/delete")
+	public String delete(@PathVariable Long id) {
+		lessonService.deleteById(id);
+		return "redirect:/lessons";
+	}
+
+	@PostMapping("/replace/teacher")
+	public String replaceTeacher(@RequestParam Long teacherId,
+			@RequestParam(value = "substituteTeacherId", required = false) List<Long> substituteTeacherIds,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+		Teacher teacher = teacherService.findById(teacherId)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", teacherId)));
+		lessonService.replaceTeacherByDateBetween(teacher, startDate, endDate, substituteTeacherIds);
+		return "redirect:/lessons";
+	}
+
+	private void retrieveRelationsFields(Lesson lesson) {
+		lesson.setCourse(courseService.findById(lesson.getCourse().getId())
+				.orElseThrow(() -> new NotFoundEntityException(
+						format("Cannot find course by id: %d", lesson.getCourse().getId()))));
+		lesson.setRoom(roomService.findById(lesson.getRoom().getId())
+				.orElseThrow(() -> new NotFoundEntityException(
+						format("Cannot find room by id: %d", lesson.getRoom().getId()))));
+		lesson.setTeacher(teacherService.findById(lesson.getTeacher().getId())
+				.orElseThrow(() -> new NotFoundEntityException(
+						format("Cannot find teacher by id: %d", lesson.getTeacher().getId()))));
+		lesson.setTimeframe(timeframeService.findById(lesson.getTimeframe().getId())
+				.orElseThrow(() -> new NotFoundEntityException(
+						format("Cannot find timeframe by id: %d", lesson.getCourse().getId()))));
+		lesson.setGroups(lesson.getGroups()
+				.stream()
+				.map(g -> groupService.findById(g.getId())
+						.orElseThrow(() -> new NotFoundEntityException(
+								format("Cannot find group by id: %d", g.getId()))))
+				.collect(toSet()));
 	}
 }

@@ -21,4 +21,8 @@ public interface LessonDao extends GenericDao<Lesson> {
 	public Optional<Lesson> getByTeacherAndDateAndTimeframe(Teacher teacher, LocalDate date, Timeframe timeframe);
 
 	public Optional<Lesson> getByRoomAndDateAndTimeframe(Room room, LocalDate date, Timeframe timeframe);
+
+	public List<Lesson> getByTeacherIdAndDateBetween(Long teacherId, LocalDate startDate, LocalDate endDate);
+
+	public List<Lesson> getByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate);
 }

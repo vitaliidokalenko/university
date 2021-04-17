@@ -1,12 +1,15 @@
 package com.foxminded.university.controller;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +40,7 @@ public class GroupControllerTest {
 	private MockMvc mockMvc;
 
 	@BeforeEach
-	void setUpp() {
+	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(groupController)
 				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -46,7 +49,7 @@ public class GroupControllerTest {
 
 	@Test
 	public void whenGetAll_thenGetRightGroupsPage() throws Exception {
-		Page<Group> expected = new PageImpl<>(Arrays.asList(buildGroup()));
+		Page<Group> expected = new PageImpl<>(List.of(buildGroup()));
 		when(groupService.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		mockMvc.perform(get("/groups").param("page", "0").param("size", "1"))
@@ -57,13 +60,13 @@ public class GroupControllerTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightGroup() throws Exception {
-		Optional<Group> expected = Optional.of(buildGroup());
-		when(groupService.findById(1L)).thenReturn(expected);
+		Group expected = buildGroup();
+		when(groupService.findById(1L)).thenReturn(Optional.of(expected));
 
 		mockMvc.perform(get("/groups/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("group/group"))
-				.andExpect(model().attribute("group", expected.get()));
+				.andExpect(model().attribute("group", expected));
 	}
 
 	@Test
@@ -77,10 +80,68 @@ public class GroupControllerTest {
 				.andExpect(forwardedUrl("error"));
 	}
 
+	@Test
+	public void whenCreate_thenAddedNewStudentAttribute() throws Exception {
+		mockMvc.perform(get("/groups/new"))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("group", new Group()))
+				.andExpect(forwardedUrl("group/create"));
+	}
+
+	@Test
+	public void whenUpdate_thenAddedRightGroupAttribute() throws Exception {
+		Group expected = buildGroup();
+		when(groupService.findById(1L)).thenReturn(Optional.of(expected));
+
+		mockMvc.perform(get("/groups/{id}/edit", 1))
+				.andExpect(status().isOk())
+				.andExpect(model().attribute("group", expected))
+				.andExpect(forwardedUrl("group/edit"));
+	}
+
+	@Test
+	public void givenNewGroup_whenSave_thenGroupIsCreating() throws Exception {
+		Group group = Group.builder()
+				.name("AA-11")
+				.build();
+
+		mockMvc.perform(post("/groups/save").flashAttr("group", group))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/groups"));
+
+		verify(groupService).create(group);
+	}
+
+	@Test
+	public void givenGroup_whenSave_thenGroupIsUpdating() throws Exception {
+		Group group = Group.builder()
+				.id(1L)
+				.name("AA-11")
+				.build();
+
+		mockMvc.perform(post("/groups/save").flashAttr("group", group))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/groups"));
+
+		verify(groupService).update(group);
+	}
+
+	@Test
+	public void givenGroup_whenDelete_thenGroupIsDeleting() throws Exception {
+		Group group = buildGroup();
+
+		mockMvc.perform(post("/groups/{id}/delete", 1))
+				.andExpect(status().isFound())
+				.andExpect(redirectedUrl("/groups"));
+
+		verify(groupService).deleteById(group.getId());
+	}
+
 	private Group buildGroup() {
-		Group group = new Group("AA-11");
-		group.setId(1L);
-		group.setStudents(Arrays.asList(new Student("Anatoy", "Chegrinets")));
-		return group;
+		return Group.builder()
+				.id(1L)
+				.name("AA-11")
+				.students(List.of(Student.builder().id(1L).name("Anatoly").surname("Chegrinets").build()))
+				.build();
 	}
 }

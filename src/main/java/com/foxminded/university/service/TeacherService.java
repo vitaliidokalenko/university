@@ -1,9 +1,11 @@
 package com.foxminded.university.service;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +72,17 @@ public class TeacherService {
 		} else {
 			throw new NotFoundEntityException(format("Cannot find teacher by id: %d", id));
 		}
+	}
+
+	@Transactional
+	public Set<Teacher> getSubstituteTeachers(Teacher teacher) {
+		logger.debug("Getting substitutes for teacher id: {}", teacher.getId());
+		return teacher.getCourses()
+				.stream()
+				.map(c -> teacherDao.getByCourseId(c.getId()))
+				.flatMap(List::stream)
+				.filter(t -> !t.equals(teacher))
+				.collect(toSet());
 	}
 
 	private void verify(Teacher teacher) {

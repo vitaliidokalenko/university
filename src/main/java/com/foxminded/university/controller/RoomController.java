@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.foxminded.university.model.Room;
@@ -37,5 +38,34 @@ public class RoomController {
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find room by id: %d", id)));
 		model.addAttribute("room", room);
 		return "room/room";
+	}
+
+	@GetMapping("/new")
+	public String create(Room room, Model model) {
+		return "room/create";
+	}
+
+	@GetMapping("/{id}/edit")
+	public String update(@PathVariable Long id, Model model) {
+		Room room = roomService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find room by id: %d", id)));
+		model.addAttribute("room", room);
+		return "room/edit";
+	}
+
+	@PostMapping("/{id}/delete")
+	public String delete(@PathVariable Long id) {
+		roomService.deleteById(id);
+		return "redirect:/rooms";
+	}
+
+	@PostMapping("/save")
+	public String save(Room room) {
+		if (room.getId() == null) {
+			roomService.create(room);
+		} else {
+			roomService.update(room);
+		}
+		return "redirect:/rooms";
 	}
 }

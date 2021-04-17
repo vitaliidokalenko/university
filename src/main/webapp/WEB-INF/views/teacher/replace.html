@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Replace teacher</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<div class="container">
+	<form id="replace" th:action="@{/lessons/replace/teacher}" method="post" th:object="${substituteTeachers}">
+	<input type="hidden" name="teacherId" th:value="${teacher.id}">
+			<dl class="row">
+				<dt class="col-sm-2">
+					<input class="btn btn-secondary" id="replace" type="submit" role="button" value="Replace">
+				</dt>
+				<dd class="col-sm-2">
+					<label for="startDate">Start date:</label> <input class="form-control" type="date"
+						name="startDate" id="startDate" th:value="${startDate}" required>
+				</dd>
+				<dd class="col-sm-2">
+					<label for="endDate">End date:</label> <input class="form-control" type="date" name="endDate"
+						id="endDate" th:value="${endDate}" required>
+				</dd>
+				<dd th:if="${!substituteTeachers.isEmpty()}" class="col-sm-6">
+				Substitute teachers:
+						<div th:each="teacher : ${substituteTeachers}">
+							<input type="checkbox" th:value="${teacher.id}" th:name="substituteTeacherId" />
+							<label th:text="${teacher.name} + ' ' + ${teacher.surname}"></label>
+						</div>
+				</dd>
+			</dl>
+		</form>
+	</div>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

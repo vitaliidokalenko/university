@@ -8,8 +8,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -28,7 +26,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.StudentDao;
+import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.model.Course;
+import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
@@ -41,6 +41,7 @@ import com.foxminded.university.service.exception.NotAvailableTeacherException;
 import com.foxminded.university.service.exception.NotCompetentTeacherForCourseException;
 import com.foxminded.university.service.exception.NotEnoughRoomCapacityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotFoundSubstituteTeacherException;
 import com.foxminded.university.service.exception.NotSuitableRoomForCourseException;
 import com.foxminded.university.service.exception.NotWeekDayException;
 
@@ -52,7 +53,8 @@ public class LessonServiceTest {
 	private LessonDao lessonDao;
 	@Mock
 	private StudentDao studentDao;
-
+	@Mock
+	private TeacherDao teacherDao;
 	@InjectMocks
 	private LessonService lessonService;
 
@@ -151,7 +153,7 @@ public class LessonServiceTest {
 	@Test
 	public void givenRoomCapacityIsNotEnough_whenCreate_thenNotEnoughRoomCapacityExceptionThrown() {
 		Lesson lesson = buildLesson();
-		List<Student> students = Arrays.asList(new Student("Anna", "Maria"),
+		List<Student> students = List.of(new Student("Anna", "Maria"),
 				new Student("Anatoly", "Deineka"),
 				new Student("Alina", "Linkoln"),
 				new Student("Homer", "Simpson"));
@@ -169,7 +171,7 @@ public class LessonServiceTest {
 	public void givenRoomCapacityIsEnough_whenCreate_thenLessonIsCreating() {
 		Lesson lesson = buildLesson();
 		when(studentDao.getByGroup(Mockito.any(Group.class)))
-				.thenReturn(Arrays.asList(new Student("Anna", "Maria"),
+				.thenReturn(List.of(new Student("Anna", "Maria"),
 						new Student("Anatoly", "Deineka")));
 
 		lessonService.create(lesson);
@@ -235,7 +237,7 @@ public class LessonServiceTest {
 	@Test
 	public void whenGetAll_thenGetRightListOfLessons() {
 		Lesson lesson = buildLesson();
-		List<Lesson> expected = Arrays.asList(lesson);
+		List<Lesson> expected = List.of(lesson);
 		when(lessonDao.getAll()).thenReturn(expected);
 
 		List<Lesson> actual = lessonService.getAll();
@@ -367,12 +369,98 @@ public class LessonServiceTest {
 
 	@Test
 	public void whenGetAllPage_thenGetRightLessons() {
-		Page<Lesson> expected = new PageImpl<>(Arrays.asList(buildLesson()));
+		Page<Lesson> expected = new PageImpl<>(List.of(buildLesson()));
 		when(lessonDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Lesson> actual = lessonService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void whenGetByTeacherIdAndDateBetween_thenGetRightListOfLessons() {
+		Lesson lesson = buildLesson();
+		List<Lesson> expected = List.of(lesson);
+		when(lessonDao.getByTeacherIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21")))
+				.thenReturn(expected);
+
+		List<Lesson> actual = lessonService
+				.getByTeacherIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void whenGetByGroupIdAndDateBetween_thenGetRightListOfLessons() {
+		Lesson lesson = buildLesson();
+		List<Lesson> expected = List.of(lesson);
+		when(lessonDao.getByGroupIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21")))
+				.thenReturn(expected);
+
+		List<Lesson> actual = lessonService
+				.getByGroupIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenSubstituteTeacherIdsIsNull_whenReplaceTeacherByDateBetween_thenLessonsIsUpdating() {
+		LocalDate startDate = LocalDate.parse("2021-01-20");
+		LocalDate endDate = LocalDate.parse("2021-01-22");
+		Lesson lesson = buildLesson();
+		List<Lesson> lessons = List.of(lesson);
+		Teacher substituteTeacher = buildTeacher();
+		substituteTeacher.setId(2L);
+		when(lessonDao.getByTeacherIdAndDateBetween(1L, startDate, endDate))
+				.thenReturn(lessons);
+		when(teacherDao.getByCourseId(1L)).thenReturn(List.of(substituteTeacher));
+		when(lessonDao.getByTeacherAndDateAndTimeframe(substituteTeacher, lesson.getDate(), lesson.getTimeframe()))
+				.thenReturn(Optional.empty());
+
+		lessonService.replaceTeacherByDateBetween(buildTeacher(), startDate, endDate, null);
+
+		verify(lessonDao).update(lesson);
+	}
+
+	@Test
+	public void givenSubstituteTeacherIdsIsNotNull_whenReplaceTeacherByDateBetween_thenLessonsIsUpdating() {
+		LocalDate startDate = LocalDate.parse("2021-01-20");
+		LocalDate endDate = LocalDate.parse("2021-01-22");
+		Lesson lesson = buildLesson();
+		List<Lesson> lessons = List.of(lesson);
+		Teacher substituteTeacher = buildTeacher();
+		substituteTeacher.setId(2L);
+		when(lessonDao.getByTeacherIdAndDateBetween(1L, startDate, endDate))
+				.thenReturn(lessons);
+		when(teacherDao.findById(1L)).thenReturn(Optional.of(substituteTeacher));
+		when(lessonDao.getByTeacherAndDateAndTimeframe(substituteTeacher, lesson.getDate(), lesson.getTimeframe()))
+				.thenReturn(Optional.empty());
+
+		lessonService.replaceTeacherByDateBetween(buildTeacher(), startDate, endDate, List.of(1L));
+
+		verify(lessonDao).update(lesson);
+	}
+
+	@Test
+	public void givenSubstituteTeacherIsNotAvailable_whenReplaceTeacherByDateBetween_thenNotFoundSubstituteTeacherExceptionThrown() {
+		LocalDate startDate = LocalDate.parse("2021-01-20");
+		LocalDate endDate = LocalDate.parse("2021-01-22");
+		Lesson lesson = buildLesson();
+		List<Lesson> lessons = List.of(lesson);
+		Teacher replacedTeacher = buildTeacher();
+		Teacher substituteTeacher = buildTeacher();
+		substituteTeacher.setId(2L);
+		when(lessonDao.getByTeacherIdAndDateBetween(1L, startDate, endDate))
+				.thenReturn(lessons);
+		when(teacherDao.getByCourseId(1L)).thenReturn(List.of(substituteTeacher));
+		when(lessonDao.getByTeacherAndDateAndTimeframe(substituteTeacher, lesson.getDate(), lesson.getTimeframe()))
+				.thenReturn(Optional.of(buildLesson()));
+
+		Exception exception = assertThrows(NotFoundSubstituteTeacherException.class,
+				() -> lessonService.replaceTeacherByDateBetween(replacedTeacher, startDate, endDate, null));
+		assertEquals(
+				"Substitute teacher was not found for the lesson id: 1, course: Art, date: 2021-01-21, start time: 08:00",
+				exception.getMessage());
 	}
 
 	private Lesson buildLesson() {
@@ -381,20 +469,21 @@ public class LessonServiceTest {
 		room.setCapacity(3);
 		Course course = new Course("Art");
 		course.setId(1L);
-		course.setRooms(new HashSet<>(Arrays.asList(room)));
+		course.setRooms(Set.of(room));
 		LocalDate date = LocalDate.parse("2021-01-21");
 		Group group = new Group("AA-11");
 		group.setId(1L);
-		Set<Group> groups = new HashSet<>(Arrays.asList(group));
+		Set<Group> groups = Set.of(group);
 		Teacher teacher = new Teacher("Homer", "Simpson");
 		teacher.setId(1L);
-		teacher.setCourses(new HashSet<>(Arrays.asList(course)));
+		teacher.setCourses(Set.of(course));
 		Timeframe timeframe = new Timeframe();
 		timeframe.setId(1L);
 		timeframe.setSequence(1);
 		timeframe.setStartTime(LocalTime.parse("08:00"));
 		timeframe.setEndTime(LocalTime.parse("09:20"));
 		Lesson lesson = new Lesson();
+		lesson.setId(1L);
 		lesson.setCourse(course);
 		lesson.setDate(date);
 		lesson.setGroups(groups);
@@ -402,5 +491,21 @@ public class LessonServiceTest {
 		lesson.setTeacher(teacher);
 		lesson.setTimeframe(timeframe);
 		return lesson;
+	}
+
+	private Teacher buildTeacher() {
+		Room room = new Room("111");
+		room.setId(1L);
+		room.setCapacity(3);
+		Course course1 = new Course("Art");
+		course1.setId(1L);
+		course1.setRooms(Set.of(room));
+		Course course2 = new Course("Law");
+		course2.setId(2L);
+		Teacher teacher = new Teacher("Homer", "Simpson");
+		teacher.setId(1L);
+		teacher.setCourses(Set.of(course1, course2));
+		teacher.setGender(Gender.MALE);
+		return teacher;
 	}
 }

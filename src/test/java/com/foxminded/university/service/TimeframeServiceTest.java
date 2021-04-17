@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,7 +116,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightListOfTimeframes() {
-		List<Timeframe> expected = Arrays.asList(buildTimeframe());
+		List<Timeframe> expected = List.of(buildTimeframe());
 		when(timeframeDao.getAll()).thenReturn(expected);
 
 		List<Timeframe> actual = timeframeService.getAll();
@@ -165,7 +164,7 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void whenGetAllPage_thenGetRightTimeframes() {
-		Page<Timeframe> expected = new PageImpl<>(Arrays.asList(buildTimeframe()));
+		Page<Timeframe> expected = new PageImpl<>(List.of(buildTimeframe()));
 		when(timeframeDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Timeframe> actual = timeframeService.getAllPage(PageRequest.of(0, 1));

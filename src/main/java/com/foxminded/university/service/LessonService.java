@@ -3,8 +3,10 @@ package com.foxminded.university.service;
 import static java.lang.String.format;
 import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
+import static java.util.stream.Collectors.toList;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -18,8 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.dao.LessonDao;
 import com.foxminded.university.dao.StudentDao;
+import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
+import com.foxminded.university.model.Teacher;
 import com.foxminded.university.service.exception.IncompleteEntityException;
 import com.foxminded.university.service.exception.NotAvailableGroupException;
 import com.foxminded.university.service.exception.NotAvailableRoomException;
@@ -27,6 +31,7 @@ import com.foxminded.university.service.exception.NotAvailableTeacherException;
 import com.foxminded.university.service.exception.NotCompetentTeacherForCourseException;
 import com.foxminded.university.service.exception.NotEnoughRoomCapacityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
+import com.foxminded.university.service.exception.NotFoundSubstituteTeacherException;
 import com.foxminded.university.service.exception.NotSuitableRoomForCourseException;
 import com.foxminded.university.service.exception.NotWeekDayException;
 
@@ -37,10 +42,12 @@ public class LessonService {
 
 	private LessonDao lessonDao;
 	private StudentDao studentDao;
+	private TeacherDao teacherDao;
 
-	public LessonService(LessonDao lessonDao, StudentDao studentDao) {
+	public LessonService(LessonDao lessonDao, StudentDao studentDao, TeacherDao teacherDao) {
 		this.lessonDao = lessonDao;
 		this.studentDao = studentDao;
+		this.teacherDao = teacherDao;
 	}
 
 	@Transactional
@@ -83,6 +90,55 @@ public class LessonService {
 		} else {
 			throw new NotFoundEntityException(format("Cannot find lesson by id: %d", id));
 		}
+	}
+
+	@Transactional
+	public List<Lesson> getByTeacherIdAndDateBetween(Long teacherId, LocalDate startDate, LocalDate endDate) {
+		logger.debug("Getting lessons by teacher id: {} and dates: between {} and {}", teacherId, startDate, endDate);
+		return lessonDao.getByTeacherIdAndDateBetween(teacherId, startDate, endDate);
+	}
+
+	@Transactional
+	public List<Lesson> getByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate) {
+		logger.debug("Getting lessons by group id: {} and dates: between {} and {}", groupId, startDate, endDate);
+		return lessonDao.getByGroupIdAndDateBetween(groupId, startDate, endDate);
+	}
+
+	@Transactional
+	public void replaceTeacherByDateBetween(Teacher teacher, LocalDate startDate, LocalDate endDate,
+			List<Long> substituteTeacherIds) {
+		logger.debug("Replacing teacher: {} {} for lessons between {} and {}",
+				teacher.getName(),
+				teacher.getSurname(),
+				startDate,
+				endDate);
+		List<Lesson> lessons = lessonDao.getByTeacherIdAndDateBetween(teacher.getId(), startDate, endDate);
+		if (substituteTeacherIds == null) {
+			lessons.forEach(l -> replaceTeacher(l, teacherDao.getByCourseId(l.getCourse().getId())));
+		} else {
+			List<Teacher> substituteTeachers = substituteTeacherIds.stream()
+					.map(id -> teacherDao.findById(id)
+							.orElseThrow(() -> new NotFoundEntityException(
+									format("Cannot find teacher by id: %d", id))))
+					.collect(toList());
+			lessons.forEach(l -> replaceTeacher(l, substituteTeachers));
+		}
+		lessons.stream().forEach(lessonDao::update);
+	}
+
+	private void replaceTeacher(Lesson lesson, List<Teacher> substituteTeachers) {
+		lesson.setTeacher(substituteTeachers.stream()
+				.filter(t -> !lessonDao.getByTeacherAndDateAndTimeframe(t, lesson.getDate(), lesson.getTimeframe())
+						.isPresent()
+						&& !t.getId().equals(lesson.getTeacher().getId())
+						&& t.getCourses().contains(lesson.getCourse()))
+				.findAny()
+				.orElseThrow(() -> new NotFoundSubstituteTeacherException(
+						format("Substitute teacher was not found for the lesson id: %d, course: %s, date: %s, start time: %s",
+								lesson.getId(),
+								lesson.getCourse().getName(),
+								lesson.getDate(),
+								lesson.getTimeframe().getStartTime()))));
 	}
 
 	private void verify(Lesson lesson) {

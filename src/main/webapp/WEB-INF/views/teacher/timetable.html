@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Timetable</title>
+<link rel="stylesheet" th:href="@{/css/fullcalendar.css}">
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<div class="container">
+		<form id="timetable"
+			th:action="@{/teachers/{id}/timetable(id=${teacher.id})}" method="get">
+			<dl class="row">
+				<dt class="col-sm-2">
+					<input class="btn btn-secondary" id="timetable" type="submit" role="button" value="Get timetable">
+				</dt>
+				<dd class="col-sm-2">
+					<label for="startDate">Start date:</label> <input class="form-control" type="date"
+						name="startDate" id="startDate" th:value="${startDate}" required>
+				</dd>
+				<dd class="col-sm-2">
+					<label for="endDate">End date:</label> <input class="form-control" type="date" name="endDate"
+						id="endDate" th:value="${endDate}" required>
+				</dd>
+			</dl>
+		</form>
+		<div class="row" id='calendar'></div>
+	</div>
+	<div th:replace="fragments/footer::footer"></div>
+	<script th:src="@{/js/fullcalendar.js}"></script>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {  
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      validRange: {
+          start: [[${#temporals.format(startDate, 'yyyy-MM-dd')}]],
+          end: [[${#temporals.format(endDate, 'yyyy-MM-dd')}]]
+        },
+		editable: true,
+        selectable: true,
+        businessHours: true,
+        dayMaxEvents: true,
+        events: [
+            [# th:each="lesson : ${lessons}"]
+            {
+                title: [[${lesson.course.name}]],
+                url: [[@{/lessons/{id}(id=${lesson.id})}]],
+                start: [[${#temporals.format(lesson.date, 'yyyy-MM-dd') + 'T' + #temporals.format(lesson.timeframe.startTime, 'HH:mm:ss')}]],
+                end: [[${#temporals.format(lesson.date, 'yyyy-MM-dd') + 'T' + #temporals.format(lesson.timeframe.endTime, 'HH:mm:ss')}]]
+            },
+       		[/]
+      ]
+    });
+    calendar.render();
+  });
+    
+  /*]]>*/
+  
+</script>
+</body>
+</html>

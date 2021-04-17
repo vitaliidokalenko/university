@@ -10,7 +10,7 @@
 	<div class="container">
 		<p class="h3 text-secondary">Timeframes</p>
 		<p>
-			<a class="btn btn-success" href="#" role="button">+Add timeframe</a>
+			<a class="btn btn-success" th:href="@{/timeframes/new}" role="button">+Add timeframe</a>
 		</p>
 		<table class="table table-responsive table-striped table-borderless table-sm align-middle">
 			<thead>
@@ -33,10 +33,10 @@
 							<a th:href="@{/timeframes/{id}(id=${timeframe.id})}">
 								<button type="button" class="btn btn-info">Detail</button>
 							</a>
-							<a href="#">
+							<a th:href="@{/timeframes/{id}/edit(id=${timeframe.id})}">
 								<button type="button" class="btn btn-warning">Edit</button>
 							</a>
-							<a href="#">
+							<a th:href="@{/timeframes/{id}/delete(id=${timeframe.id})}">
 								<button type="button" class="btn btn-danger">Delete</button>
 							</a>
 						</div>

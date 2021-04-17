@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Add new course</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<div th:replace="fragments/navbar::navbar"></div>
+	<form action="#" th:action="@{/courses/save}" th:object="${course}" method="post">
+		<div class="container">
+		<p class="h3 text-secondary">New course</p>
+			<br>
+			<dl class="row">
+				<dt class="col-sm-2">
+					<label for="name">Name</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="text" th:field="*{name}" id="name" placeholder="Name" required>
+				</dd>
+				<dt class="col-sm-2">
+					<label for="description">Description</label>
+				</dt>
+				<dd class="col-sm-10">
+					<input type="text" th:field="*{description}" id="description" placeholder="Description">
+				</dd>
+				<dt class="col-sm-2">
+					<label for="rooms">Rooms</label>
+				</dt>
+				<dd class="col-sm-10">
+					<div
+						style="height: 150px; border: 1px solid #ccc; overflow: auto;">
+						<div th:each="room : ${rooms}">
+							<input type="checkbox" th:value="${room.id}" th:field="*{rooms}" /> <label
+								th:for="${#ids.prev('rooms')}" th:text="${room.name}"></label>
+						</div>
+					</div>
+				</dd>
+			</dl>
+			<input class="btn btn-success" type="submit" role="button" value="Submit">
+		</div>
+	</form>
+	<div th:replace="fragments/footer::footer"></div>
+</body>
+</html>

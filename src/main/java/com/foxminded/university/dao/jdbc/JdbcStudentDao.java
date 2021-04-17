@@ -41,7 +41,7 @@ public class JdbcStudentDao implements StudentDao {
 	private static final String FIND_STUDENT_BY_ID_QUERY = "SELECT * FROM students WHERE id = ?";
 	private static final String GET_STUDENTS_QUERY = "SELECT * FROM students";
 	private static final String DELETE_STUDENT_BY_ID_QUERY = "DELETE FROM students WHERE id = ?";
-	private static final String UPDATE_STUDENT_QUERY = "UPDATE students SET id = ?, name = ?, surname = ?, phone = ?, email = ?, address = ?, birth_date = ?, gender = ? "
+	private static final String UPDATE_STUDENT_QUERY = "UPDATE students SET group_id = ?, name = ?, surname = ?, phone = ?, email = ?, address = ?, birth_date = ?, gender = ? "
 			+ "WHERE id = ?";
 	private static final String GET_STUDENTS_BY_GROUP_ID_QUERY = "SELECT * FROM students WHERE group_id = ?";
 	private static final String CREATE_STUDENT_COURSE_QUERY = "INSERT INTO students_courses (student_id, course_id) VALUES(?, ?)";

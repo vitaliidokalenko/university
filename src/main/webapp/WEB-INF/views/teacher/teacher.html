@@ -37,13 +37,31 @@
 			</dd>
 		</dl>
 		<div class="btn-group" role="group">
-			<a href="#">
+			<a th:href="@{/teachers/{id}/edit(id=${teacher.id})}">
 				<button type="button" class="btn btn-warning">Edit</button>
 			</a>
-			<a href="#">
+			<a th:href="@{/teachers/{id}/delete(id=${teacher.id})}">
 				<button type="button" class="btn btn-danger">Delete</button>
 			</a>
+			<a th:href="@{/teachers/{id}/replace(id=${teacher.id})}">
+				<button type="button" class="btn btn-primary">Replace</button>
+			</a>
 		</div>
+		<form id="timetable" th:action="@{/teachers/{id}/timetable(id=${teacher.id})}" method="get">
+			<dl class="row">
+				<dt class="col-sm-2">
+					<input class="btn btn-secondary" id="timetable" type="submit" role="button" value="Get timetable">
+				</dt>
+				<dd class="col-sm-2">
+					<label for="startDate">Start date:</label> <input class="form-control" type="date"
+						name="startDate" id="startDate" th:value="${startDate}" required>
+				</dd>
+				<dd class="col-sm-2">
+					<label for="endDate">End date:</label> <input class="form-control" type="date" name="endDate"
+						id="endDate" th:value="${endDate}" required>
+				</dd>
+			</dl>
+		</form>
 	</div>
 	<div th:replace="fragments/footer::footer"></div>
 </body>

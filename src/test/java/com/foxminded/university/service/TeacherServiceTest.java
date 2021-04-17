@@ -5,10 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -104,7 +103,7 @@ public class TeacherServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightListOfTeachers() {
-		List<Teacher> expected = Arrays.asList(buildTeacher());
+		List<Teacher> expected = List.of(buildTeacher());
 		when(teacherDao.getAll()).thenReturn(expected);
 
 		List<Teacher> actual = teacherService.getAll();
@@ -140,10 +139,24 @@ public class TeacherServiceTest {
 
 	@Test
 	public void whenGetAllPage_thenGetRightTeachers() {
-		Page<Teacher> expected = new PageImpl<>(Arrays.asList(buildTeacher()));
+		Page<Teacher> expected = new PageImpl<>(List.of(buildTeacher()));
 		when(teacherDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Teacher> actual = teacherService.getAllPage(PageRequest.of(0, 1));
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenTeacher_whenGetSubstituteTeachers_thenGetRightSetOfTeachers() {
+		Teacher teacher = buildTeacher();
+		Teacher substitute = buildTeacher();
+		substitute.setId(2L);
+		Set<Teacher> expected = Set.of(substitute);
+		when(teacherDao.getByCourseId(1L)).thenReturn(List.of(teacher));
+		when(teacherDao.getByCourseId(2L)).thenReturn(List.of(substitute));
+
+		Set<Teacher> actual = teacherService.getSubstituteTeachers(teacher);
 
 		assertEquals(expected, actual);
 	}
@@ -155,7 +168,7 @@ public class TeacherServiceTest {
 		course2.setId(2L);
 		Teacher teacher = new Teacher("Homer", "Simpson");
 		teacher.setId(1L);
-		teacher.setCourses(new HashSet<>(Arrays.asList(course1, course2)));
+		teacher.setCourses(Set.of(course1, course2));
 		teacher.setGender(Gender.MALE);
 		return teacher;
 	}

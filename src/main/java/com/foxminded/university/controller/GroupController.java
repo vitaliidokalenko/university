@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.foxminded.university.model.Group;
@@ -37,5 +38,34 @@ public class GroupController {
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find group by id: %d", id)));
 		model.addAttribute("group", group);
 		return "group/group";
+	}
+
+	@GetMapping("/new")
+	public String create(Group group, Model model) {
+		return "group/create";
+	}
+
+	@GetMapping("/{id}/edit")
+	public String update(@PathVariable Long id, Model model) {
+		Group group = groupService.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find group by id: %d", id)));
+		model.addAttribute("group", group);
+		return "group/edit";
+	}
+
+	@PostMapping("/save")
+	public String save(Group group) {
+		if (group.getId() == null) {
+			groupService.create(group);
+		} else {
+			groupService.update(group);
+		}
+		return "redirect:/groups";
+	}
+
+	@PostMapping("/{id}/delete")
+	public String delete(@PathVariable Long id) {
+		groupService.deleteById(id);
+		return "redirect:/groups";
 	}
 }

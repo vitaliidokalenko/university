@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,7 +84,7 @@ public class RoomServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightListOfRooms() {
-		List<Room> expected = Arrays.asList(buildRoom());
+		List<Room> expected = List.of(buildRoom());
 		when(roomDao.getAll()).thenReturn(expected);
 
 		List<Room> actual = roomService.getAll();
@@ -164,7 +163,7 @@ public class RoomServiceTest {
 
 	@Test
 	public void whenGetAllPage_thenGetRightRooms() {
-		Page<Room> expected = new PageImpl<>(Arrays.asList(buildRoom()));
+		Page<Room> expected = new PageImpl<>(List.of(buildRoom()));
 		when(roomDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Room> actual = roomService.getAllPage(PageRequest.of(0, 1));

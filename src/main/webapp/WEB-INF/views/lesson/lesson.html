@@ -40,10 +40,10 @@
 			</dd>
 		</dl>
 		<div class="btn-group" role="group">
-			<a href="#">
+			<a th:href="@{/lessons/{id}/edit(id=${lesson.id})}">
 				<button type="button" class="btn btn-warning">Edit</button>
 			</a>
-			<a href="#">
+			<a th:href="@{/lessons/{id}/delete(id=${lesson.id})}">
 				<button type="button" class="btn btn-danger">Delete</button>
 			</a>
 		</div>

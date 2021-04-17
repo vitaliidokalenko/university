@@ -10,7 +10,7 @@
 	<div class="container">
 		<p class="h3 text-secondary">Lessons</p>
 		<p>
-			<a class="btn btn-success" href="#" role="button">+Add lesson</a>
+			<a class="btn btn-success" th:href="@{/lessons/new}" role="button">+Add lesson</a>
 		</p>
 		<table class="table table-responsive table-striped table-borderless table-sm align-middle">
 			<thead>
@@ -43,10 +43,10 @@
 							<a th:href="@{/lessons/{id}(id=${lesson.id})}">
 								<button type="button" class="btn btn-info">Detail</button>
 							</a>
-							<a href="#">
+							<a th:href="@{/lessons/{id}/edit(id=${lesson.id})}">
 								<button type="button" class="btn btn-warning">Edit</button>
 							</a>
-							<a href="#">
+							<a th:href="@{/lessons/{id}/delete(id=${lesson.id})}">
 								<button type="button" class="btn btn-danger">Delete</button>
 							</a>
 						</div>

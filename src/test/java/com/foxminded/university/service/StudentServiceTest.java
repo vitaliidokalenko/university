@@ -6,10 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -108,7 +107,7 @@ public class StudentServiceTest {
 	public void givenGroupSizeIsNotEnuogh_whenCreate_thenGroupOverflowExceptionThrown() {
 		Student student = buildStudent();
 		when(studentDao.getByGroup(student.getGroup()))
-				.thenReturn(Arrays.asList(new Student("Serhii", "Gerega"), new Student("Anatoly", "Soprano")));
+				.thenReturn(List.of(new Student("Serhii", "Gerega"), new Student("Anatoly", "Soprano")));
 
 		Exception exception = assertThrows(GroupOverflowException.class,
 				() -> studentService.create(student));
@@ -129,7 +128,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void whenGetAll_thenGetRightListOfStudents() {
-		List<Student> expected = Arrays.asList(buildStudent());
+		List<Student> expected = List.of(buildStudent());
 		when(studentDao.getAll()).thenReturn(expected);
 
 		List<Student> actual = studentService.getAll();
@@ -165,7 +164,7 @@ public class StudentServiceTest {
 
 	@Test
 	public void whenGetAllPage_thenGetRightStudents() {
-		Page<Student> expected = new PageImpl<>(Arrays.asList(buildStudent()));
+		Page<Student> expected = new PageImpl<>(List.of(buildStudent()));
 		when(studentDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Student> actual = studentService.getAllPage(PageRequest.of(0, 1));
@@ -182,7 +181,7 @@ public class StudentServiceTest {
 		group.setId(1L);
 		Student student = new Student("Homer", "Simpson");
 		student.setId(1L);
-		student.setCourses(new HashSet<>(Arrays.asList(course1, course2)));
+		student.setCourses(Set.of(course1, course2));
 		student.setGender(Gender.MALE);
 		student.setGroup(group);
 		return student;
