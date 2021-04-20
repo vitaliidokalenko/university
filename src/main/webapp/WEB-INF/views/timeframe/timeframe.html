@@ -23,9 +23,9 @@
 			<a th:href="@{/timeframes/{id}/edit(id=${timeframe.id})}">
 				<button type="button" class="btn btn-warning">Edit</button>
 			</a>
-			<a th:href="@{/timeframes/{id}/delete(id=${timeframe.id})}">
-				<button type="button" class="btn btn-danger">Delete</button>
-			</a>
+			<form th:action="@{/timeframes/{id}/delete(id=${timeframe.id})}" method="post">
+				<input type="submit" class="btn btn-danger" value="Delete">
+			</form>
 		</div>
 	</div>
 	<div th:replace="fragments/footer::footer"></div>

@@ -40,9 +40,9 @@
 							<a th:href="@{/students/{id}/edit(id=${student.id})}">
 								<button type="button" class="btn btn-warning">Edit</button>
 							</a>
-							<a th:href="@{/students/{id}/delete(id=${student.id})}">
-								<button type="button" class="btn btn-danger">Delete</button>
-							</a>
+							<form th:action="@{/students/{id}/delete(id=${student.id})}" method="post">
+								<input type="submit" class="btn btn-danger" value="Delete">
+							</form>
 						</div>
 					</td>
 				</tr>
