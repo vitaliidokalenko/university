@@ -34,9 +34,9 @@
 							<a th:href="@{/rooms/{id}/edit(id=${room.id})}">
 								<button type="button" class="btn btn-warning">Edit</button>
 							</a>
-							<a th:href="@{/rooms/{id}/delete(id=${room.id})}">
-								<button type="button" class="btn btn-danger">Delete</button>
-							</a>
+							<form th:action="@{/rooms/{id}/delete(id=${room.id})}" method="post">
+								<input type="submit" class="btn btn-danger" value="Delete">
+							</form>
 						</div>
 					</td>
 				</tr>
