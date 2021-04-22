@@ -20,13 +20,13 @@ public class AppConfig {
 
 	private static final String SCHEMA = "schema.sql";
 
-	@Value("${db.jndi}")
-	private String dataSourceName;
+	@Value("${db.jndiName}")
+	private String jndiName;
 
 	@Bean
 	public DataSource dataSource() {
 		JndiDataSourceLookup lookup = new JndiDataSourceLookup();
-		return lookup.getDataSource(dataSourceName);
+		return lookup.getDataSource(jndiName);
 	}
 
 	@Bean
