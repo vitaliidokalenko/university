@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.TeacherDao;
+import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.model.Teacher;
 
 @Component
@@ -29,67 +30,100 @@ public class HibernateTeacherDao implements TeacherDao {
 
 	@Override
 	public void create(Teacher teacher) {
-		sessionFactory.getCurrentSession().save(teacher);
+		try {
+			sessionFactory.getCurrentSession().save(teacher);
+		} catch (Exception e) {
+			throw new DaoException("Could not create teacher: " + teacher, e);
+		}
 	}
 
 	@Override
 	public Optional<Teacher> findById(Long id) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Teacher> query = builder.createQuery(Teacher.class);
-		Root<Teacher> root = query.from(Teacher.class);
-		root.fetch("courses", JoinType.LEFT);
-		query.select(root).where(builder.equal(root.get("id"), id));
-		return session.createQuery(query).uniqueResultOptional();
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<Teacher> query = builder.createQuery(Teacher.class);
+			Root<Teacher> root = query.from(Teacher.class);
+			root.fetch("courses", JoinType.LEFT);
+			query.select(root).where(builder.equal(root.get("id"), id));
+			return session.createQuery(query).uniqueResultOptional();
+		} catch (Exception e) {
+			throw new DaoException("Could not get teacher by id: " + id, e);
+		}
 	}
 
 	@Override
 	public List<Teacher> getAll() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaQuery<Teacher> query = session.getCriteriaBuilder().createQuery(Teacher.class);
-		query.select(query.from(Teacher.class));
-		return session.createQuery(query).getResultList();
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaQuery<Teacher> query = session.getCriteriaBuilder().createQuery(Teacher.class);
+			query.select(query.from(Teacher.class));
+			return session.createQuery(query).getResultList();
+		} catch (Exception e) {
+			throw new DaoException("Could not get teachers", e);
+		}
 	}
 
 	@Override
 	public void update(Teacher teacher) {
-		sessionFactory.getCurrentSession().merge(teacher);
+		try {
+			sessionFactory.getCurrentSession().merge(teacher);
+		} catch (Exception e) {
+			throw new DaoException("Could not update teacher: " + teacher, e);
+		}
 	}
 
 	@Override
 	public void delete(Teacher teacher) {
-		sessionFactory.getCurrentSession().delete(teacher);
+		try {
+			sessionFactory.getCurrentSession().delete(teacher);
+		} catch (Exception e) {
+			throw new DaoException("Could not delete teacher: " + teacher, e);
+		}
 	}
 
 	@Override
 	public long count() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Long> query = builder.createQuery(Long.class);
-		query.select(builder.count(query.from(Teacher.class)));
-		return session.createQuery(query).getSingleResult();
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<Long> query = builder.createQuery(Long.class);
+			query.select(builder.count(query.from(Teacher.class)));
+			return session.createQuery(query).getSingleResult();
+		} catch (Exception e) {
+			throw new DaoException("Could not get amount of teachers", e);
+		}
 	}
 
 	@Override
 	public Page<Teacher> getAllPage(Pageable pageable) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaQuery<Teacher> query = session.getCriteriaBuilder().createQuery(Teacher.class);
-		query.select(query.from(Teacher.class));
-		List<Teacher> etachers = session.createQuery(query)
-				.setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize())
-				.getResultList();
-		return new PageImpl<>(etachers, pageable, count());
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaQuery<Teacher> query = session.getCriteriaBuilder().createQuery(Teacher.class);
+			query.select(query.from(Teacher.class));
+			List<Teacher> etachers = session.createQuery(query)
+					.setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize())
+					.getResultList();
+			return new PageImpl<>(etachers, pageable, count());
+		} catch (Exception e) {
+			throw new DaoException("Could not get teachers", e);
+		}
+
 	}
 
 	@Override
 	public List<Teacher> getByCourseId(Long courseId) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Teacher> query = builder.createQuery(Teacher.class);
-		Root<Teacher> root = query.from(Teacher.class);
-		root.fetch("courses", JoinType.LEFT);
-		query.select(root).where(builder.equal(root.join("courses").get("id"), courseId));
-		return session.createQuery(query).getResultList();
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<Teacher> query = builder.createQuery(Teacher.class);
+			Root<Teacher> root = query.from(Teacher.class);
+			root.fetch("courses", JoinType.LEFT);
+			query.select(root).where(builder.equal(root.join("courses").get("id"), courseId));
+			return session.createQuery(query).getResultList();
+		} catch (Exception e) {
+			throw new DaoException("Could not get teachers by course id: " + courseId, e);
+		}
 	}
 }

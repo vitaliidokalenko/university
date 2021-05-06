@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.RoomDao;
+import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
 
@@ -29,70 +30,106 @@ public class HibernateRoomDao implements RoomDao {
 
 	@Override
 	public void create(Room room) {
-		sessionFactory.getCurrentSession().save(room);
+		try {
+			sessionFactory.getCurrentSession().save(room);
+		} catch (Exception e) {
+			throw new DaoException("Could not create room: " + room, e);
+		}
 	}
 
 	@Override
 	public Optional<Room> findById(Long id) {
-		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Room.class, id));
+		try {
+			return Optional.ofNullable(sessionFactory.getCurrentSession().get(Room.class, id));
+		} catch (Exception e) {
+			throw new DaoException("Could not get room by id: " + id, e);
+		}
 	}
 
 	@Override
 	public List<Room> getAll() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaQuery<Room> query = session.getCriteriaBuilder().createQuery(Room.class);
-		query.select(query.from(Room.class));
-		return session.createQuery(query).getResultList();
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaQuery<Room> query = session.getCriteriaBuilder().createQuery(Room.class);
+			query.select(query.from(Room.class));
+			return session.createQuery(query).getResultList();
+		} catch (Exception e) {
+			throw new DaoException("Could not get rooms", e);
+		}
 	}
 
 	@Override
 	public void update(Room room) {
-		sessionFactory.getCurrentSession().merge(room);
+		try {
+			sessionFactory.getCurrentSession().merge(room);
+		} catch (Exception e) {
+			throw new DaoException("Cold not update room: " + room, e);
+		}
 	}
 
 	@Override
 	public void delete(Room room) {
-		sessionFactory.getCurrentSession().delete(room);
+		try {
+			sessionFactory.getCurrentSession().delete(room);
+		} catch (Exception e) {
+			throw new DaoException("Could not delete room: " + room, e);
+		}
 	}
 
 	@Override
 	public long count() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Long> query = builder.createQuery(Long.class);
-		query.select(builder.count(query.from(Room.class)));
-		return session.createQuery(query).getSingleResult();
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<Long> query = builder.createQuery(Long.class);
+			query.select(builder.count(query.from(Room.class)));
+			return session.createQuery(query).getSingleResult();
+		} catch (Exception e) {
+			throw new DaoException("Could not get amount of rooms", e);
+		}
 	}
 
 	@Override
 	public Page<Room> getAllPage(Pageable pageable) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaQuery<Room> query = session.getCriteriaBuilder().createQuery(Room.class);
-		query.select(query.from(Room.class));
-		List<Room> rooms = session.createQuery(query)
-				.setFirstResult((int) pageable.getOffset())
-				.setMaxResults(pageable.getPageSize())
-				.getResultList();
-		return new PageImpl<>(rooms, pageable, count());
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaQuery<Room> query = session.getCriteriaBuilder().createQuery(Room.class);
+			query.select(query.from(Room.class));
+			List<Room> rooms = session.createQuery(query)
+					.setFirstResult((int) pageable.getOffset())
+					.setMaxResults(pageable.getPageSize())
+					.getResultList();
+			return new PageImpl<>(rooms, pageable, count());
+		} catch (Exception e) {
+			throw new DaoException("Could not get rooms", e);
+		}
 	}
 
 	@Override
 	public List<Room> getByCourseId(Long courseId) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Room> query = builder.createQuery(Room.class);
-		Root<Course> root = query.from(Course.class);
-		query.select(root.get("rooms")).where(builder.equal(root.get("id"), courseId));
-		return session.createQuery(query).getResultList();
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<Room> query = builder.createQuery(Room.class);
+			Root<Course> root = query.from(Course.class);
+			query.select(root.get("rooms")).where(builder.equal(root.get("id"), courseId));
+			return session.createQuery(query).getResultList();
+		} catch (Exception e) {
+			throw new DaoException("Could not get rooms by course id: " + courseId, e);
+		}
 	}
 
 	@Override
 	public Optional<Room> findByName(String name) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Room> query = builder.createQuery(Room.class);
-		Root<Room> root = query.from(Room.class);
-		query.select(root).where(builder.equal(root.get("name"), name));
-		return session.createQuery(query).uniqueResultOptional();
+		try {
+			Session session = sessionFactory.getCurrentSession();
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<Room> query = builder.createQuery(Room.class);
+			Root<Room> root = query.from(Room.class);
+			query.select(root).where(builder.equal(root.get("name"), name));
+			return session.createQuery(query).uniqueResultOptional();
+		} catch (Exception e) {
+			throw new DaoException("Could not get room by name: " + name, e);
+		}
 	}
 }
