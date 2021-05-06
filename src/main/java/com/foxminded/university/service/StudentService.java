@@ -68,11 +68,8 @@ public class StudentService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting student by id: {}", id);
-		if (studentDao.findById(id).isPresent()) {
-			studentDao.deleteById(id);
-		} else {
-			throw new NotFoundEntityException(format("Cannot find student by id: %d", id));
-		}
+		studentDao.delete(studentDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find student by id: %d", id))));
 	}
 
 	private void verify(Student student) {

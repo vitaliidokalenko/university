@@ -67,11 +67,8 @@ public class TeacherService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting teacher by id: {}", id);
-		if (teacherDao.findById(id).isPresent()) {
-			teacherDao.deleteById(id);
-		} else {
-			throw new NotFoundEntityException(format("Cannot find teacher by id: %d", id));
-		}
+		teacherDao.delete(teacherDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id))));
 	}
 
 	@Transactional

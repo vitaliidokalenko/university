@@ -122,11 +122,12 @@ public class TeacherServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenTeacherIsDeleting() {
-		when(teacherDao.findById(1L)).thenReturn(Optional.of(buildTeacher()));
+		Teacher teacher = buildTeacher();
+		when(teacherDao.findById(1L)).thenReturn(Optional.of(teacher));
 
 		teacherService.deleteById(1L);
 
-		verify(teacherDao).deleteById(1L);
+		verify(teacherDao).delete(teacher);
 	}
 
 	@Test

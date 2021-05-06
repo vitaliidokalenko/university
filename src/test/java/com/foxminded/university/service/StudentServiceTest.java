@@ -147,11 +147,12 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenStudentIsDeleting() {
-		when(studentDao.findById(1L)).thenReturn(Optional.of(buildStudent()));
+		Student student = buildStudent();
+		when(studentDao.findById(1L)).thenReturn(Optional.of(student));
 
 		studentService.deleteById(1L);
 
-		verify(studentDao).deleteById(1L);
+		verify(studentDao).delete(student);
 	}
 
 	@Test

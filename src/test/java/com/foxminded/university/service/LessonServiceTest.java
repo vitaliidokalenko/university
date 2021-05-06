@@ -352,11 +352,12 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenLessonIsDeleting() {
-		when(lessonDao.findById(1L)).thenReturn(Optional.of(buildLesson()));
+		Lesson lesson = buildLesson();
+		when(lessonDao.findById(1L)).thenReturn(Optional.of(lesson));
 
 		lessonService.deleteById(1L);
 
-		verify(lessonDao).deleteById(1L);
+		verify(lessonDao).delete(lesson);
 	}
 
 	@Test

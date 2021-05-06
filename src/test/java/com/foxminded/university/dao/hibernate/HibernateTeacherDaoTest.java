@@ -1,0 +1,136 @@
+package com.foxminded.university.dao.hibernate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.foxminded.university.config.TestAppConfig;
+import com.foxminded.university.model.Course;
+import com.foxminded.university.model.Gender;
+import com.foxminded.university.model.Teacher;
+
+@SpringJUnitConfig(TestAppConfig.class)
+@Transactional
+public class HibernateTeacherDaoTest {
+
+	@Autowired
+	HibernateTemplate template;
+	@Autowired
+	HibernateTeacherDao teacherDao;
+
+	@Test
+	public void whenGetAll_thenGetRightListOfTeachers() {
+		List<Teacher> expected = template.loadAll(Teacher.class);
+
+		List<Teacher> actual = teacherDao.getAll();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenTeacher_whenCreate_thenTeacherIsAddedToTable() {
+		Teacher teacher = Teacher.builder()
+				.name("Homer")
+				.surname("Simpson")
+				.courses(Set.of(template.get(Course.class, 1L)))
+				.gender(Gender.MALE)
+				.birthDate(LocalDate.parse("2001-01-01"))
+				.build();
+		int expectedRows = template.loadAll(Teacher.class).size() + 1;
+
+		teacherDao.create(teacher);
+
+		int actualRows = template.loadAll(Teacher.class).size();
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	public void givenId_whenFindById_thenGetRightTeacher() {
+		Optional<Teacher> expected = Optional.of(template.get(Teacher.class, 1L));
+
+		Optional<Teacher> actual = teacherDao.findById(1L);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenWrongId_whenFindById_thenGetEmptyOptional() {
+		Optional<Teacher> expected = Optional.empty();
+
+		Optional<Teacher> actual = teacherDao.findById(10L);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenUpdatedFields_whenUpdate_thenTeacherTableIsUpdated() {
+		String expectedName = "Updated Name";
+		Teacher teacher = template.get(Teacher.class, 1L);
+		teacher.setName(expectedName);
+
+		teacherDao.update(teacher);
+
+		assertEquals(expectedName, template.get(Teacher.class, 1L).getName());
+	}
+
+	@Test
+	public void givenUpdatedCourses_whenUpdate_thenTeachersCoursesTableIsUpdated() {
+		Teacher teacher = template.get(Teacher.class, 1L);
+		teacher.getCourses().clear();
+
+		teacherDao.update(teacher);
+
+		assertTrue(template.get(Teacher.class, 1L).getCourses().isEmpty());
+	}
+
+	@Test
+	public void givenTeacher_whenDelete_thenTeacherIsDeleted() {
+		Teacher teacher = template.get(Teacher.class, 4L);
+		int expectedRows = template.loadAll(Teacher.class).size() - 1;
+
+		teacherDao.delete(teacher);
+
+		int actualRows = template.loadAll(Teacher.class).size();
+		assertEquals(expectedRows, actualRows);
+	}
+
+	@Test
+	public void whenCount_thenGetRightAmountOfTeachers() {
+		long expected = template.loadAll(Teacher.class).size();
+
+		long actual = teacherDao.count();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenPageSize_whenGetAllPage_thenGetRightTeachers() {
+		List<Teacher> expected = template.loadAll(Teacher.class).subList(0, 2);
+		int pageSize = 2;
+
+		Page<Teacher> actual = teacherDao.getAllPage(PageRequest.of(0, pageSize));
+
+		assertEquals(expected, actual.getContent());
+	}
+
+	@Test
+	public void givenCourseId_whenGetByCourseId_thenGetRightListOfTeachers() {
+		List<Teacher> expected = List.of(template.get(Teacher.class, 1L));
+
+		List<Teacher> actual = teacherDao.getByCourseId(1L);
+
+		assertEquals(expected, actual);
+	}
+}

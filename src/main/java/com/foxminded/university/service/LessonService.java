@@ -85,11 +85,8 @@ public class LessonService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting lesson by id: {}", id);
-		if (lessonDao.findById(id).isPresent()) {
-			lessonDao.deleteById(id);
-		} else {
-			throw new NotFoundEntityException(format("Cannot find lesson by id: %d", id));
-		}
+		lessonDao.delete(lessonDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find lesson by id: %d", id))));
 	}
 
 	@Transactional

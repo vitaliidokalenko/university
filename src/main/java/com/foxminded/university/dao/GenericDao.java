@@ -16,9 +16,9 @@ public interface GenericDao<T> {
 
 	public void update(T entity);
 
-	public void deleteById(Long id);
+	public void delete(T entity);
 
-	public int count();
+	public long count();
 
 	public Page<T> getAllPage(Pageable pageable);
 }

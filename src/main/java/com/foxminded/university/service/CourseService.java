@@ -66,11 +66,8 @@ public class CourseService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting course by id: {}", id);
-		if (courseDao.findById(id).isPresent()) {
-			courseDao.deleteById(id);
-		} else {
-			throw new NotFoundEntityException(format("Cannot find course by id: %d", id));
-		}
+		courseDao.delete(courseDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find course by id: %d", id))));
 	}
 
 	private void verify(Course course) {
