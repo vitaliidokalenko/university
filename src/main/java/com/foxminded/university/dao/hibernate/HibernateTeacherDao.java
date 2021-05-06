@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
@@ -33,7 +34,13 @@ public class HibernateTeacherDao implements TeacherDao {
 
 	@Override
 	public Optional<Teacher> findById(Long id) {
-		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Teacher.class, id));
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<Teacher> query = builder.createQuery(Teacher.class);
+		Root<Teacher> root = query.from(Teacher.class);
+		root.fetch("courses", JoinType.LEFT);
+		query.select(root).where(builder.equal(root.get("id"), id));
+		return session.createQuery(query).uniqueResultOptional();
 	}
 
 	@Override
@@ -81,6 +88,7 @@ public class HibernateTeacherDao implements TeacherDao {
 		CriteriaBuilder builder = session.getCriteriaBuilder();
 		CriteriaQuery<Teacher> query = builder.createQuery(Teacher.class);
 		Root<Teacher> root = query.from(Teacher.class);
+		root.fetch("courses", JoinType.LEFT);
 		query.select(root).where(builder.equal(root.join("courses").get("id"), courseId));
 		return session.createQuery(query).getResultList();
 	}

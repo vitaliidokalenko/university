@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
@@ -34,7 +35,13 @@ public class HibernateGroupDao implements GroupDao {
 
 	@Override
 	public Optional<Group> findById(Long id) {
-		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Group.class, id));
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<Group> query = builder.createQuery(Group.class);
+		Root<Group> root = query.from(Group.class);
+		root.fetch("students", JoinType.LEFT);
+		query.select(root).where(builder.equal(root.get("id"), id));
+		return session.createQuery(query).uniqueResultOptional();
 	}
 
 	@Override

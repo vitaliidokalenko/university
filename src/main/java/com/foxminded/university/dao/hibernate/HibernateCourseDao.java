@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
@@ -35,7 +36,13 @@ public class HibernateCourseDao implements CourseDao {
 
 	@Override
 	public Optional<Course> findById(Long id) {
-		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Course.class, id));
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<Course> query = builder.createQuery(Course.class);
+		Root<Course> root = query.from(Course.class);
+		root.fetch("rooms", JoinType.LEFT);
+		query.select(root).where(builder.equal(root.get("id"), id));
+		return session.createQuery(query).uniqueResultOptional();
 	}
 
 	@Override

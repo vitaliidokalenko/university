@@ -127,7 +127,9 @@ public class HibernateTeacherDaoTest {
 
 	@Test
 	public void givenCourseId_whenGetByCourseId_thenGetRightListOfTeachers() {
-		List<Teacher> expected = List.of(template.get(Teacher.class, 1L));
+		Teacher teacher = template.get(Teacher.class, 1L);
+		teacher.setCourses(Set.of(template.get(Course.class, 1L)));
+		List<Teacher> expected = List.of(teacher);
 
 		List<Teacher> actual = teacherDao.getByCourseId(1L);
 

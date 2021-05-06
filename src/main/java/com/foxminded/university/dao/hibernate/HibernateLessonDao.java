@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
@@ -38,14 +39,21 @@ public class HibernateLessonDao implements LessonDao {
 
 	@Override
 	public Optional<Lesson> findById(Long id) {
-		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Lesson.class, id));
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
+		Root<Lesson> root = query.from(Lesson.class);
+		root.fetch("groups", JoinType.LEFT);
+		query.select(root).where(builder.equal(root.get("id"), id));
+		return session.createQuery(query).uniqueResultOptional();
 	}
 
 	@Override
 	public List<Lesson> getAll() {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaQuery<Lesson> query = session.getCriteriaBuilder().createQuery(Lesson.class);
-		query.select(query.from(Lesson.class));
+		Root<Lesson> root = query.from(Lesson.class);
+		query.select(root);
 		return session.createQuery(query).getResultList();
 	}
 
@@ -72,7 +80,9 @@ public class HibernateLessonDao implements LessonDao {
 	public Page<Lesson> getAllPage(Pageable pageable) {
 		Session session = sessionFactory.getCurrentSession();
 		CriteriaQuery<Lesson> query = session.getCriteriaBuilder().createQuery(Lesson.class);
-		query.select(query.from(Lesson.class));
+		Root<Lesson> root = query.from(Lesson.class);
+		root.fetch("groups", JoinType.LEFT);
+		query.select(root);
 		List<Lesson> lessons = session.createQuery(query)
 				.setFirstResult((int) pageable.getOffset())
 				.setMaxResults(pageable.getPageSize())
@@ -86,6 +96,7 @@ public class HibernateLessonDao implements LessonDao {
 		CriteriaBuilder builder = session.getCriteriaBuilder();
 		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
 		Root<Lesson> root = query.from(Lesson.class);
+		root.fetch("groups", JoinType.LEFT);
 		query.select(root)
 				.where(builder.and(builder.equal(root.join("groups").get("id"), groupId),
 						builder.equal(root.get("date"), date),
@@ -119,6 +130,7 @@ public class HibernateLessonDao implements LessonDao {
 		CriteriaBuilder builder = session.getCriteriaBuilder();
 		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
 		Root<Lesson> root = query.from(Lesson.class);
+		root.fetch("groups", JoinType.LEFT);
 		query.select(root)
 				.where(builder.and(builder.equal(root.get("teacher"), teacher),
 						builder.equal(root.get("date"), date),
