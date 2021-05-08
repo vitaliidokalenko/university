@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.GroupDao;
-import com.foxminded.university.dao.exception.DaoException;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
 
@@ -31,112 +30,76 @@ public class HibernateGroupDao implements GroupDao {
 
 	@Override
 	public void create(Group group) {
-		try {
-			sessionFactory.getCurrentSession().save(group);
-		} catch (Exception e) {
-			throw new DaoException("Could not create group: " + group, e);
-		}
+		sessionFactory.getCurrentSession().save(group);
 	}
 
 	@Override
 	public Optional<Group> findById(Long id) {
-		try {
-			Session session = sessionFactory.getCurrentSession();
-			CriteriaBuilder builder = session.getCriteriaBuilder();
-			CriteriaQuery<Group> query = builder.createQuery(Group.class);
-			Root<Group> root = query.from(Group.class);
-			root.fetch("students", JoinType.LEFT);
-			query.select(root).where(builder.equal(root.get("id"), id));
-			return session.createQuery(query).uniqueResultOptional();
-		} catch (Exception e) {
-			throw new DaoException("Could not get group by id: " + id, e);
-		}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<Group> query = builder.createQuery(Group.class);
+		Root<Group> root = query.from(Group.class);
+		root.fetch("students", JoinType.LEFT);
+		query.select(root).where(builder.equal(root.get("id"), id));
+		return session.createQuery(query).uniqueResultOptional();
 	}
 
 	@Override
 	public List<Group> getAll() {
-		try {
-			Session session = sessionFactory.getCurrentSession();
-			CriteriaQuery<Group> query = session.getCriteriaBuilder().createQuery(Group.class);
-			query.select(query.from(Group.class));
-			return session.createQuery(query).getResultList();
-		} catch (Exception e) {
-			throw new DaoException("Could not get groups", e);
-		}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaQuery<Group> query = session.getCriteriaBuilder().createQuery(Group.class);
+		query.select(query.from(Group.class));
+		return session.createQuery(query).getResultList();
 	}
 
 	@Override
 	public void update(Group group) {
-		try {
-			sessionFactory.getCurrentSession().merge(group);
-		} catch (Exception e) {
-			throw new DaoException("Could not update group: " + group, e);
-		}
+		sessionFactory.getCurrentSession().merge(group);
 	}
 
 	@Override
 	public void delete(Group group) {
-		try {
-			sessionFactory.getCurrentSession().delete(group);
-		} catch (Exception e) {
-			throw new DaoException("Could not delete group: " + group, e);
-		}
+		sessionFactory.getCurrentSession().delete(group);
 	}
 
 	@Override
 	public long count() {
-		try {
-			Session session = sessionFactory.getCurrentSession();
-			CriteriaBuilder builder = session.getCriteriaBuilder();
-			CriteriaQuery<Long> query = builder.createQuery(Long.class);
-			query.select(builder.count(query.from(Group.class)));
-			return session.createQuery(query).getSingleResult();
-		} catch (Exception e) {
-			throw new DaoException("Could not get amount of groups", e);
-		}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<Long> query = builder.createQuery(Long.class);
+		query.select(builder.count(query.from(Group.class)));
+		return session.createQuery(query).getSingleResult();
 	}
 
 	@Override
 	public Page<Group> getAllPage(Pageable pageable) {
-		try {
-			Session session = sessionFactory.getCurrentSession();
-			CriteriaQuery<Group> query = session.getCriteriaBuilder().createQuery(Group.class);
-			query.select(query.from(Group.class));
-			List<Group> groups = session.createQuery(query)
-					.setFirstResult((int) pageable.getOffset())
-					.setMaxResults(pageable.getPageSize())
-					.getResultList();
-			return new PageImpl<>(groups, pageable, count());
-		} catch (Exception e) {
-			throw new DaoException("Could not get groups", e);
-		}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaQuery<Group> query = session.getCriteriaBuilder().createQuery(Group.class);
+		query.select(query.from(Group.class));
+		List<Group> groups = session.createQuery(query)
+				.setFirstResult((int) pageable.getOffset())
+				.setMaxResults(pageable.getPageSize())
+				.getResultList();
+		return new PageImpl<>(groups, pageable, count());
 	}
 
 	@Override
 	public List<Group> getByLessonId(Long lessonId) {
-		try {
-			Session session = sessionFactory.getCurrentSession();
-			CriteriaBuilder builder = session.getCriteriaBuilder();
-			CriteriaQuery<Group> query = builder.createQuery(Group.class);
-			Root<Lesson> root = query.from(Lesson.class);
-			query.select(root.get("groups")).where(builder.equal(root.get("id"), lessonId));
-			return session.createQuery(query).getResultList();
-		} catch (Exception e) {
-			throw new DaoException("Could not get groups by lesson id: " + lessonId, e);
-		}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<Group> query = builder.createQuery(Group.class);
+		Root<Lesson> root = query.from(Lesson.class);
+		query.select(root.get("groups")).where(builder.equal(root.get("id"), lessonId));
+		return session.createQuery(query).getResultList();
 	}
 
 	@Override
 	public Optional<Group> findByName(String name) {
-		try {
-			Session session = sessionFactory.getCurrentSession();
-			CriteriaBuilder builder = session.getCriteriaBuilder();
-			CriteriaQuery<Group> query = builder.createQuery(Group.class);
-			Root<Group> root = query.from(Group.class);
-			query.select(root).where(builder.equal(root.get("name"), name));
-			return session.createQuery(query).uniqueResultOptional();
-		} catch (Exception e) {
-			throw new DaoException("Could not get group by name: " + name, e);
-		}
+		Session session = sessionFactory.getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<Group> query = builder.createQuery(Group.class);
+		Root<Group> root = query.from(Group.class);
+		query.select(root).where(builder.equal(root.get("name"), name));
+		return session.createQuery(query).uniqueResultOptional();
 	}
 }
