@@ -15,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.foxminded.university.config.TestAppConfig;
-import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Timeframe;
 
 @SpringJUnitConfig(TestAppConfig.class)
@@ -37,18 +36,17 @@ public class HibernateTimeframeDaoTest {
 	}
 
 	@Test
-	public void givenTimeframe_whenCreate_thenTimeframeIsAddedToTable() {
-		Timeframe timeframe = Timeframe.builder()
+	public void givenNewTimeframe_whenCreate_thenCreated() {
+		Timeframe expected = Timeframe.builder()
 				.sequence(5)
 				.startTime(LocalTime.parse("14:40"))
 				.endTime(LocalTime.parse("16:00"))
 				.build();
-		int expectedRows = template.loadAll(Course.class).size() + 1;
 
-		timeframeDao.create(timeframe);
+		timeframeDao.create(expected);
 
-		int actualRows = template.loadAll(Timeframe.class).size();
-		assertEquals(expectedRows, actualRows);
+		Timeframe actual = template.get(Timeframe.class, 5L);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -70,7 +68,7 @@ public class HibernateTimeframeDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedFields_whenUpdate_thenTimeframeTableIsUpdated() {
+	public void givenUpdatedFields_whenUpdate_thenTimeframeUpdated() {
 		int expectedSequence = 10;
 		Timeframe timeframe = template.get(Timeframe.class, 1L);
 		timeframe.setSequence(expectedSequence);
@@ -81,7 +79,7 @@ public class HibernateTimeframeDaoTest {
 	}
 
 	@Test
-	public void givenTimeframe_whenDelete_thenTimeframeIsDeleted() {
+	public void givenTimeframe_whenDelete_thenDeleted() {
 		Timeframe timeframe = template.get(Timeframe.class, 4L);
 		int expectedRows = template.loadAll(Timeframe.class).size() - 1;
 

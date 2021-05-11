@@ -40,20 +40,19 @@ public class HibernateTeacherDaoTest {
 	}
 
 	@Test
-	public void givenTeacher_whenCreate_thenTeacherIsAddedToTable() {
-		Teacher teacher = Teacher.builder()
+	public void givenNewTeacher_whenCreate_thenCreated() {
+		Teacher expected = Teacher.builder()
 				.name("Homer")
 				.surname("Simpson")
 				.courses(Set.of(template.get(Course.class, 1L)))
 				.gender(Gender.MALE)
 				.birthDate(LocalDate.parse("2001-01-01"))
 				.build();
-		int expectedRows = template.loadAll(Teacher.class).size() + 1;
 
-		teacherDao.create(teacher);
+		teacherDao.create(expected);
 
-		int actualRows = template.loadAll(Teacher.class).size();
-		assertEquals(expectedRows, actualRows);
+		Teacher actual = template.get(Teacher.class, 5L);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -75,7 +74,7 @@ public class HibernateTeacherDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedFields_whenUpdate_thenTeacherTableIsUpdated() {
+	public void givenUpdatedFields_whenUpdate_thenTeacherUpdated() {
 		String expectedName = "Updated Name";
 		Teacher teacher = template.get(Teacher.class, 1L);
 		teacher.setName(expectedName);
@@ -86,7 +85,7 @@ public class HibernateTeacherDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedCourses_whenUpdate_thenTeachersCoursesTableIsUpdated() {
+	public void givenUpdatedCourses_whenUpdate_thenTeachersCoursesUpdated() {
 		Teacher teacher = template.get(Teacher.class, 1L);
 		teacher.getCourses().clear();
 
@@ -96,7 +95,7 @@ public class HibernateTeacherDaoTest {
 	}
 
 	@Test
-	public void givenTeacher_whenDelete_thenTeacherIsDeleted() {
+	public void givenTeacher_whenDelete_thenDeleted() {
 		Teacher teacher = template.get(Teacher.class, 4L);
 		int expectedRows = template.loadAll(Teacher.class).size() - 1;
 

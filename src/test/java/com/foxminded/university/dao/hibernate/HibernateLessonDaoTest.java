@@ -43,8 +43,8 @@ public class HibernateLessonDaoTest {
 	}
 
 	@Test
-	public void givenCourse_whenCreate_thenCourseIsAddedToTable() {
-		Lesson lesson = Lesson.builder()
+	public void givenNewCourse_whenCreate_thenCreated() {
+		Lesson expected = Lesson.builder()
 				.date(LocalDate.parse("2021-01-21"))
 				.groups(Set.of(template.get(Group.class, 2L)))
 				.teacher(template.get(Teacher.class, 2L))
@@ -52,12 +52,11 @@ public class HibernateLessonDaoTest {
 				.room(template.get(Room.class, 2L))
 				.timeframe(template.get(Timeframe.class, 2L))
 				.build();
-		int expectedRows = template.loadAll(Lesson.class).size() + 1;
 
-		lessonDao.create(lesson);
+		lessonDao.create(expected);
 
-		int actualRows = template.loadAll(Lesson.class).size();
-		assertEquals(expectedRows, actualRows);
+		Lesson actual = template.get(Lesson.class, 4L);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -79,7 +78,7 @@ public class HibernateLessonDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedFields_whenUpdate_thenLessonTableIsUpdated() {
+	public void givenUpdatedFields_whenUpdate_thenLessonUpdated() {
 		LocalDate expectedDate = LocalDate.parse("2022-01-01");
 		Lesson lesson = template.get(Lesson.class, 1L);
 		lesson.setDate(expectedDate);
@@ -90,7 +89,7 @@ public class HibernateLessonDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedGroups_whenUpdate_thenLessonsGroupsTableIsUpdated() {
+	public void givenUpdatedGroups_whenUpdate_thenLessonsGroupsUpdated() {
 		Group expectedGroup = template.get(Group.class, 3L);
 		Lesson lesson = template.get(Lesson.class, 1L);
 		lesson.getGroups().add(expectedGroup);
@@ -101,7 +100,7 @@ public class HibernateLessonDaoTest {
 	}
 
 	@Test
-	public void givenLesson_whenDelete_thenLessonIsDeleted() {
+	public void givenLesson_whenDelete_thenDeleted() {
 		Lesson lesson = template.get(Lesson.class, 1L);
 		int expectedRows = template.loadAll(Lesson.class).size() - 1;
 

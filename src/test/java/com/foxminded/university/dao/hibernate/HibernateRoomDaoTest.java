@@ -35,14 +35,13 @@ public class HibernateRoomDaoTest {
 	}
 
 	@Test
-	public void givenRoom_whenCreate_thenRoomIsAddedToTable() {
-		Room room = Room.builder().name("E555").build();
-		int expectedRows = template.loadAll(Room.class).size() + 1;
+	public void givenNewRoom_whenCreate_thenCreated() {
+		Room expected = Room.builder().name("E555").build();
 
-		roomDao.create(room);
+		roomDao.create(expected);
 
-		int actualRows = template.loadAll(Room.class).size();
-		assertEquals(expectedRows, actualRows);
+		Room actual = template.get(Room.class, 5L);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -64,7 +63,7 @@ public class HibernateRoomDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedFields_whenUpdate_thenRoomTableIsUpdated() {
+	public void givenUpdatedFields_whenUpdate_thenRoomUpdated() {
 		String expectedName = "Updated Name";
 		Room room = template.get(Room.class, 1L);
 		room.setName(expectedName);
@@ -75,7 +74,7 @@ public class HibernateRoomDaoTest {
 	}
 
 	@Test
-	public void givenRoom_whenDelete_thenRoomIsDeleted() {
+	public void givenRoom_whenDelete_thenDeleted() {
 		Room room = template.get(Room.class, 4L);
 		int expectedRows = template.loadAll(Room.class).size() - 1;
 

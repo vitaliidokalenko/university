@@ -36,14 +36,13 @@ public class HibernateGroupDaoTest {
 	}
 
 	@Test
-	public void givenGroup_whenCreate_thenGroupIsAddedToTable() {
-		Group group = Group.builder().name("EE-55").build();
-		int expectedRows = template.loadAll(Group.class).size() + 1;
+	public void givenNewGroup_whenCreate_thenCreated() {
+		Group expected = Group.builder().name("EE-55").build();
 
-		groupDao.create(group);
+		groupDao.create(expected);
 
-		int actualRows = template.loadAll(Group.class).size();
-		assertEquals(expectedRows, actualRows);
+		Group actual = template.get(Group.class, 5L);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -65,7 +64,7 @@ public class HibernateGroupDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedFields_whenUpdate_thenGroupTableIsUpdated() {
+	public void givenUpdatedFields_whenUpdate_thenGroupUpdated() {
 		String expectedName = "Updated Name";
 		Group group = template.get(Group.class, 1L);
 		group.setName(expectedName);
@@ -76,7 +75,7 @@ public class HibernateGroupDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedStudents_whenUpdate_thenGroupsStudentsTableIsUpdated() {
+	public void givenUpdatedStudents_whenUpdate_thenGroupsStudentsUpdated() {
 		Group group = template.get(Group.class, 1L);
 		group.getStudents().clear();
 
@@ -86,7 +85,7 @@ public class HibernateGroupDaoTest {
 	}
 
 	@Test
-	public void givenGroup_whenDelete_thenGroupIsDeleted() {
+	public void givenGroup_whenDelete_thenDeleted() {
 		Group group = template.get(Group.class, 4L);
 		int expectedRows = template.loadAll(Group.class).size() - 1;
 

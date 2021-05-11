@@ -36,14 +36,13 @@ public class HibernateCourseDaoTest {
 	}
 
 	@Test
-	public void givenCourse_whenCreate_thenCourseIsAddedToTable() {
-		Course course = Course.builder().name("Architecture").build();
-		int expectedRows = template.loadAll(Course.class).size() + 1;
+	public void givenNewCourse_whenCreate_thenCreated() {
+		Course expected = Course.builder().name("Architecture").description("some description").build();
 
-		courseDao.create(course);
+		courseDao.create(expected);
 
-		int actualRows = template.loadAll(Course.class).size();
-		assertEquals(expectedRows, actualRows);
+		Course actual = template.get(Course.class, 5L);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -65,7 +64,7 @@ public class HibernateCourseDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedFields_whenUpdate_thenCourseTableIsUpdated() {
+	public void givenUpdatedFields_whenUpdate_thenCourseUpdated() {
 		String expectedName = "Updated Name";
 		Course course = template.get(Course.class, 1L);
 		course.setName(expectedName);
@@ -76,7 +75,7 @@ public class HibernateCourseDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedRooms_whenUpdate_thenCoursesRoomsTableIsUpdated() {
+	public void givenUpdatedRooms_whenUpdate_thenCoursesRoomsUpdated() {
 		Course course = template.get(Course.class, 1L);
 		course.getRooms().clear();
 
@@ -86,7 +85,7 @@ public class HibernateCourseDaoTest {
 	}
 
 	@Test
-	public void givenCourse_whenDelete_thenCourseIsDeleted() {
+	public void givenCourse_whenDelete_thenDeleted() {
 		Course course = template.get(Course.class, 4L);
 		int expectedRows = template.loadAll(Course.class).size() - 1;
 

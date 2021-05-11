@@ -41,8 +41,8 @@ public class HibernateStudentDaoTest {
 	}
 
 	@Test
-	public void givenStudent_whenCreate_thenStudentIsAddedToTable() {
-		Student student = Student.builder()
+	public void givenNewStudent_whenCreate_thenCreated() {
+		Student expected = Student.builder()
 				.name("Homer")
 				.surname("Simpson")
 				.group(template.get(Group.class, 1L))
@@ -50,12 +50,11 @@ public class HibernateStudentDaoTest {
 				.gender(Gender.MALE)
 				.birthDate(LocalDate.parse("2001-01-01"))
 				.build();
-		int expectedRows = template.loadAll(Student.class).size() + 1;
 
-		studentDao.create(student);
+		studentDao.create(expected);
 
-		int actualRows = template.loadAll(Student.class).size();
-		assertEquals(expectedRows, actualRows);
+		Student actual = template.get(Student.class, 4L);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -77,7 +76,7 @@ public class HibernateStudentDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedFields_whenUpdate_thenStudentTableIsUpdated() {
+	public void givenUpdatedFields_whenUpdate_thenStudentUpdated() {
 		String expectedName = "Updated Name";
 		Student student = template.get(Student.class, 1L);
 		student.setName(expectedName);
@@ -88,7 +87,7 @@ public class HibernateStudentDaoTest {
 	}
 
 	@Test
-	public void givenUpdatedCourses_whenUpdate_thenStudentsCoursesTableIsUpdated() {
+	public void givenUpdatedCourses_whenUpdate_thenStudentsCoursesUpdated() {
 		Student student = template.get(Student.class, 1L);
 		student.getCourses().clear();
 
@@ -98,7 +97,7 @@ public class HibernateStudentDaoTest {
 	}
 
 	@Test
-	public void givenStudent_whenDelete_thenStudentIsDeleted() {
+	public void givenStudent_whenDelete_thenDeleted() {
 		Student student = template.get(Student.class, 3L);
 		int expectedRows = template.loadAll(Student.class).size() - 1;
 
