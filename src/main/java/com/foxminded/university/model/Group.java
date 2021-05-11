@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -16,6 +17,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NamedQuery(
+		name = "getGroupById",
+		query = "from Group g left join fetch g.students where g.id = :id")
+@NamedQuery(
+		name = "getAllGroups",
+		query = "from Group g")
+@NamedQuery(
+		name = "countGroups",
+		query = "select count(g) from Group g")
+@NamedQuery(
+		name = "getGroupsByLessonId",
+		query = "select g from Lesson l join l.groups g where l.id = :id")
+@NamedQuery(
+		name = "findGroupByName",
+		query = "from Group g where g.name = :name")
 @Entity
 @Table(name = "groups")
 @Getter
@@ -53,9 +69,7 @@ public class Group {
 			return false;
 		}
 		Group other = (Group) obj;
-		return Objects.equals(id, other.id)
-				&& Objects.equals(name, other.name)
-				&& Objects.equals(students, other.students);
+		return Objects.equals(id, other.id) && Objects.equals(name, other.name);
 	}
 
 	@Override

@@ -3,12 +3,6 @@ package com.foxminded.university.dao.hibernate;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,23 +27,19 @@ public class HibernateStudentDao implements StudentDao {
 		sessionFactory.getCurrentSession().save(student);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Student> findById(Long id) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Student> query = builder.createQuery(Student.class);
-		Root<Student> root = query.from(Student.class);
-		root.fetch("courses", JoinType.LEFT);
-		query.select(root).where(builder.equal(root.get("id"), id));
-		return session.createQuery(query).uniqueResultOptional();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getStudentById")
+				.setParameter("id", id)
+				.uniqueResultOptional();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Student> getAll() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaQuery<Student> query = session.getCriteriaBuilder().createQuery(Student.class);
-		query.select(query.from(Student.class));
-		return session.createQuery(query).getResultList();
+		return sessionFactory.getCurrentSession().getNamedQuery("getAllStudents").getResultList();
 	}
 
 	@Override
@@ -64,42 +54,35 @@ public class HibernateStudentDao implements StudentDao {
 
 	@Override
 	public long count() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Long> query = builder.createQuery(Long.class);
-		query.select(builder.count(query.from(Student.class)));
-		return session.createQuery(query).getSingleResult();
+		return (long) sessionFactory.getCurrentSession().getNamedQuery("countStudents").getSingleResult();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Page<Student> getAllPage(Pageable pageable) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaQuery<Student> query = session.getCriteriaBuilder().createQuery(Student.class);
-		query.select(query.from(Student.class));
-		List<Student> students = session.createQuery(query)
+		List<Student> students = sessionFactory.getCurrentSession()
+				.getNamedQuery("getAllStudents")
 				.setFirstResult((int) pageable.getOffset())
 				.setMaxResults(pageable.getPageSize())
 				.getResultList();
 		return new PageImpl<>(students, pageable, count());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Student> getByGroup(Group group) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Student> query = builder.createQuery(Student.class);
-		Root<Student> root = query.from(Student.class);
-		query.select(root).where(builder.equal(root.get("group"), group));
-		return session.createQuery(query).getResultList();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getStudentsByGroup")
+				.setParameter("group", group)
+				.getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Student> getByCourseId(Long courseId) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Student> query = builder.createQuery(Student.class);
-		Root<Student> root = query.from(Student.class);
-		query.select(root).where(builder.equal(root.join("courses").get("id"), courseId));
-		return session.createQuery(query).getResultList();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getStudentsByCourseId")
+				.setParameter("id", courseId)
+				.getResultList();
 	}
 }

@@ -2,6 +2,7 @@ package com.foxminded.university.model;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -15,18 +16,36 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NamedQuery(
+		name = "getStudentById",
+		query = "from Student s left join fetch s.courses where s.id = :id")
+@NamedQuery(
+		name = "getAllStudents",
+		query = "from Student s")
+@NamedQuery(
+		name = "countStudents",
+		query = "select count(s) from Student s")
+@NamedQuery(
+		name = "getStudentsByGroup",
+		query = "select s from Student s where s.group = :group")
+@NamedQuery(
+		name = "getStudentsByCourseId",
+		query = "select s from Student s join s.courses c where c.id = :id")
 @Entity
 @Table(name = "students")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -56,5 +75,33 @@ public class Student {
 	public Student(String name, String surname) {
 		this.name = name;
 		this.surname = surname;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(email, id, name, surname);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Student other = (Student) obj;
+		return Objects.equals(email, other.email)
+				&& Objects.equals(id, other.id)
+				&& Objects.equals(name, other.name)
+				&& Objects.equals(surname, other.surname);
+	}
+
+	@Override
+	public String toString() {
+		return "Student [id=" + id + ", name=" + name + ", surname=" + surname + "]";
 	}
 }

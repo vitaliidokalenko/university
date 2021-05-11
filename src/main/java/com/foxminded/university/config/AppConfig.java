@@ -29,6 +29,8 @@ public class AppConfig {
 	private String dialect;
 	@Value("${hibernate.show_sql}")
 	private String showSql;
+	@Value("${hibernate.format_sql}")
+	private String formatSql;
 	@Value("${current_session_context_class}")
 	private String context;
 
@@ -59,6 +61,7 @@ public class AppConfig {
 		hibernateProperties.setProperty("hibernate.hbm2ddl.auto", hbm2ddlAuto);
 		hibernateProperties.setProperty("hibernate.dialect", dialect);
 		hibernateProperties.setProperty("hibernate.show_sql", showSql);
+		hibernateProperties.setProperty("hibernate.format_sql", formatSql);
 		hibernateProperties.setProperty("current_session_context_class", context);
 		return hibernateProperties;
 	}

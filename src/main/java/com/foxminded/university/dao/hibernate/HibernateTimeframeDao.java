@@ -3,11 +3,6 @@ package com.foxminded.university.dao.hibernate;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -36,12 +31,10 @@ public class HibernateTimeframeDao implements TimeframeDao {
 		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Timeframe.class, id));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Timeframe> getAll() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaQuery<Timeframe> query = session.getCriteriaBuilder().createQuery(Timeframe.class);
-		query.select(query.from(Timeframe.class));
-		return session.createQuery(query).getResultList();
+		return sessionFactory.getCurrentSession().getNamedQuery("getAllTimeframes").getResultList();
 	}
 
 	@Override
@@ -56,32 +49,26 @@ public class HibernateTimeframeDao implements TimeframeDao {
 
 	@Override
 	public long count() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Long> query = builder.createQuery(Long.class);
-		query.select(builder.count(query.from(Timeframe.class)));
-		return session.createQuery(query).getSingleResult();
+		return (long) sessionFactory.getCurrentSession().getNamedQuery("countTimeframes").getSingleResult();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Page<Timeframe> getAllPage(Pageable pageable) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaQuery<Timeframe> query = session.getCriteriaBuilder().createQuery(Timeframe.class);
-		query.select(query.from(Timeframe.class));
-		List<Timeframe> timeframes = session.createQuery(query)
+		List<Timeframe> timeframes = sessionFactory.getCurrentSession()
+				.getNamedQuery("getAllTimeframes")
 				.setFirstResult((int) pageable.getOffset())
 				.setMaxResults(pageable.getPageSize())
 				.getResultList();
 		return new PageImpl<>(timeframes, pageable, count());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Timeframe> findBySequence(int sequence) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Timeframe> query = builder.createQuery(Timeframe.class);
-		Root<Timeframe> root = query.from(Timeframe.class);
-		query.select(root).where(builder.equal(root.get("sequence"), sequence));
-		return session.createQuery(query).uniqueResultOptional();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("findTimeframeBySequence")
+				.setParameter("sequence", sequence)
+				.uniqueResultOptional();
 	}
 }

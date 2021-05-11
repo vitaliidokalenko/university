@@ -4,11 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.data.domain.Page;
@@ -37,24 +32,19 @@ public class HibernateLessonDao implements LessonDao {
 		sessionFactory.getCurrentSession().save(lesson);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Lesson> findById(Long id) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
-		Root<Lesson> root = query.from(Lesson.class);
-		root.fetch("groups", JoinType.LEFT);
-		query.select(root).where(builder.equal(root.get("id"), id));
-		return session.createQuery(query).uniqueResultOptional();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getLessonById")
+				.setParameter("id", id)
+				.uniqueResultOptional();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lesson> getAll() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaQuery<Lesson> query = session.getCriteriaBuilder().createQuery(Lesson.class);
-		Root<Lesson> root = query.from(Lesson.class);
-		query.select(root);
-		return session.createQuery(query).getResultList();
+		return sessionFactory.getCurrentSession().getNamedQuery("getAllLessons").getResultList();
 	}
 
 	@Override
@@ -69,109 +59,91 @@ public class HibernateLessonDao implements LessonDao {
 
 	@Override
 	public long count() {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Long> query = builder.createQuery(Long.class);
-		query.select(builder.count(query.from(Lesson.class)));
-		return session.createQuery(query).getSingleResult();
+		return (long) sessionFactory.getCurrentSession().getNamedQuery("countLessons").getSingleResult();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Page<Lesson> getAllPage(Pageable pageable) {
 		Session session = sessionFactory.getCurrentSession();
-		CriteriaQuery<Lesson> query = session.getCriteriaBuilder().createQuery(Lesson.class);
-		Root<Lesson> root = query.from(Lesson.class);
-		root.fetch("groups", JoinType.LEFT);
-		query.select(root);
-		List<Lesson> lessons = session.createQuery(query)
+		List<Lesson> lessons = session.getNamedQuery("getAllLessons")
+				.setHint("javax.persistence.loadgraph", session.getEntityGraph("Lesson.groups"))
 				.setFirstResult((int) pageable.getOffset())
 				.setMaxResults(pageable.getPageSize())
 				.getResultList();
 		return new PageImpl<>(lessons, pageable, count());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Lesson> getByGroupIdAndDateAndTimeframe(Long groupId, LocalDate date, Timeframe timeframe) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
-		Root<Lesson> root = query.from(Lesson.class);
-		root.fetch("groups", JoinType.LEFT);
-		query.select(root)
-				.where(builder.and(builder.equal(root.join("groups").get("id"), groupId),
-						builder.equal(root.get("date"), date),
-						builder.equal(root.get("timeframe"), timeframe)));
-		return session.createQuery(query).uniqueResultOptional();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getLessonByGroupIdAndDateAndTimeframe")
+				.setParameter("id", groupId)
+				.setParameter("date", date)
+				.setParameter("timeframe", timeframe)
+				.uniqueResultOptional();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lesson> getByTimeframe(Timeframe timeframe) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
-		Root<Lesson> root = query.from(Lesson.class);
-		query.select(root).where(builder.equal(root.get("timeframe"), timeframe));
-		return session.createQuery(query).getResultList();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getLessonsByTimeframe")
+				.setParameter("timeframe", timeframe)
+				.getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lesson> getByCourse(Course course) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
-		Root<Lesson> root = query.from(Lesson.class);
-		query.select(root).where(builder.equal(root.get("course"), course));
-		return session.createQuery(query).getResultList();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getLessonsByCourse")
+				.setParameter("course", course)
+				.getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Lesson> getByTeacherAndDateAndTimeframe(Teacher teacher, LocalDate date, Timeframe timeframe) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
-		Root<Lesson> root = query.from(Lesson.class);
-		root.fetch("groups", JoinType.LEFT);
-		query.select(root)
-				.where(builder.and(builder.equal(root.get("teacher"), teacher),
-						builder.equal(root.get("date"), date),
-						builder.equal(root.get("timeframe"), timeframe)));
-		return session.createQuery(query).uniqueResultOptional();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getLessonByTeacherAndDateAndTimeframe")
+				.setParameter("teacher", teacher)
+				.setParameter("date", date)
+				.setParameter("timeframe", timeframe)
+				.uniqueResultOptional();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Lesson> getByRoomAndDateAndTimeframe(Room room, LocalDate date, Timeframe timeframe) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
-		Root<Lesson> root = query.from(Lesson.class);
-		query.select(root)
-				.where(builder.and(builder.equal(root.get("room"), room),
-						builder.equal(root.get("date"), date),
-						builder.equal(root.get("timeframe"), timeframe)));
-		return session.createQuery(query).uniqueResultOptional();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getLessonByRoomAndDateAndTimeframe")
+				.setParameter("room", room)
+				.setParameter("date", date)
+				.setParameter("timeframe", timeframe)
+				.uniqueResultOptional();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lesson> getByTeacherIdAndDateBetween(Long teacherId, LocalDate startDate, LocalDate endDate) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
-		Root<Lesson> root = query.from(Lesson.class);
-		query.select(root)
-				.where(builder.equal(root.get("teacher").get("id"), teacherId),
-						builder.between(root.get("date"), startDate, endDate));
-		return session.createQuery(query).getResultList();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getLessonsByTeacherIdAndDateBetween")
+				.setParameter("id", teacherId)
+				.setParameter("startDate", startDate)
+				.setParameter("endDate", endDate)
+				.getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lesson> getByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate) {
-		Session session = sessionFactory.getCurrentSession();
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<Lesson> query = builder.createQuery(Lesson.class);
-		Root<Lesson> root = query.from(Lesson.class);
-		query.select(root)
-				.where(builder.equal(root.join("groups").get("id"), groupId),
-						builder.between(root.get("date"), startDate, endDate));
-		return session.createQuery(query).getResultList();
+		return sessionFactory.getCurrentSession()
+				.getNamedQuery("getLessonsByGroupIdAndDateBetween")
+				.setParameter("id", groupId)
+				.setParameter("startDate", startDate)
+				.setParameter("endDate", endDate)
+				.getResultList();
 	}
 }
