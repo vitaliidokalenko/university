@@ -1,6 +1,7 @@
 package com.foxminded.university.dao.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -87,12 +88,10 @@ public class HibernateGroupDaoTest {
 	@Test
 	public void givenGroup_whenDelete_thenDeleted() {
 		Group group = template.get(Group.class, 4L);
-		int expectedRows = template.loadAll(Group.class).size() - 1;
 
 		groupDao.delete(group);
 
-		int actualRows = template.loadAll(Group.class).size();
-		assertEquals(expectedRows, actualRows);
+		assertNull(template.get(Group.class, 4L));
 	}
 
 	@Test

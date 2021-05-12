@@ -1,6 +1,7 @@
 package com.foxminded.university.dao.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
@@ -97,12 +98,10 @@ public class HibernateTeacherDaoTest {
 	@Test
 	public void givenTeacher_whenDelete_thenDeleted() {
 		Teacher teacher = template.get(Teacher.class, 4L);
-		int expectedRows = template.loadAll(Teacher.class).size() - 1;
 
 		teacherDao.delete(teacher);
 
-		int actualRows = template.loadAll(Teacher.class).size();
-		assertEquals(expectedRows, actualRows);
+		assertNull(template.get(Teacher.class, 4L));
 	}
 
 	@Test

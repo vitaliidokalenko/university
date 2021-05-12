@@ -1,6 +1,7 @@
 package com.foxminded.university.dao.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -81,12 +82,10 @@ public class HibernateTimeframeDaoTest {
 	@Test
 	public void givenTimeframe_whenDelete_thenDeleted() {
 		Timeframe timeframe = template.get(Timeframe.class, 4L);
-		int expectedRows = template.loadAll(Timeframe.class).size() - 1;
 
 		timeframeDao.delete(timeframe);
 
-		int actualRows = template.loadAll(Timeframe.class).size();
-		assertEquals(expectedRows, actualRows);
+		assertNull(template.get(Timeframe.class, 4L));
 	}
 
 	@Test
