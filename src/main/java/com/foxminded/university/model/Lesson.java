@@ -28,9 +28,6 @@ import lombok.NoArgsConstructor;
 		name = "Lesson.groups",
 		attributeNodes = { @NamedAttributeNode("groups") })
 @NamedQuery(
-		name = "getLessonById",
-		query = "from Lesson l left join fetch l.groups where l.id = :id")
-@NamedQuery(
 		name = "getAllLessons",
 		query = "from Lesson l")
 @NamedQuery(

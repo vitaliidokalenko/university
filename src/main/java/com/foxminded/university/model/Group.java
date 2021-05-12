@@ -18,9 +18,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @NamedQuery(
-		name = "getGroupById",
-		query = "from Group g left join fetch g.students where g.id = :id")
-@NamedQuery(
 		name = "getAllGroups",
 		query = "from Group g")
 @NamedQuery(

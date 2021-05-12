@@ -34,10 +34,7 @@ public class HibernateLessonDao implements LessonDao {
 
 	@Override
 	public Optional<Lesson> findById(Long id) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getLessonById")
-				.setParameter("id", id)
-				.uniqueResultOptional();
+		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Lesson.class, id));
 	}
 
 	@Override

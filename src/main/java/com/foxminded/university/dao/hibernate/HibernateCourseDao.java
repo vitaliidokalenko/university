@@ -28,10 +28,7 @@ public class HibernateCourseDao implements CourseDao {
 
 	@Override
 	public Optional<Course> findById(Long id) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getCourseById")
-				.setParameter("id", id)
-				.uniqueResultOptional();
+		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Course.class, id));
 	}
 
 	@Override

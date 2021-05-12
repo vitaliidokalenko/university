@@ -28,10 +28,7 @@ public class HibernateTeacherDao implements TeacherDao {
 
 	@Override
 	public Optional<Teacher> findById(Long id) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getTeacherById")
-				.setParameter("id", id)
-				.uniqueResultOptional();
+		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Teacher.class, id));
 	}
 
 	@Override

@@ -27,9 +27,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @NamedQuery(
-		name = "getTeacherById",
-		query = "from Teacher t left join fetch t.courses where t.id = :id")
-@NamedQuery(
 		name = "getAllTeachers",
 		query = "from Teacher t")
 @NamedQuery(

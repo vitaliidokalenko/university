@@ -28,10 +28,7 @@ public class HibernateGroupDao implements GroupDao {
 
 	@Override
 	public Optional<Group> findById(Long id) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getGroupById")
-				.setParameter("id", id)
-				.uniqueResultOptional();
+		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Group.class, id));
 	}
 
 	@Override

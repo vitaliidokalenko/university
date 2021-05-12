@@ -29,10 +29,7 @@ public class HibernateStudentDao implements StudentDao {
 
 	@Override
 	public Optional<Student> findById(Long id) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getStudentById")
-				.setParameter("id", id)
-				.uniqueResultOptional();
+		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Student.class, id));
 	}
 
 	@Override
