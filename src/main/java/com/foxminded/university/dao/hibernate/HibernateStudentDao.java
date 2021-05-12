@@ -27,7 +27,6 @@ public class HibernateStudentDao implements StudentDao {
 		sessionFactory.getCurrentSession().save(student);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Student> findById(Long id) {
 		return sessionFactory.getCurrentSession()
@@ -36,7 +35,6 @@ public class HibernateStudentDao implements StudentDao {
 				.uniqueResultOptional();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Student> getAll() {
 		return sessionFactory.getCurrentSession().getNamedQuery("getAllStudents").getResultList();
@@ -57,7 +55,6 @@ public class HibernateStudentDao implements StudentDao {
 		return (long) sessionFactory.getCurrentSession().getNamedQuery("countStudents").getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Page<Student> getAllPage(Pageable pageable) {
 		List<Student> students = sessionFactory.getCurrentSession()
@@ -68,7 +65,6 @@ public class HibernateStudentDao implements StudentDao {
 		return new PageImpl<>(students, pageable, count());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Student> getByGroup(Group group) {
 		return sessionFactory.getCurrentSession()
@@ -77,7 +73,6 @@ public class HibernateStudentDao implements StudentDao {
 				.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Student> getByCourseId(Long courseId) {
 		return sessionFactory.getCurrentSession()

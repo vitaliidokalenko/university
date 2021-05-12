@@ -26,7 +26,6 @@ public class HibernateTeacherDao implements TeacherDao {
 		sessionFactory.getCurrentSession().save(teacher);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Teacher> findById(Long id) {
 		return sessionFactory.getCurrentSession()
@@ -35,7 +34,6 @@ public class HibernateTeacherDao implements TeacherDao {
 				.uniqueResultOptional();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Teacher> getAll() {
 		return sessionFactory.getCurrentSession().getNamedQuery("getAllTeachers").getResultList();
@@ -56,7 +54,6 @@ public class HibernateTeacherDao implements TeacherDao {
 		return (long) sessionFactory.getCurrentSession().getNamedQuery("countTeachers").getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Page<Teacher> getAllPage(Pageable pageable) {
 		List<Teacher> teachers = sessionFactory.getCurrentSession()
@@ -67,7 +64,6 @@ public class HibernateTeacherDao implements TeacherDao {
 		return new PageImpl<>(teachers, pageable, count());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Teacher> getByCourseId(Long courseId) {
 		return sessionFactory.getCurrentSession()

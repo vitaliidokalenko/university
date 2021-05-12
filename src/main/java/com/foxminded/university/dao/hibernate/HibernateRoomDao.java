@@ -31,7 +31,6 @@ public class HibernateRoomDao implements RoomDao {
 		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Room.class, id));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Room> getAll() {
 		return sessionFactory.getCurrentSession().getNamedQuery("getAllRooms").getResultList();
@@ -52,7 +51,6 @@ public class HibernateRoomDao implements RoomDao {
 		return (long) sessionFactory.getCurrentSession().getNamedQuery("countRooms").getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Page<Room> getAllPage(Pageable pageable) {
 		List<Room> rooms = sessionFactory.getCurrentSession()
@@ -63,7 +61,6 @@ public class HibernateRoomDao implements RoomDao {
 		return new PageImpl<>(rooms, pageable, count());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Room> getByCourseId(Long courseId) {
 		return sessionFactory.getCurrentSession()
@@ -72,7 +69,6 @@ public class HibernateRoomDao implements RoomDao {
 				.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Room> findByName(String name) {
 		return sessionFactory.getCurrentSession()

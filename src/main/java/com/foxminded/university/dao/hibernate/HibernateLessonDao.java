@@ -32,7 +32,6 @@ public class HibernateLessonDao implements LessonDao {
 		sessionFactory.getCurrentSession().save(lesson);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Lesson> findById(Long id) {
 		return sessionFactory.getCurrentSession()
@@ -41,7 +40,6 @@ public class HibernateLessonDao implements LessonDao {
 				.uniqueResultOptional();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lesson> getAll() {
 		return sessionFactory.getCurrentSession().getNamedQuery("getAllLessons").getResultList();
@@ -62,7 +60,6 @@ public class HibernateLessonDao implements LessonDao {
 		return (long) sessionFactory.getCurrentSession().getNamedQuery("countLessons").getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Page<Lesson> getAllPage(Pageable pageable) {
 		Session session = sessionFactory.getCurrentSession();
@@ -74,7 +71,6 @@ public class HibernateLessonDao implements LessonDao {
 		return new PageImpl<>(lessons, pageable, count());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Lesson> getByGroupIdAndDateAndTimeframe(Long groupId, LocalDate date, Timeframe timeframe) {
 		return sessionFactory.getCurrentSession()
@@ -85,7 +81,6 @@ public class HibernateLessonDao implements LessonDao {
 				.uniqueResultOptional();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lesson> getByTimeframe(Timeframe timeframe) {
 		return sessionFactory.getCurrentSession()
@@ -94,7 +89,6 @@ public class HibernateLessonDao implements LessonDao {
 				.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lesson> getByCourse(Course course) {
 		return sessionFactory.getCurrentSession()
@@ -103,7 +97,6 @@ public class HibernateLessonDao implements LessonDao {
 				.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Lesson> getByTeacherAndDateAndTimeframe(Teacher teacher, LocalDate date, Timeframe timeframe) {
 		return sessionFactory.getCurrentSession()
@@ -114,7 +107,6 @@ public class HibernateLessonDao implements LessonDao {
 				.uniqueResultOptional();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Lesson> getByRoomAndDateAndTimeframe(Room room, LocalDate date, Timeframe timeframe) {
 		return sessionFactory.getCurrentSession()
@@ -125,7 +117,6 @@ public class HibernateLessonDao implements LessonDao {
 				.uniqueResultOptional();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lesson> getByTeacherIdAndDateBetween(Long teacherId, LocalDate startDate, LocalDate endDate) {
 		return sessionFactory.getCurrentSession()
@@ -136,7 +127,6 @@ public class HibernateLessonDao implements LessonDao {
 				.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Lesson> getByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate) {
 		return sessionFactory.getCurrentSession()

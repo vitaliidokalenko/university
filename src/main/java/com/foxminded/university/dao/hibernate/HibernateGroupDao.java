@@ -26,7 +26,6 @@ public class HibernateGroupDao implements GroupDao {
 		sessionFactory.getCurrentSession().save(group);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Group> findById(Long id) {
 		return sessionFactory.getCurrentSession()
@@ -35,7 +34,6 @@ public class HibernateGroupDao implements GroupDao {
 				.uniqueResultOptional();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Group> getAll() {
 		return sessionFactory.getCurrentSession().getNamedQuery("getAllGroups").getResultList();
@@ -56,7 +54,6 @@ public class HibernateGroupDao implements GroupDao {
 		return (long) sessionFactory.getCurrentSession().getNamedQuery("countGroups").getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Page<Group> getAllPage(Pageable pageable) {
 		List<Group> groups = sessionFactory.getCurrentSession()
@@ -67,7 +64,6 @@ public class HibernateGroupDao implements GroupDao {
 		return new PageImpl<>(groups, pageable, count());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Group> getByLessonId(Long lessonId) {
 		return sessionFactory.getCurrentSession()
@@ -76,7 +72,6 @@ public class HibernateGroupDao implements GroupDao {
 				.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Group> findByName(String name) {
 		return sessionFactory.getCurrentSession()

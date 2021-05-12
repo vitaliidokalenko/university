@@ -31,7 +31,6 @@ public class HibernateTimeframeDao implements TimeframeDao {
 		return Optional.ofNullable(sessionFactory.getCurrentSession().get(Timeframe.class, id));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Timeframe> getAll() {
 		return sessionFactory.getCurrentSession().getNamedQuery("getAllTimeframes").getResultList();
@@ -52,7 +51,6 @@ public class HibernateTimeframeDao implements TimeframeDao {
 		return (long) sessionFactory.getCurrentSession().getNamedQuery("countTimeframes").getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Page<Timeframe> getAllPage(Pageable pageable) {
 		List<Timeframe> timeframes = sessionFactory.getCurrentSession()
@@ -63,7 +61,6 @@ public class HibernateTimeframeDao implements TimeframeDao {
 		return new PageImpl<>(timeframes, pageable, count());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Timeframe> findBySequence(int sequence) {
 		return sessionFactory.getCurrentSession()

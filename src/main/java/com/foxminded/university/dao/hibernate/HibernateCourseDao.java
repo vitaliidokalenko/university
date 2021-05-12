@@ -26,7 +26,6 @@ public class HibernateCourseDao implements CourseDao {
 		sessionFactory.getCurrentSession().save(course);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Course> findById(Long id) {
 		return sessionFactory.getCurrentSession()
@@ -35,7 +34,6 @@ public class HibernateCourseDao implements CourseDao {
 				.uniqueResultOptional();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Course> getAll() {
 		return sessionFactory.getCurrentSession().getNamedQuery("getAllCourses").getResultList();
@@ -56,7 +54,6 @@ public class HibernateCourseDao implements CourseDao {
 		return (long) sessionFactory.getCurrentSession().getNamedQuery("countCourses").getSingleResult();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Page<Course> getAllPage(Pageable pageable) {
 		List<Course> courses = sessionFactory.getCurrentSession()
@@ -67,7 +64,6 @@ public class HibernateCourseDao implements CourseDao {
 		return new PageImpl<>(courses, pageable, count());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Course> getByRoomId(Long roomId) {
 		return sessionFactory.getCurrentSession()
@@ -76,7 +72,6 @@ public class HibernateCourseDao implements CourseDao {
 				.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Course> getByStudentId(Long studentId) {
 		return sessionFactory.getCurrentSession()
@@ -85,7 +80,6 @@ public class HibernateCourseDao implements CourseDao {
 				.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Course> getByTeacherId(Long teacherId) {
 		return sessionFactory.getCurrentSession()
@@ -94,7 +88,6 @@ public class HibernateCourseDao implements CourseDao {
 				.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Course> findByName(String name) {
 		return sessionFactory.getCurrentSession()
