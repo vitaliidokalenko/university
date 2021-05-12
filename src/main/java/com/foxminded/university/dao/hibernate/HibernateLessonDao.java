@@ -38,11 +38,6 @@ public class HibernateLessonDao implements LessonDao {
 	}
 
 	@Override
-	public List<Lesson> getAll() {
-		return sessionFactory.getCurrentSession().getNamedQuery("getAllLessons").getResultList();
-	}
-
-	@Override
 	public void update(Lesson lesson) {
 		sessionFactory.getCurrentSession().merge(lesson);
 	}

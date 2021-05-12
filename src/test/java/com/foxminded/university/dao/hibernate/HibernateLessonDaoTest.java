@@ -34,15 +34,6 @@ public class HibernateLessonDaoTest {
 	HibernateLessonDao lessonDao;
 
 	@Test
-	public void whenGetAll_thenGetRightListOfLessons() {
-		List<Lesson> expected = template.loadAll(Lesson.class);
-
-		List<Lesson> actual = lessonDao.getAll();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void givenNewCourse_whenCreate_thenCreated() {
 		Lesson expected = Lesson.builder()
 				.date(LocalDate.parse("2021-01-21"))

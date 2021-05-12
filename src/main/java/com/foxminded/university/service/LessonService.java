@@ -64,12 +64,6 @@ public class LessonService {
 	}
 
 	@Transactional
-	public List<Lesson> getAll() {
-		logger.debug("Getting lessons");
-		return lessonDao.getAll();
-	}
-
-	@Transactional
 	public Page<Lesson> getAllPage(Pageable pageable) {
 		logger.debug("Getting pageable lessons");
 		return lessonDao.getAllPage(pageable);

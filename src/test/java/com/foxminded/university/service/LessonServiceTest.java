@@ -235,17 +235,6 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightListOfLessons() {
-		Lesson lesson = buildLesson();
-		List<Lesson> expected = List.of(lesson);
-		when(lessonDao.getAll()).thenReturn(expected);
-
-		List<Lesson> actual = lessonService.getAll();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void givenLesson_whenUpdate_thenLessonIsUpdating() {
 		Lesson lesson = buildLesson();
 
