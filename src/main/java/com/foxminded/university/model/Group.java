@@ -25,7 +25,7 @@ import lombok.Setter;
 		query = "select count(g) from Group g")
 @NamedQuery(
 		name = "getGroupsByLessonId",
-		query = "select g from Lesson l join l.groups g where l.id = :id")
+		query = "select g from Group g where g.id in (select g.id from Lesson l join l.groups g where l.id = :id)")
 @NamedQuery(
 		name = "findGroupByName",
 		query = "from Group g where g.name = :name")
