@@ -121,31 +121,4 @@ public class HibernateCourseDaoTest {
 
 		assertEquals(expected, actual);
 	}
-
-	@Test
-	public void givenTeacherId_whenGetByTeacherId_thenGetRightListOfCourses() {
-		List<Course> expected = List.of(template.get(Course.class, 1L), template.get(Course.class, 2L));
-
-		List<Course> actual = courseDao.getByTeacherId(1L);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenStudentId_whenGetByStudentId_thenGetRightListOfCourses() {
-		List<Course> expected = List.of(template.get(Course.class, 1L), template.get(Course.class, 2L));
-
-		List<Course> actual = courseDao.getByStudentId(1L);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenRoomId_whenGetByRoomId_thenGetRightListOfCourses() {
-		List<Course> expected = List.of(template.get(Course.class, 1L));
-
-		List<Course> actual = courseDao.getByRoomId(1L);
-
-		assertEquals(expected, actual);
-	}
 }

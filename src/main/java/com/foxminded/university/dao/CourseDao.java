@@ -9,11 +9,5 @@ public interface CourseDao extends GenericDao<Course> {
 
 	public List<Course> getAll();
 
-	public List<Course> getByRoomId(Long roomId);
-
-	public List<Course> getByStudentId(Long studentId);
-
-	public List<Course> getByTeacherId(Long teacherId);
-
 	public Optional<Course> findByName(String name);
 }

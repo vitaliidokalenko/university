@@ -27,15 +27,6 @@ import lombok.Setter;
 		name = "countCourses",
 		query = "select count(c) from Course c")
 @NamedQuery(
-		name = "getCoursesByRoomId",
-		query = "select c from Course c join c.rooms r where r.id = :id")
-@NamedQuery(
-		name = "getCoursesByStudentId",
-		query = "select c from Course c where c.id in (select c.id from Student s join s.courses c where s.id = :id)")
-@NamedQuery(
-		name = "getCoursesByTeacherId",
-		query = "select c from Course c where c.id in (select c.id from Teacher t join t.courses c where t.id = :id)")
-@NamedQuery(
 		name = "findCourseByName",
 		query = "from Course c where c.name = :name")
 @Entity

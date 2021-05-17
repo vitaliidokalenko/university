@@ -19,9 +19,6 @@ import lombok.NoArgsConstructor;
 		name = "countRooms",
 		query = "select count(r) from Room r")
 @NamedQuery(
-		name = "getRoomsByCourseId",
-		query = "select r from Room r where r.id in (select r.id from Course c join c.rooms r where c.id = :id)")
-@NamedQuery(
 		name = "findRoomByName",
 		query = "from Room r where r.name = :name")
 @Entity

@@ -62,14 +62,6 @@ public class HibernateRoomDao implements RoomDao {
 	}
 
 	@Override
-	public List<Room> getByCourseId(Long courseId) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getRoomsByCourseId")
-				.setParameter("id", courseId)
-				.getResultList();
-	}
-
-	@Override
 	public Optional<Room> findByName(String name) {
 		return sessionFactory.getCurrentSession()
 				.getNamedQuery("findRoomByName")

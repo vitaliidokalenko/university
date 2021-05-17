@@ -120,26 +120,6 @@ public class HibernateLessonDaoTest {
 	}
 
 	@Test
-	public void givenTimeframe_whenGetByTimeframe_thenGetRightListOfLessons() {
-		Timeframe timeframe = template.get(Timeframe.class, 1L);
-		List<Lesson> expected = List.of(template.get(Lesson.class, 1L));
-
-		List<Lesson> actual = lessonDao.getByTimeframe(timeframe);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenCourse_whenGetByCourse_thenGetRightListOfLessons() {
-		Course course = template.get(Course.class, 1L);
-		List<Lesson> expected = List.of(template.get(Lesson.class, 1L));
-
-		List<Lesson> actual = lessonDao.getByCourse(course);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void givenGroupIdAndDateAndTimeframe_whenGetByGroupIdAndDateAndTimeframe_thenGetRightLesson() {
 		LocalDate date = LocalDate.parse("2020-12-12");
 		Timeframe timeframe = template.get(Timeframe.class, 1L);

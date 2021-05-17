@@ -62,30 +62,6 @@ public class HibernateCourseDao implements CourseDao {
 	}
 
 	@Override
-	public List<Course> getByRoomId(Long roomId) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getCoursesByRoomId")
-				.setParameter("id", roomId)
-				.getResultList();
-	}
-
-	@Override
-	public List<Course> getByStudentId(Long studentId) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getCoursesByStudentId")
-				.setParameter("id", studentId)
-				.getResultList();
-	}
-
-	@Override
-	public List<Course> getByTeacherId(Long teacherId) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getCoursesByTeacherId")
-				.setParameter("id", teacherId)
-				.getResultList();
-	}
-
-	@Override
 	public Optional<Course> findByName(String name) {
 		return sessionFactory.getCurrentSession()
 				.getNamedQuery("findCourseByName")

@@ -37,12 +37,6 @@ import lombok.NoArgsConstructor;
 		name = "getLessonByGroupIdAndDateAndTimeframe",
 		query = "select l from Lesson l join l.groups g where g.id = :id and l.date = :date and l.timeframe = :timeframe")
 @NamedQuery(
-		name = "getLessonsByTimeframe",
-		query = "select l from Lesson l where l.timeframe = :timeframe")
-@NamedQuery(
-		name = "getLessonsByCourse",
-		query = "select l from Lesson l where l.course = :course")
-@NamedQuery(
 		name = "getLessonByTeacherAndDateAndTimeframe",
 		query = "select l from Lesson l where l.teacher = :teacher and l.date = :date and l.timeframe = :timeframe")
 @NamedQuery(

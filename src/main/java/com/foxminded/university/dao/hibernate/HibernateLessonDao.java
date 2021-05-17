@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.foxminded.university.dao.LessonDao;
-import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
@@ -71,22 +70,6 @@ public class HibernateLessonDao implements LessonDao {
 				.setParameter("date", date)
 				.setParameter("timeframe", timeframe)
 				.uniqueResultOptional();
-	}
-
-	@Override
-	public List<Lesson> getByTimeframe(Timeframe timeframe) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getLessonsByTimeframe")
-				.setParameter("timeframe", timeframe)
-				.getResultList();
-	}
-
-	@Override
-	public List<Lesson> getByCourse(Course course) {
-		return sessionFactory.getCurrentSession()
-				.getNamedQuery("getLessonsByCourse")
-				.setParameter("course", course)
-				.getResultList();
 	}
 
 	@Override

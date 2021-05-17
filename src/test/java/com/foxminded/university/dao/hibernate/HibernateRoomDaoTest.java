@@ -110,13 +110,4 @@ public class HibernateRoomDaoTest {
 
 		assertEquals(expected, actual);
 	}
-
-	@Test
-	public void givenCourseId_whenGetByCourseId_thenGetRightListOfRooms() {
-		List<Room> expected = List.of(template.get(Room.class, 1L), template.get(Room.class, 2L));
-
-		List<Room> actual = roomDao.getByCourseId(1L);
-
-		assertEquals(expected, actual);
-	}
 }
