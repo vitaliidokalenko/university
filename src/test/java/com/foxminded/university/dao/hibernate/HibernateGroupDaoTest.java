@@ -42,7 +42,7 @@ public class HibernateGroupDaoTest {
 
 		groupDao.create(expected);
 
-		Group actual = template.get(Group.class, 5L);
+		Group actual = template.get(Group.class, expected.getId());
 		assertEquals(expected, actual);
 	}
 

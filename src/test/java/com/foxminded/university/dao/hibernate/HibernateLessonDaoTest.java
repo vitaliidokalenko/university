@@ -47,7 +47,7 @@ public class HibernateLessonDaoTest {
 
 		lessonDao.create(expected);
 
-		Lesson actual = template.get(Lesson.class, 4L);
+		Lesson actual = template.get(Lesson.class, expected.getId());
 		assertEquals(expected, actual);
 	}
 

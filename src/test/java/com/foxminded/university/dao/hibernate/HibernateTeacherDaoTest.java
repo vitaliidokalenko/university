@@ -52,7 +52,7 @@ public class HibernateTeacherDaoTest {
 
 		teacherDao.create(expected);
 
-		Teacher actual = template.get(Teacher.class, 5L);
+		Teacher actual = template.get(Teacher.class, expected.getId());
 		assertEquals(expected, actual);
 	}
 

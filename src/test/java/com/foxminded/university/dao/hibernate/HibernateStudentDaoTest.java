@@ -54,7 +54,7 @@ public class HibernateStudentDaoTest {
 
 		studentDao.create(expected);
 
-		Student actual = template.get(Student.class, 4L);
+		Student actual = template.get(Student.class, expected.getId());
 		assertEquals(expected, actual);
 	}
 

@@ -46,7 +46,7 @@ public class HibernateTimeframeDaoTest {
 
 		timeframeDao.create(expected);
 
-		Timeframe actual = template.get(Timeframe.class, 5L);
+		Timeframe actual = template.get(Timeframe.class, expected.getId());
 		assertEquals(expected, actual);
 	}
 

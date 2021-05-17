@@ -41,7 +41,7 @@ public class HibernateRoomDaoTest {
 
 		roomDao.create(expected);
 
-		Room actual = template.get(Room.class, 5L);
+		Room actual = template.get(Room.class, expected.getId());
 		assertEquals(expected, actual);
 	}
 
