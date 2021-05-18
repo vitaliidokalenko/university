@@ -33,6 +33,8 @@ public class AppConfig {
 	private String formatSql;
 	@Value("${current_session_context_class}")
 	private String context;
+	@Value("${hibernate.enable_lazy_load_no_trans}")
+	private String lazyLoad;
 
 	@Bean
 	public DataSource dataSource() {
@@ -63,6 +65,7 @@ public class AppConfig {
 		hibernateProperties.setProperty("hibernate.show_sql", showSql);
 		hibernateProperties.setProperty("hibernate.format_sql", formatSql);
 		hibernateProperties.setProperty("current_session_context_class", context);
+		hibernateProperties.setProperty("hibernate.enable_lazy_load_no_trans", lazyLoad);
 		return hibernateProperties;
 	}
 }

@@ -55,7 +55,6 @@ public class HibernateLessonDao implements LessonDao {
 	public Page<Lesson> getAllPage(Pageable pageable) {
 		Session session = sessionFactory.getCurrentSession();
 		List<Lesson> lessons = session.getNamedQuery("getAllLessons")
-				.setHint("javax.persistence.loadgraph", session.getEntityGraph("Lesson.groups"))
 				.setFirstResult((int) pageable.getOffset())
 				.setMaxResults(pageable.getPageSize())
 				.getResultList();

@@ -12,8 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
@@ -24,9 +22,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NamedEntityGraph(
-		name = "Lesson.groups",
-		attributeNodes = { @NamedAttributeNode("groups") })
 @NamedQuery(
 		name = "getAllLessons",
 		query = "from Lesson l")
