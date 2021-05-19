@@ -1,5 +1,7 @@
 package com.foxminded.university.config;
 
+import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -7,21 +9,32 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @ComponentScan("com.foxminded.university.dao")
 @PropertySource("classpath:application.properties")
+@EnableTransactionManagement
 public class AppConfig {
-
-	private static final String SCHEMA = "schema.sql";
 
 	@Value("${db.jndiName}")
 	private String jndiName;
+	@Value("${hibernate.hbm2ddl.auto}")
+	private String hbm2ddlAuto;
+	@Value("${hibernate.dialect}")
+	private String dialect;
+	@Value("${hibernate.show_sql}")
+	private String showSql;
+	@Value("${hibernate.format_sql}")
+	private String formatSql;
+	@Value("${current_session_context_class}")
+	private String context;
+	@Value("${hibernate.enable_lazy_load_no_trans}")
+	private String lazyLoad;
 
 	@Bean
 	public DataSource dataSource() {
@@ -30,17 +43,29 @@ public class AppConfig {
 	}
 
 	@Bean
-	public DataSourceInitializer dataSourceInitializer(DataSource dataSource) {
-		ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-		databasePopulator.addScript(new ClassPathResource(SCHEMA));
-		DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
-		dataSourceInitializer.setDataSource(dataSource);
-		dataSourceInitializer.setDatabasePopulator(databasePopulator);
-		return dataSourceInitializer;
+	public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
+		LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
+		sessionFactory.setDataSource(dataSource);
+		sessionFactory.setPackagesToScan("com.foxminded.university.model");
+		sessionFactory.setHibernateProperties(hibernateProperties());
+		return sessionFactory;
 	}
 
 	@Bean
-	public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-		return new JdbcTemplate(dataSource);
+	public PlatformTransactionManager hibernateTransactionManager(LocalSessionFactoryBean sessionFactory) {
+		HibernateTransactionManager transactionManager = new HibernateTransactionManager();
+		transactionManager.setSessionFactory(sessionFactory.getObject());
+		return transactionManager;
+	}
+
+	private final Properties hibernateProperties() {
+		Properties hibernateProperties = new Properties();
+		hibernateProperties.setProperty("hibernate.hbm2ddl.auto", hbm2ddlAuto);
+		hibernateProperties.setProperty("hibernate.dialect", dialect);
+		hibernateProperties.setProperty("hibernate.show_sql", showSql);
+		hibernateProperties.setProperty("hibernate.format_sql", formatSql);
+		hibernateProperties.setProperty("current_session_context_class", context);
+		hibernateProperties.setProperty("hibernate.enable_lazy_load_no_trans", lazyLoad);
+		return hibernateProperties;
 	}
 }

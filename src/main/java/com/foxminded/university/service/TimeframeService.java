@@ -70,11 +70,8 @@ public class TimeframeService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting timeframe by id: {}", id);
-		if (timeframeDao.findById(id).isPresent()) {
-			timeframeDao.deleteById(id);
-		} else {
-			throw new NotFoundEntityException(format("Cannot find timeframe by id: %d", id));
-		}
+		timeframeDao.delete(timeframeDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find timeframe by id: %d", id))));
 	}
 
 	private void verify(Timeframe timeframe) {

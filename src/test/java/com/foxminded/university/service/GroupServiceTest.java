@@ -21,9 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.GroupDao;
-import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Group;
-import com.foxminded.university.model.Student;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
@@ -34,8 +32,6 @@ public class GroupServiceTest {
 
 	@Mock
 	private GroupDao groupDao;
-	@Mock
-	private StudentDao studentDao;
 
 	@InjectMocks
 	private GroupService groupService;
@@ -68,18 +64,6 @@ public class GroupServiceTest {
 	}
 
 	@Test
-	public void givenId_whenFindById_thenGetRightGroupWithItStudents() {
-		Optional<Group> expected = Optional.of(buildGroup());
-		List<Student> students = List.of(new Student("Avraam", "Melburn"), new Student("Homer", "Mahony"));
-		when(groupDao.findById(1L)).thenReturn(expected);
-		when(studentDao.getByGroup(expected.get())).thenReturn(students);
-
-		Optional<Group> actual = groupService.findById(1L);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void whenGetAll_thenGetRightListOfGroups() {
 		List<Group> expected = List.of(buildGroup());
 		when(groupDao.getAll()).thenReturn(expected);
@@ -100,11 +84,12 @@ public class GroupServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenGroupIsDeleting() {
-		when(groupDao.findById(1L)).thenReturn(Optional.of(buildGroup()));
+		Group group = buildGroup();
+		when(groupDao.findById(1L)).thenReturn(Optional.of(group));
 
 		groupService.deleteById(1L);
 
-		verify(groupDao).deleteById(1L);
+		verify(groupDao).delete(group);
 	}
 
 	@Test

@@ -106,11 +106,12 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenCourseIsDeleting() {
-		when(courseDao.findById(1L)).thenReturn(Optional.of(buildCourse()));
+		Course course = buildCourse();
+		when(courseDao.findById(1L)).thenReturn(Optional.of(course));
 
 		courseService.deleteById(1L);
 
-		verify(courseDao).deleteById(1L);
+		verify(courseDao).delete(course);
 	}
 
 	@Test

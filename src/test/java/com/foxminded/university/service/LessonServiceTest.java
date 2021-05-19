@@ -235,17 +235,6 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void whenGetAll_thenGetRightListOfLessons() {
-		Lesson lesson = buildLesson();
-		List<Lesson> expected = List.of(lesson);
-		when(lessonDao.getAll()).thenReturn(expected);
-
-		List<Lesson> actual = lessonService.getAll();
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void givenLesson_whenUpdate_thenLessonIsUpdating() {
 		Lesson lesson = buildLesson();
 
@@ -352,11 +341,12 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenLessonIsDeleting() {
-		when(lessonDao.findById(1L)).thenReturn(Optional.of(buildLesson()));
+		Lesson lesson = buildLesson();
+		when(lessonDao.findById(1L)).thenReturn(Optional.of(lesson));
 
 		lessonService.deleteById(1L);
 
-		verify(lessonDao).deleteById(1L);
+		verify(lessonDao).delete(lesson);
 	}
 
 	@Test

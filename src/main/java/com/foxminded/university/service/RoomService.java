@@ -65,11 +65,8 @@ public class RoomService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting room by id: {}", id);
-		if (roomDao.findById(id).isPresent()) {
-			roomDao.deleteById(id);
-		} else {
-			throw new NotFoundEntityException(format("Cannot find room by id: %d", id));
-		}
+		roomDao.delete(roomDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find room by id: %d", id))));
 	}
 
 	private void verify(Room room) {

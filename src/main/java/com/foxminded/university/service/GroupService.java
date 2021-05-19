@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.foxminded.university.dao.GroupDao;
-import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
@@ -26,11 +25,9 @@ public class GroupService {
 	private static final Logger logger = LoggerFactory.getLogger(GroupService.class);
 
 	private GroupDao groupDao;
-	private StudentDao studentDao;
 
-	public GroupService(GroupDao groupDao, StudentDao studentDao) {
+	public GroupService(GroupDao groupDao) {
 		this.groupDao = groupDao;
-		this.studentDao = studentDao;
 	}
 
 	@Transactional
@@ -43,11 +40,7 @@ public class GroupService {
 	@Transactional
 	public Optional<Group> findById(Long id) {
 		logger.debug("Finding group by id: {}", id);
-		Optional<Group> group = groupDao.findById(id);
-		if (group.isPresent()) {
-			group.get().setStudents(studentDao.getByGroup(group.get()));
-		}
-		return group;
+		return groupDao.findById(id);
 	}
 
 	@Transactional
@@ -72,11 +65,8 @@ public class GroupService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting group by id: {}", id);
-		if (groupDao.findById(id).isPresent()) {
-			groupDao.deleteById(id);
-		} else {
-			throw new NotFoundEntityException(format("Cannot find group by id: %d", id));
-		}
+		groupDao.delete(groupDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find group by id: %d", id))));
 	}
 
 	private void verify(Group group) {

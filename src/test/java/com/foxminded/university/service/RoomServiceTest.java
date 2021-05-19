@@ -103,11 +103,12 @@ public class RoomServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenRoomIsDeleting() {
-		when(roomDao.findById(1L)).thenReturn(Optional.of(buildRoom()));
+		Room room = buildRoom();
+		when(roomDao.findById(1L)).thenReturn(Optional.of(room));
 
 		roomService.deleteById(1L);
 
-		verify(roomDao).deleteById(1L);
+		verify(roomDao).delete(room);
 	}
 
 	@Test

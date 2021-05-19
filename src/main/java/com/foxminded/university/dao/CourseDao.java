@@ -7,11 +7,7 @@ import com.foxminded.university.model.Course;
 
 public interface CourseDao extends GenericDao<Course> {
 
-	public List<Course> getByRoomId(Long roomId);
-
-	public List<Course> getByStudentId(Long studentId);
-
-	public List<Course> getByTeacherId(Long teacherId);
+	public List<Course> getAll();
 
 	public Optional<Course> findByName(String name);
 }

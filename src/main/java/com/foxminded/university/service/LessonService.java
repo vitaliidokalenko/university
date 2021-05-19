@@ -64,12 +64,6 @@ public class LessonService {
 	}
 
 	@Transactional
-	public List<Lesson> getAll() {
-		logger.debug("Getting lessons");
-		return lessonDao.getAll();
-	}
-
-	@Transactional
 	public Page<Lesson> getAllPage(Pageable pageable) {
 		logger.debug("Getting pageable lessons");
 		return lessonDao.getAllPage(pageable);
@@ -85,11 +79,8 @@ public class LessonService {
 	@Transactional
 	public void deleteById(Long id) {
 		logger.debug("Deleting lesson by id: {}", id);
-		if (lessonDao.findById(id).isPresent()) {
-			lessonDao.deleteById(id);
-		} else {
-			throw new NotFoundEntityException(format("Cannot find lesson by id: %d", id));
-		}
+		lessonDao.delete(lessonDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find lesson by id: %d", id))));
 	}
 
 	@Transactional

@@ -135,11 +135,12 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenEntityIsPresent_whenDeleteById_thenTimeframeIsDeleting() {
-		when(timeframeDao.findById(1L)).thenReturn(Optional.of(buildTimeframe()));
+		Timeframe timeframe = buildTimeframe();
+		when(timeframeDao.findById(1L)).thenReturn(Optional.of(timeframe));
 
 		timeframeService.deleteById(1L);
 
-		verify(timeframeDao).deleteById(1L);
+		verify(timeframeDao).delete(timeframe);
 	}
 
 	@Test
