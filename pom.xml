@@ -11,14 +11,14 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<springframework.boot.version>2.3.11.RELEASE</springframework.boot.version>
+		<spring-boot.version>2.3.11.RELEASE</spring-boot.version>
 	</properties>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>${springframework.boot.version}</version>
+				<version>${spring-boot.version}</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -27,7 +27,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${springframework.boot.version}</version>
+				<version>${spring-boot.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

@@ -28,7 +28,7 @@ public class TimeframeService {
 	private static final Logger logger = LoggerFactory.getLogger(TimeframeService.class);
 
 	private TimeframeDao timeframeDao;
-	@Value("#{T(java.time.Duration).parse('${timeframe.duration}')}")
+	@Value("#{T(java.time.Duration).parse('${university.lesson-duration}')}")
 	private Duration duration;
 
 	public TimeframeService(TimeframeDao timeframeDao) {
