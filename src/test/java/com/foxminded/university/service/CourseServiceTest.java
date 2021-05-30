@@ -18,9 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
@@ -29,7 +27,6 @@ import com.foxminded.university.service.exception.IncompleteEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
 
-@SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class CourseServiceTest {
 

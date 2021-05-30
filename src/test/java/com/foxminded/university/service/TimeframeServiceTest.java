@@ -20,10 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
@@ -32,7 +30,6 @@ import com.foxminded.university.service.exception.IncorrectTimelineException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueSequenceException;
 
-@SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class TimeframeServiceTest {
 
