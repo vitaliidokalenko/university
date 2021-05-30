@@ -2,16 +2,21 @@ spring:
     datasource:
         driver-class-name: org.postgresql.Driver
         url: jdbc:postgresql://127.0.0.1:5432/university_db
-        password: 12345678
         username: user
+        password: 12345678
     data:
         web:
             pageable:
                 max-page-size: 15
     jpa:
         database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+        
+hibernate:
+    current_session_context_class: thread
+    enable_lazy_load_no_trans: true
+    hbm2ddl:
+        auto: update
 
-group:
-    size: 30
-timeframe:
-    duration: PT1H20M
+university:
+    max-group-size: 30
+    lesson-duration: PT1H20M

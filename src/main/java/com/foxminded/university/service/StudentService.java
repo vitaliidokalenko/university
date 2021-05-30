@@ -26,7 +26,7 @@ public class StudentService {
 	private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
 	private StudentDao studentDao;
-	@Value("${group.size}")
+	@Value("${university.max-group-size}")
 	private int groupSize;
 
 	public StudentService(StudentDao studentDao) {

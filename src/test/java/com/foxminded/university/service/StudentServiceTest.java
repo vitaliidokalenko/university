@@ -19,10 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
@@ -32,7 +30,6 @@ import com.foxminded.university.service.exception.GroupOverflowException;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
-@SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
 
