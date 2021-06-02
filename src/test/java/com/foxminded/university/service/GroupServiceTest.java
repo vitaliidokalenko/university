@@ -151,8 +151,6 @@ public class GroupServiceTest {
 	}
 
 	private Group buildGroup() {
-		Group group = new Group("AA-11");
-		group.setId(1L);
-		return group;
+		return Group.builder().id(1L).name("AA-11").build();
 	}
 }

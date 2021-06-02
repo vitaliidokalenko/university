@@ -69,11 +69,6 @@ public class Student {
 	@Enumerated(EnumType.STRING)
 	private Gender gender;
 
-	public Student(String name, String surname) {
-		this.name = name;
-		this.surname = surname;
-	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(email, id, name, surname);

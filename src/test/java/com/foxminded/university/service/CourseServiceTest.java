@@ -173,13 +173,10 @@ public class CourseServiceTest {
 	}
 
 	private Course buildCourse() {
-		Room room1 = new Room("111");
-		room1.setId(1L);
-		Room room2 = new Room("222");
-		room2.setId(2L);
-		Course course = new Course("Art");
-		course.setId(1L);
-		course.setRooms(Set.of(room1, room2));
-		return course;
+		return Course.builder()
+				.id(1L)
+				.name("Art")
+				.rooms(Set.of(Room.builder().id(1L).name("111").build(), Room.builder().id(2L).name("222").build()))
+				.build();
 	}
 }

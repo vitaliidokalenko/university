@@ -170,9 +170,6 @@ public class RoomServiceTest {
 	}
 
 	private Room buildRoom() {
-		Room room = new Room("111");
-		room.setId(1L);
-		room.setCapacity(30);
-		return room;
+		return Room.builder().id(1L).name("111").capacity(30).build();
 	}
 }

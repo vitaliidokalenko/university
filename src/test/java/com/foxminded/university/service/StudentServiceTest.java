@@ -101,7 +101,8 @@ public class StudentServiceTest {
 		int maxGroupSize = 2;
 		Student student = buildStudent();
 		when(studentDao.getByGroup(student.getGroup()))
-				.thenReturn(List.of(new Student("Serhii", "Gerega"), new Student("Anatoly", "Soprano")));
+				.thenReturn(List.of(Student.builder().name("Anna").surname("Maria").build(),
+						Student.builder().name("Anatoly").surname("Deineka").build()));
 		when(properties.getMaxGroupSize()).thenReturn(maxGroupSize);
 
 		Exception exception = assertThrows(GroupOverflowException.class,

@@ -150,10 +150,10 @@ public class LessonServiceTest {
 	@Test
 	public void givenRoomCapacityIsNotEnough_whenCreate_thenNotEnoughRoomCapacityExceptionThrown() {
 		Lesson lesson = buildLesson();
-		List<Student> students = List.of(new Student("Anna", "Maria"),
-				new Student("Anatoly", "Deineka"),
-				new Student("Alina", "Linkoln"),
-				new Student("Homer", "Simpson"));
+		List<Student> students = List.of(Student.builder().name("Anna").surname("Maria").build(),
+				Student.builder().name("Anatoly").surname("Deineka").build(),
+				Student.builder().name("Alina").surname("Linkoln").build(),
+				Student.builder().name("Homer").surname("Simpson").build());
 		when(studentDao.getByGroup(Mockito.any(Group.class))).thenReturn(students);
 
 		Exception exception = assertThrows(NotEnoughRoomCapacityException.class,
@@ -168,8 +168,8 @@ public class LessonServiceTest {
 	public void givenRoomCapacityIsEnough_whenCreate_thenLessonIsCreating() {
 		Lesson lesson = buildLesson();
 		when(studentDao.getByGroup(Mockito.any(Group.class)))
-				.thenReturn(List.of(new Student("Anna", "Maria"),
-						new Student("Anatoly", "Deineka")));
+				.thenReturn(List.of(Student.builder().name("Anna").surname("Maria").build(),
+						Student.builder().name("Anatoly").surname("Deineka").build()));
 
 		lessonService.create(lesson);
 
@@ -179,7 +179,7 @@ public class LessonServiceTest {
 	@Test
 	public void givenTeacherIsNotCompetentInCourse_whenCreate_thenNotCompetentTeacherForCourseExceptionThrown() {
 		Lesson lesson = buildLesson();
-		lesson.setCourse(new Course("Law"));
+		lesson.setCourse(Course.builder().id(3L).name("Biology").build());
 
 		Exception exception = assertThrows(NotCompetentTeacherForCourseException.class,
 				() -> lessonService.create(lesson));
@@ -192,7 +192,7 @@ public class LessonServiceTest {
 	@Test
 	public void givenRoomIsNotAssignedForLessonCourse_whenCreate_thenNotSuitableRoomForCourseExceptionThrown() {
 		Lesson lesson = buildLesson();
-		lesson.setRoom(new Room("333"));
+		lesson.setRoom(Room.builder().id(3L).name("333").build());
 
 		Exception exception = assertThrows(NotSuitableRoomForCourseException.class,
 				() -> lessonService.create(lesson));
@@ -451,48 +451,34 @@ public class LessonServiceTest {
 	}
 
 	private Lesson buildLesson() {
-		Room room = new Room("111");
-		room.setId(1L);
-		room.setCapacity(3);
-		Course course = new Course("Art");
-		course.setId(1L);
-		course.setRooms(Set.of(room));
-		LocalDate date = LocalDate.parse("2021-01-21");
-		Group group = new Group("AA-11");
-		group.setId(1L);
-		Set<Group> groups = Set.of(group);
-		Teacher teacher = new Teacher("Homer", "Simpson");
-		teacher.setId(1L);
-		teacher.setCourses(Set.of(course));
-		Timeframe timeframe = new Timeframe();
-		timeframe.setId(1L);
-		timeframe.setSequence(1);
-		timeframe.setStartTime(LocalTime.parse("08:00"));
-		timeframe.setEndTime(LocalTime.parse("09:20"));
-		Lesson lesson = new Lesson();
-		lesson.setId(1L);
-		lesson.setCourse(course);
-		lesson.setDate(date);
-		lesson.setGroups(groups);
-		lesson.setRoom(room);
-		lesson.setTeacher(teacher);
-		lesson.setTimeframe(timeframe);
-		return lesson;
+		return Lesson.builder()
+				.id(1L)
+				.course(Course.builder().id(1L).name("Art").rooms(Set.of(buildRoom())).build())
+				.date(LocalDate.parse("2021-01-21"))
+				.groups(Set.of(Group.builder().id(1L).name("AA-11").build()))
+				.room(buildRoom())
+				.teacher(buildTeacher())
+				.timeframe(Timeframe.builder()
+						.id(1L)
+						.sequence(1)
+						.startTime(LocalTime.parse("08:00"))
+						.endTime(LocalTime.parse("09:20"))
+						.build())
+				.build();
 	}
 
 	private Teacher buildTeacher() {
-		Room room = new Room("111");
-		room.setId(1L);
-		room.setCapacity(3);
-		Course course1 = new Course("Art");
-		course1.setId(1L);
-		course1.setRooms(Set.of(room));
-		Course course2 = new Course("Law");
-		course2.setId(2L);
-		Teacher teacher = new Teacher("Homer", "Simpson");
-		teacher.setId(1L);
-		teacher.setCourses(Set.of(course1, course2));
-		teacher.setGender(Gender.MALE);
-		return teacher;
+		return Teacher.builder()
+				.id(1L)
+				.name("Homer")
+				.surname("Simpson")
+				.courses(Set.of(Course.builder().id(1L).name("Art").build(),
+						Course.builder().id(2L).name("Law").build()))
+				.gender(Gender.MALE)
+				.build();
+	}
+
+	private Room buildRoom() {
+		return Room.builder().id(1L).name("111").capacity(3).build();
 	}
 }

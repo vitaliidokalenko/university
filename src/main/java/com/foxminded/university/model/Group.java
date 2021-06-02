@@ -45,10 +45,6 @@ public class Group {
 	@OneToMany(mappedBy = "group")
 	private List<Student> students;
 
-	public Group(String name) {
-		this.name = name;
-	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, name);

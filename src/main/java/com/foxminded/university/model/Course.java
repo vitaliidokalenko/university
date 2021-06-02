@@ -49,10 +49,6 @@ public class Course {
 			inverseJoinColumns = @JoinColumn(name = "room_id"))
 	private Set<Room> rooms = new HashSet<>();
 
-	public Course(String name) {
-		this.name = name;
-	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(id, name);

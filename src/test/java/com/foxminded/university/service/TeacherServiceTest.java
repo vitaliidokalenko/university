@@ -160,14 +160,13 @@ public class TeacherServiceTest {
 	}
 
 	private Teacher buildTeacher() {
-		Course course1 = new Course("Art");
-		course1.setId(1L);
-		Course course2 = new Course("Law");
-		course2.setId(2L);
-		Teacher teacher = new Teacher("Homer", "Simpson");
-		teacher.setId(1L);
-		teacher.setCourses(Set.of(course1, course2));
-		teacher.setGender(Gender.MALE);
-		return teacher;
+		return Teacher.builder()
+				.id(1L)
+				.name("Homer")
+				.surname("Simpson")
+				.courses(Set.of(Course.builder().id(1L).name("Art").build(),
+						Course.builder().id(2L).name("Law").build()))
+				.gender(Gender.MALE)
+				.build();
 	}
 }
