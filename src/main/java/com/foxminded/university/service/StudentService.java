@@ -7,13 +7,13 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.foxminded.university.config.UniversityConfigProperties;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.service.exception.GroupOverflowException;
@@ -26,11 +26,11 @@ public class StudentService {
 	private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
 	private StudentDao studentDao;
-	@Value("${university.max-group-size}")
-	private int groupSize;
+	private UniversityConfigProperties properties;
 
-	public StudentService(StudentDao studentDao) {
+	public StudentService(StudentDao studentDao, UniversityConfigProperties properties) {
 		this.studentDao = studentDao;
+		this.properties = properties;
 	}
 
 	@Transactional
@@ -88,10 +88,10 @@ public class StudentService {
 	}
 
 	private void verifyGroupIsFull(Student student) {
-		if (studentDao.getByGroup(student.getGroup()).stream().count() >= groupSize) {
+		if (studentDao.getByGroup(student.getGroup()).stream().count() >= properties.getMaxGroupSize()) {
 			throw new GroupOverflowException(format("The group %s is overflow (size = %d)",
 					student.getGroup().getName(),
-					groupSize));
+					properties.getMaxGroupSize()));
 		}
 	}
 }

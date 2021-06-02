@@ -8,12 +8,12 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.foxminded.university.config.UniversityConfigProperties;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
@@ -28,11 +28,11 @@ public class TimeframeService {
 	private static final Logger logger = LoggerFactory.getLogger(TimeframeService.class);
 
 	private TimeframeDao timeframeDao;
-	@Value("#{T(java.time.Duration).parse('${university.lesson-duration}')}")
-	private Duration duration;
+	private UniversityConfigProperties properties;
 
-	public TimeframeService(TimeframeDao timeframeDao) {
+	public TimeframeService(TimeframeDao timeframeDao, UniversityConfigProperties properties) {
 		this.timeframeDao = timeframeDao;
+		this.properties = properties;
 	}
 
 	@Transactional
@@ -92,9 +92,11 @@ public class TimeframeService {
 	}
 
 	private void verifyDuration(Timeframe timeframe) {
-		if (!Duration.between(timeframe.getStartTime(), timeframe.getEndTime()).equals(duration)) {
+		if (!Duration.between(timeframe.getStartTime(), timeframe.getEndTime())
+				.equals(properties.getLessonDuration())) {
 			throw new IncorrectDurationException(
-					format("Not valid timeframe duration. It must be %smin.", duration.toMinutes()));
+					format("Not valid timeframe duration. It must be %smin.",
+							properties.getLessonDuration().toMinutes()));
 		}
 	}
 

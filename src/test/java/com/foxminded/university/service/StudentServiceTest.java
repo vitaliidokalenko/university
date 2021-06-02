@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.util.ReflectionTestUtils;
 
+import com.foxminded.university.config.UniversityConfigProperties;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
@@ -33,22 +32,19 @@ import com.foxminded.university.service.exception.NotFoundEntityException;
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
 
-	private static final int GROUP_SIZE = 2;
-
 	@Mock
 	private StudentDao studentDao;
+	@Mock
+	private UniversityConfigProperties properties;
 
 	@InjectMocks
 	private StudentService studentService;
 
-	@BeforeEach
-	void setUp() {
-		ReflectionTestUtils.setField(studentService, "groupSize", GROUP_SIZE);
-	}
-
 	@Test
 	public void givenStudent_whenCreate_thenStudentIsCreating() {
 		Student student = buildStudent();
+		int maxGroupSize = 2;
+		when(properties.getMaxGroupSize()).thenReturn(maxGroupSize);
 
 		studentService.create(student);
 
@@ -102,15 +98,17 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenGroupSizeIsNotEnuogh_whenCreate_thenGroupOverflowExceptionThrown() {
+		int maxGroupSize = 2;
 		Student student = buildStudent();
 		when(studentDao.getByGroup(student.getGroup()))
 				.thenReturn(List.of(new Student("Serhii", "Gerega"), new Student("Anatoly", "Soprano")));
+		when(properties.getMaxGroupSize()).thenReturn(maxGroupSize);
 
 		Exception exception = assertThrows(GroupOverflowException.class,
 				() -> studentService.create(student));
 		assertEquals(format("The group %s is overflow (size = %d)",
 				student.getGroup().getName(),
-				GROUP_SIZE), exception.getMessage());
+				maxGroupSize), exception.getMessage());
 	}
 
 	@Test
@@ -136,6 +134,8 @@ public class StudentServiceTest {
 	@Test
 	public void givenStudent_whenUpdate_thenStudentIsUpdating() {
 		Student student = buildStudent();
+		int maxGroupSize = 2;
+		when(properties.getMaxGroupSize()).thenReturn(maxGroupSize);
 
 		studentService.update(student);
 
@@ -171,17 +171,14 @@ public class StudentServiceTest {
 	}
 
 	private Student buildStudent() {
-		Course course1 = new Course("Art");
-		course1.setId(1L);
-		Course course2 = new Course("Law");
-		course2.setId(2L);
-		Group group = new Group("AA-11");
-		group.setId(1L);
-		Student student = new Student("Homer", "Simpson");
-		student.setId(1L);
-		student.setCourses(Set.of(course1, course2));
-		student.setGender(Gender.MALE);
-		student.setGroup(group);
-		return student;
+		return Student.builder()
+				.id(1L)
+				.name("Homer")
+				.surname("Simpson")
+				.courses(Set.of(Course.builder().id(1L).name("Art").build(),
+						Course.builder().id(2L).name("Law").build()))
+				.gender(Gender.MALE)
+				.group(Group.builder().id(1L).name("AA-11").build())
+				.build();
 	}
 }
