@@ -34,8 +34,4 @@ public class Room {
 	private Long id;
 	private String name;
 	private int capacity;
-
-	public Room(String name) {
-		this.name = name;
-	}
 }

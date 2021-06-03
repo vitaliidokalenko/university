@@ -6,41 +6,22 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@ComponentScan("com.foxminded.university.dao")
-@PropertySource("classpath:application.properties")
 @EnableTransactionManagement
 public class AppConfig {
 
-	@Value("${db.jndiName}")
-	private String jndiName;
 	@Value("${hibernate.hbm2ddl.auto}")
 	private String hbm2ddlAuto;
-	@Value("${hibernate.dialect}")
-	private String dialect;
-	@Value("${hibernate.show_sql}")
-	private String showSql;
-	@Value("${hibernate.format_sql}")
-	private String formatSql;
-	@Value("${current_session_context_class}")
+	@Value("${hibernate.current_session_context_class}")
 	private String context;
 	@Value("${hibernate.enable_lazy_load_no_trans}")
 	private String lazyLoad;
-
-	@Bean
-	public DataSource dataSource() {
-		JndiDataSourceLookup lookup = new JndiDataSourceLookup();
-		return lookup.getDataSource(jndiName);
-	}
 
 	@Bean
 	public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
@@ -61,9 +42,6 @@ public class AppConfig {
 	private final Properties hibernateProperties() {
 		Properties hibernateProperties = new Properties();
 		hibernateProperties.setProperty("hibernate.hbm2ddl.auto", hbm2ddlAuto);
-		hibernateProperties.setProperty("hibernate.dialect", dialect);
-		hibernateProperties.setProperty("hibernate.show_sql", showSql);
-		hibernateProperties.setProperty("hibernate.format_sql", formatSql);
 		hibernateProperties.setProperty("current_session_context_class", context);
 		hibernateProperties.setProperty("hibernate.enable_lazy_load_no_trans", lazyLoad);
 		return hibernateProperties;

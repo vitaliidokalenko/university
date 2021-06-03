@@ -17,16 +17,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
 
-@SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class RoomServiceTest {
 
@@ -173,9 +170,6 @@ public class RoomServiceTest {
 	}
 
 	private Room buildRoom() {
-		Room room = new Room("111");
-		room.setId(1L);
-		room.setCapacity(30);
-		return room;
+		return Room.builder().id(1L).name("111").capacity(30).build();
 	}
 }

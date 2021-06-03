@@ -18,9 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
@@ -29,7 +27,6 @@ import com.foxminded.university.service.exception.IncompleteEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
 
-@SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class CourseServiceTest {
 
@@ -176,13 +173,10 @@ public class CourseServiceTest {
 	}
 
 	private Course buildCourse() {
-		Room room1 = new Room("111");
-		room1.setId(1L);
-		Room room2 = new Room("222");
-		room2.setId(2L);
-		Course course = new Course("Art");
-		course.setId(1L);
-		course.setRooms(Set.of(room1, room2));
-		return course;
+		return Course.builder()
+				.id(1L)
+				.name("Art")
+				.rooms(Set.of(Room.builder().id(1L).name("111").build(), Room.builder().id(2L).name("222").build()))
+				.build();
 	}
 }

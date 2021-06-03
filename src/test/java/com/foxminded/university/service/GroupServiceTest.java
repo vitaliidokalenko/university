@@ -17,16 +17,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
 
-@SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class GroupServiceTest {
 
@@ -154,8 +151,6 @@ public class GroupServiceTest {
 	}
 
 	private Group buildGroup() {
-		Group group = new Group("AA-11");
-		group.setId(1L);
-		return group;
+		return Group.builder().id(1L).name("AA-11").build();
 	}
 }

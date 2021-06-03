@@ -17,9 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.foxminded.university.config.TestAppConfig;
 import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
@@ -27,7 +25,6 @@ import com.foxminded.university.model.Teacher;
 import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
-@SpringJUnitConfig(TestAppConfig.class)
 @ExtendWith(MockitoExtension.class)
 public class TeacherServiceTest {
 
@@ -163,14 +160,13 @@ public class TeacherServiceTest {
 	}
 
 	private Teacher buildTeacher() {
-		Course course1 = new Course("Art");
-		course1.setId(1L);
-		Course course2 = new Course("Law");
-		course2.setId(2L);
-		Teacher teacher = new Teacher("Homer", "Simpson");
-		teacher.setId(1L);
-		teacher.setCourses(Set.of(course1, course2));
-		teacher.setGender(Gender.MALE);
-		return teacher;
+		return Teacher.builder()
+				.id(1L)
+				.name("Homer")
+				.surname("Simpson")
+				.courses(Set.of(Course.builder().id(1L).name("Art").build(),
+						Course.builder().id(2L).name("Law").build()))
+				.gender(Gender.MALE)
+				.build();
 	}
 }
