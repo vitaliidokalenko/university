@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -20,15 +19,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NamedQuery(
-		name = "getAllCourses",
-		query = "from Course c")
-@NamedQuery(
-		name = "countCourses",
-		query = "select count(c) from Course c")
-@NamedQuery(
-		name = "findCourseByName",
-		query = "from Course c where c.name = :name")
 @Entity
 @Table(name = "courses")
 @Getter
