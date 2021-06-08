@@ -39,7 +39,7 @@ public class RoomServiceTest {
 
 		roomService.create(room);
 
-		verify(roomDao).create(room);
+		verify(roomDao).save(room);
 	}
 
 	@Test
@@ -82,7 +82,7 @@ public class RoomServiceTest {
 	@Test
 	public void whenGetAll_thenGetRightListOfRooms() {
 		List<Room> expected = List.of(buildRoom());
-		when(roomDao.getAll()).thenReturn(expected);
+		when(roomDao.findAll()).thenReturn(expected);
 
 		List<Room> actual = roomService.getAll();
 
@@ -95,7 +95,7 @@ public class RoomServiceTest {
 
 		roomService.update(room);
 
-		verify(roomDao).update(room);
+		verify(roomDao).save(room);
 	}
 
 	@Test
@@ -134,7 +134,7 @@ public class RoomServiceTest {
 
 		roomService.create(room);
 
-		verify(roomDao).create(room);
+		verify(roomDao).save(room);
 	}
 
 	@Test
@@ -156,13 +156,13 @@ public class RoomServiceTest {
 
 		roomService.update(room);
 
-		verify(roomDao).update(room);
+		verify(roomDao).save(room);
 	}
 
 	@Test
 	public void whenGetAllPage_thenGetRightRooms() {
 		Page<Room> expected = new PageImpl<>(List.of(buildRoom()));
-		when(roomDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+		when(roomDao.findAll(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Room> actual = roomService.getAllPage(PageRequest.of(0, 1));
 

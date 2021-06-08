@@ -48,7 +48,7 @@ public class TimeframeServiceTest {
 
 		timeframeService.create(timeframe);
 
-		verify(timeframeDao).create(timeframe);
+		verify(timeframeDao).save(timeframe);
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class TimeframeServiceTest {
 	@Test
 	public void whenGetAll_thenGetRightListOfTimeframes() {
 		List<Timeframe> expected = List.of(buildTimeframe());
-		when(timeframeDao.getAll()).thenReturn(expected);
+		when(timeframeDao.findAll()).thenReturn(expected);
 
 		List<Timeframe> actual = timeframeService.getAll();
 
@@ -127,7 +127,7 @@ public class TimeframeServiceTest {
 
 		timeframeService.update(timeframe);
 
-		verify(timeframeDao).update(timeframe);
+		verify(timeframeDao).save(timeframe);
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class TimeframeServiceTest {
 	@Test
 	public void whenGetAllPage_thenGetRightTimeframes() {
 		Page<Timeframe> expected = new PageImpl<>(List.of(buildTimeframe()));
-		when(timeframeDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+		when(timeframeDao.findAll(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Timeframe> actual = timeframeService.getAllPage(PageRequest.of(0, 1));
 

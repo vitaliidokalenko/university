@@ -34,7 +34,7 @@ public class GroupService {
 	public void create(Group group) {
 		logger.debug("Creating group: {}", group);
 		verify(group);
-		groupDao.create(group);
+		groupDao.save(group);
 	}
 
 	@Transactional
@@ -46,20 +46,20 @@ public class GroupService {
 	@Transactional
 	public List<Group> getAll() {
 		logger.debug("Getting groups");
-		return groupDao.getAll();
+		return groupDao.findAll();
 	}
 
 	@Transactional
 	public Page<Group> getAllPage(Pageable pageable) {
 		logger.debug("Getting pageable groups");
-		return groupDao.getAllPage(pageable);
+		return groupDao.findAll(pageable);
 	}
 
 	@Transactional
 	public void update(Group group) {
 		logger.debug("Updating group: {}", group);
 		verify(group);
-		groupDao.update(group);
+		groupDao.save(group);
 	}
 
 	@Transactional

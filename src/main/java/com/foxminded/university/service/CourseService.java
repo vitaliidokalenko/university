@@ -35,7 +35,7 @@ public class CourseService {
 	public void create(Course course) {
 		logger.debug("Creating course: {}", course);
 		verify(course);
-		courseDao.create(course);
+		courseDao.save(course);
 	}
 
 	@Transactional
@@ -47,20 +47,20 @@ public class CourseService {
 	@Transactional
 	public List<Course> getAll() {
 		logger.debug("Getting courses");
-		return courseDao.getAll();
+		return courseDao.findAll();
 	}
 
 	@Transactional
 	public Page<Course> getAllPage(Pageable pageable) {
 		logger.debug("Getting pageable courses");
-		return courseDao.getAllPage(pageable);
+		return courseDao.findAll(pageable);
 	}
 
 	@Transactional
 	public void update(Course course) {
 		logger.debug("Updating course: {}", course);
 		verify(course);
-		courseDao.update(course);
+		courseDao.save(course);
 	}
 
 	@Transactional

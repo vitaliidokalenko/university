@@ -37,7 +37,7 @@ public class StudentService {
 	public void create(Student student) {
 		logger.debug("Creating student: {}", student);
 		verify(student);
-		studentDao.create(student);
+		studentDao.save(student);
 	}
 
 	@Transactional
@@ -49,20 +49,20 @@ public class StudentService {
 	@Transactional
 	public List<Student> getAll() {
 		logger.debug("Getting students");
-		return studentDao.getAll();
+		return studentDao.findAll();
 	}
 
 	@Transactional
 	public Page<Student> getAllPage(Pageable pageable) {
 		logger.debug("Getting pageable students");
-		return studentDao.getAllPage(pageable);
+		return studentDao.findAll(pageable);
 	}
 
 	@Transactional
 	public void update(Student student) {
 		logger.debug("Updating student: {}", student);
 		verify(student);
-		studentDao.update(student);
+		studentDao.save(student);
 	}
 
 	@Transactional

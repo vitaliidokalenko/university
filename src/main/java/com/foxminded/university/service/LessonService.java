@@ -54,7 +54,7 @@ public class LessonService {
 	public void create(Lesson lesson) {
 		logger.debug("Creating lesson: {}", lesson);
 		verify(lesson);
-		lessonDao.create(lesson);
+		lessonDao.save(lesson);
 	}
 
 	@Transactional
@@ -66,14 +66,14 @@ public class LessonService {
 	@Transactional
 	public Page<Lesson> getAllPage(Pageable pageable) {
 		logger.debug("Getting pageable lessons");
-		return lessonDao.getAllPage(pageable);
+		return lessonDao.findAll(pageable);
 	}
 
 	@Transactional
 	public void update(Lesson lesson) {
 		logger.debug("Updating lesson: {}", lesson);
 		verify(lesson);
-		lessonDao.update(lesson);
+		lessonDao.save(lesson);
 	}
 
 	@Transactional
@@ -114,7 +114,7 @@ public class LessonService {
 					.collect(toList());
 			lessons.forEach(l -> replaceTeacher(l, substituteTeachers));
 		}
-		lessons.stream().forEach(lessonDao::update);
+		lessons.stream().forEach(lessonDao::save);
 	}
 
 	private void replaceTeacher(Lesson lesson, List<Teacher> substituteTeachers) {

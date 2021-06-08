@@ -36,7 +36,7 @@ public class TeacherService {
 	public void create(Teacher teacher) {
 		logger.debug("Creating teacher: {}", teacher);
 		verify(teacher);
-		teacherDao.create(teacher);
+		teacherDao.save(teacher);
 	}
 
 	@Transactional
@@ -48,20 +48,20 @@ public class TeacherService {
 	@Transactional
 	public List<Teacher> getAll() {
 		logger.debug("Getting teachers");
-		return teacherDao.getAll();
+		return teacherDao.findAll();
 	}
 
 	@Transactional
 	public Page<Teacher> getAllPage(Pageable pageable) {
 		logger.debug("Getting pageable teachers");
-		return teacherDao.getAllPage(pageable);
+		return teacherDao.findAll(pageable);
 	}
 
 	@Transactional
 	public void update(Teacher teacher) {
 		logger.debug("Updating teacher: {}", teacher);
 		verify(teacher);
-		teacherDao.update(teacher);
+		teacherDao.save(teacher);
 	}
 
 	@Transactional

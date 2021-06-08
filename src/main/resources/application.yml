@@ -9,13 +9,11 @@ spring:
             pageable:
                 max-page-size: 15
     jpa:
-        database-platform: org.hibernate.dialect.PostgreSQL9Dialect
-        
-hibernate:
-    current_session_context_class: thread
-    enable_lazy_load_no_trans: true
-    hbm2ddl:
-        auto: update
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQL9Dialect
 
 university:
     max-group-size: 30

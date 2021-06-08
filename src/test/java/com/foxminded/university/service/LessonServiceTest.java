@@ -61,7 +61,7 @@ public class LessonServiceTest {
 
 		lessonService.create(lesson);
 
-		verify(lessonDao).create(lesson);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class LessonServiceTest {
 
 		lessonService.create(actual);
 
-		verify(lessonDao).create(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class LessonServiceTest {
 
 		lessonService.create(actual);
 
-		verify(lessonDao).create(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -144,7 +144,7 @@ public class LessonServiceTest {
 
 		lessonService.create(actual);
 
-		verify(lessonDao).create(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -173,7 +173,7 @@ public class LessonServiceTest {
 
 		lessonService.create(lesson);
 
-		verify(lessonDao).create(lesson);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -237,7 +237,7 @@ public class LessonServiceTest {
 
 		lessonService.update(lesson);
 
-		verify(lessonDao).update(lesson);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -271,7 +271,7 @@ public class LessonServiceTest {
 
 		lessonService.update(actual);
 
-		verify(lessonDao).update(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -304,7 +304,7 @@ public class LessonServiceTest {
 
 		lessonService.update(actual);
 
-		verify(lessonDao).update(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -333,7 +333,7 @@ public class LessonServiceTest {
 
 		lessonService.update(actual);
 
-		verify(lessonDao).update(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -357,7 +357,7 @@ public class LessonServiceTest {
 	@Test
 	public void whenGetAllPage_thenGetRightLessons() {
 		Page<Lesson> expected = new PageImpl<>(List.of(buildLesson()));
-		when(lessonDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+		when(lessonDao.findAll(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Lesson> actual = lessonService.getAllPage(PageRequest.of(0, 1));
 
@@ -406,7 +406,7 @@ public class LessonServiceTest {
 
 		lessonService.replaceTeacherByDateBetween(buildTeacher(), startDate, endDate, null);
 
-		verify(lessonDao).update(lesson);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -425,7 +425,7 @@ public class LessonServiceTest {
 
 		lessonService.replaceTeacherByDateBetween(buildTeacher(), startDate, endDate, List.of(1L));
 
-		verify(lessonDao).update(lesson);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
