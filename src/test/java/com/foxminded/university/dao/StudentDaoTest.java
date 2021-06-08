@@ -24,7 +24,7 @@ public class StudentDaoTest {
 	public void givenCourseId_whenGetByCourseId_thenGetRightListOfStudents() {
 		List<Student> expected = List.of(entityManager.find(Student.class, 1L));
 
-		List<Student> actual = studentDao.getByCourseId(1L);
+		List<Student> actual = studentDao.getByCoursesId(1L);
 
 		assertEquals(expected, actual);
 	}

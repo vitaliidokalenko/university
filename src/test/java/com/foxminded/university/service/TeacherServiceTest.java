@@ -151,8 +151,8 @@ public class TeacherServiceTest {
 		Teacher substitute = buildTeacher();
 		substitute.setId(2L);
 		Set<Teacher> expected = Set.of(substitute);
-		when(teacherDao.getByCourseId(1L)).thenReturn(List.of(teacher));
-		when(teacherDao.getByCourseId(2L)).thenReturn(List.of(substitute));
+		when(teacherDao.getByCoursesId(1L)).thenReturn(List.of(teacher));
+		when(teacherDao.getByCoursesId(2L)).thenReturn(List.of(substitute));
 
 		Set<Teacher> actual = teacherService.getSubstituteTeachers(teacher);
 

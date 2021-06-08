@@ -30,7 +30,7 @@ public class LessonDaoTest {
 		Timeframe timeframe = entityManager.find(Timeframe.class, 1L);
 		Optional<Lesson> expected = Optional.of(entityManager.find(Lesson.class, 1L));
 
-		Optional<Lesson> actual = lessonDao.getByGroupIdAndDateAndTimeframe(1L, date, timeframe);
+		Optional<Lesson> actual = lessonDao.getByGroupsIdAndDateAndTimeframe(1L, date, timeframe);
 
 		assertEquals(expected, actual);
 	}
@@ -76,7 +76,7 @@ public class LessonDaoTest {
 		LocalDate endDate = LocalDate.parse("2020-12-15");
 		List<Lesson> expected = List.of(entityManager.find(Lesson.class, 1L), entityManager.find(Lesson.class, 2L));
 
-		List<Lesson> actual = lessonDao.getByGroupIdAndDateBetween(1L, startDate, endDate);
+		List<Lesson> actual = lessonDao.getByGroupsIdAndDateBetween(1L, startDate, endDate);
 
 		assertEquals(expected, actual);
 	}

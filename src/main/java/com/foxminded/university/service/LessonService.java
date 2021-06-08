@@ -92,7 +92,7 @@ public class LessonService {
 	@Transactional
 	public List<Lesson> getByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate) {
 		logger.debug("Getting lessons by group id: {} and dates: between {} and {}", groupId, startDate, endDate);
-		return lessonDao.getByGroupIdAndDateBetween(groupId, startDate, endDate);
+		return lessonDao.getByGroupsIdAndDateBetween(groupId, startDate, endDate);
 	}
 
 	@Transactional
@@ -105,7 +105,7 @@ public class LessonService {
 				endDate);
 		List<Lesson> lessons = lessonDao.getByTeacherIdAndDateBetween(teacher.getId(), startDate, endDate);
 		if (substituteTeacherIds == null) {
-			lessons.forEach(l -> replaceTeacher(l, teacherDao.getByCourseId(l.getCourse().getId())));
+			lessons.forEach(l -> replaceTeacher(l, teacherDao.getByCoursesId(l.getCourse().getId())));
 		} else {
 			List<Teacher> substituteTeachers = substituteTeacherIds.stream()
 					.map(id -> teacherDao.findById(id)
@@ -188,7 +188,7 @@ public class LessonService {
 
 	private void verifyGroupIsAvailable(Group group, Lesson lesson) {
 		Optional<Lesson> lessonByCriteria = lessonDao
-				.getByGroupIdAndDateAndTimeframe(group.getId(), lesson.getDate(), lesson.getTimeframe());
+				.getByGroupsIdAndDateAndTimeframe(group.getId(), lesson.getDate(), lesson.getTimeframe());
 		if (lessonByCriteria.isPresent() && !lessonByCriteria.get().getId().equals(lesson.getId())) {
 			throw new NotAvailableGroupException(
 					format("Other lesson was scheduled for the group %s at the time %s, %s",

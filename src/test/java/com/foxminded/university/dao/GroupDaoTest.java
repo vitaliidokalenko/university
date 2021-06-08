@@ -2,7 +2,7 @@ package com.foxminded.university.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +20,10 @@ public class GroupDaoTest {
 	GroupDao groupDao;
 
 	@Test
-	public void givenLessonId_whenGetByLessonId_thenGetRightListOfGroups() {
-		List<Group> expected = List.of(entityManager.find(Group.class, 1L), entityManager.find(Group.class, 2L));
+	public void givenName_whenFindByName_thenGetRightGroup() {
+		Optional<Group> expected = Optional.of(entityManager.find(Group.class, 1L));
 
-		List<Group> actual = groupDao.getByLessonId(1L);
+		Optional<Group> actual = groupDao.findByName("AA-11");
 
 		assertEquals(expected, actual);
 	}

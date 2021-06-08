@@ -27,7 +27,7 @@ public class TeacherDaoTest {
 		teacher.setCourses(Set.of(entityManager.find(Course.class, 1L)));
 		List<Teacher> expected = List.of(teacher);
 
-		List<Teacher> actual = teacherDao.getByCourseId(1L);
+		List<Teacher> actual = teacherDao.getByCoursesId(1L);
 
 		assertEquals(expected, actual);
 	}

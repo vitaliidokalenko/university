@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
@@ -14,8 +13,7 @@ import com.foxminded.university.model.Timeframe;
 
 public interface LessonDao extends JpaRepository<Lesson, Long> {
 
-	@Query("select l from Lesson l join l.groups g where g.id = :id and l.date = :date and l.timeframe = :timeframe")
-	public Optional<Lesson> getByGroupIdAndDateAndTimeframe(Long id, LocalDate date, Timeframe timeframe);
+	public Optional<Lesson> getByGroupsIdAndDateAndTimeframe(Long id, LocalDate date, Timeframe timeframe);
 
 	public Optional<Lesson> getByTeacherAndDateAndTimeframe(Teacher teacher, LocalDate date, Timeframe timeframe);
 
@@ -23,6 +21,5 @@ public interface LessonDao extends JpaRepository<Lesson, Long> {
 
 	public List<Lesson> getByTeacherIdAndDateBetween(Long id, LocalDate startDate, LocalDate endDate);
 
-	@Query("select l from Lesson l join l.groups g where g.id = :id and l.date between :startDate and :endDate")
-	public List<Lesson> getByGroupIdAndDateBetween(Long id, LocalDate startDate, LocalDate endDate);
+	public List<Lesson> getByGroupsIdAndDateBetween(Long id, LocalDate startDate, LocalDate endDate);
 }
