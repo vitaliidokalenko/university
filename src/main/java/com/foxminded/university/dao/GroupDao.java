@@ -8,5 +8,5 @@ import com.foxminded.university.model.Group;
 
 public interface GroupDao extends JpaRepository<Group, Long> {
 
-	public Optional<Group> findByName(String name);
+	Optional<Group> findByName(String name);
 }

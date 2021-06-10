@@ -22,12 +22,13 @@ public class TeacherDaoTest {
 	TeacherDao teacherDao;
 
 	@Test
-	public void givenCourseId_whenGetByCourseId_thenGetRightListOfTeachers() {
+	public void givenCourse_whenGetByCourse_thenGetRightListOfTeachers() {
 		Teacher teacher = entityManager.find(Teacher.class, 1L);
-		teacher.setCourses(Set.of(entityManager.find(Course.class, 1L)));
+		Course course = entityManager.find(Course.class, 1L);
+		teacher.setCourses(Set.of(course));
 		List<Teacher> expected = List.of(teacher);
 
-		List<Teacher> actual = teacherDao.getByCoursesId(1L);
+		List<Teacher> actual = teacherDao.getByCourses(course);
 
 		assertEquals(expected, actual);
 	}

@@ -9,7 +9,5 @@ import com.foxminded.university.model.Student;
 
 public interface StudentDao extends JpaRepository<Student, Long> {
 
-	public List<Student> getByGroup(Group group);
-
-	public List<Student> getByCoursesId(Long id);
+	List<Student> getByGroup(Group group);
 }

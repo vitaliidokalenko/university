@@ -21,15 +21,6 @@ public class StudentDaoTest {
 	StudentDao studentDao;
 
 	@Test
-	public void givenCourseId_whenGetByCourseId_thenGetRightListOfStudents() {
-		List<Student> expected = List.of(entityManager.find(Student.class, 1L));
-
-		List<Student> actual = studentDao.getByCoursesId(1L);
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void givenGroup_whenGetByGroup_thenGetRightListOfStudents() {
 		Group group = entityManager.find(Group.class, 1L);
 		List<Student> expected = List.of(entityManager.find(Student.class, 1L));

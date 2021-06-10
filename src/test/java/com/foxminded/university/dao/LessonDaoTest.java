@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
@@ -25,12 +26,13 @@ public class LessonDaoTest {
 	LessonDao lessonDao;
 
 	@Test
-	public void givenGroupIdAndDateAndTimeframe_whenGetByGroupIdAndDateAndTimeframe_thenGetRightLesson() {
+	public void givenGroupAndDateAndTimeframe_whenGetByGroupAndDateAndTimeframe_thenGetRightLesson() {
 		LocalDate date = LocalDate.parse("2020-12-12");
 		Timeframe timeframe = entityManager.find(Timeframe.class, 1L);
+		Group group = entityManager.find(Group.class, 1L);
 		Optional<Lesson> expected = Optional.of(entityManager.find(Lesson.class, 1L));
 
-		Optional<Lesson> actual = lessonDao.getByGroupsIdAndDateAndTimeframe(1L, date, timeframe);
+		Optional<Lesson> actual = lessonDao.getByGroupsAndDateAndTimeframe(group, date, timeframe);
 
 		assertEquals(expected, actual);
 	}
@@ -60,23 +62,25 @@ public class LessonDaoTest {
 	}
 
 	@Test
-	public void givenTeacherIdAndDates_whenGetByTeacherIdAndDateBetween_thenGetRightListOfLessons() {
+	public void givenTeacherAndDates_whenGetByTeacherAndDateBetween_thenGetRightListOfLessons() {
 		LocalDate startDate = LocalDate.parse("2020-12-11");
 		LocalDate endDate = LocalDate.parse("2020-12-15");
-		List<Lesson> expected = List.of(entityManager.find(Lesson.class, 1L));
+		Lesson lesson = entityManager.find(Lesson.class, 1L);
+		List<Lesson> expected = List.of(lesson);
 
-		List<Lesson> actual = lessonDao.getByTeacherIdAndDateBetween(1L, startDate, endDate);
+		List<Lesson> actual = lessonDao.getByTeacherAndDateBetween(lesson.getTeacher(), startDate, endDate);
 
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void givenGroupIdAndDates_whenGetByGroupIdAndDateBetween_thenGetRightListOfLessons() {
+	public void givenGroupAndDates_whenGetByGroupsAndDateBetween_thenGetRightListOfLessons() {
 		LocalDate startDate = LocalDate.parse("2020-12-11");
 		LocalDate endDate = LocalDate.parse("2020-12-15");
+		Group group = entityManager.find(Group.class, 1L);
 		List<Lesson> expected = List.of(entityManager.find(Lesson.class, 1L), entityManager.find(Lesson.class, 2L));
 
-		List<Lesson> actual = lessonDao.getByGroupsIdAndDateBetween(1L, startDate, endDate);
+		List<Lesson> actual = lessonDao.getByGroupsAndDateBetween(group, startDate, endDate);
 
 		assertEquals(expected, actual);
 	}

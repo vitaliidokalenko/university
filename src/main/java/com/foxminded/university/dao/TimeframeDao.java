@@ -8,5 +8,5 @@ import com.foxminded.university.model.Timeframe;
 
 public interface TimeframeDao extends JpaRepository<Timeframe, Long> {
 
-	public Optional<Timeframe> findBySequence(int sequence);
+	Optional<Timeframe> findBySequence(int sequence);
 }

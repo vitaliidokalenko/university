@@ -8,5 +8,5 @@ import com.foxminded.university.model.Course;
 
 public interface CourseDao extends JpaRepository<Course, Long> {
 
-	public Optional<Course> findByName(String name);
+	Optional<Course> findByName(String name);
 }

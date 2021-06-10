@@ -179,7 +179,7 @@ public class StudentControllerTest {
 		LocalDate startDate = LocalDate.parse("2021-01-21");
 		LocalDate endDate = LocalDate.parse("2021-01-21");
 		when(studentService.findById(1L)).thenReturn(Optional.of(student));
-		when(lessonService.getByGroupIdAndDateBetween(1L, startDate, endDate))
+		when(lessonService.getByGroupAndDateBetween(student.getGroup(), startDate, endDate))
 				.thenReturn(expected);
 
 		mockMvc.perform(

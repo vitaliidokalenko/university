@@ -8,5 +8,5 @@ import com.foxminded.university.model.Room;
 
 public interface RoomDao extends JpaRepository<Room, Long> {
 
-	public Optional<Room> findByName(String name);
+	Optional<Room> findByName(String name);
 }

@@ -100,7 +100,7 @@ public class StudentController {
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find student by id: %d", id)));
 		model.addAttribute("student", student);
 		model.addAttribute("lessons",
-				lessonService.getByGroupIdAndDateBetween(student.getGroup().getId(), startDate, endDate));
+				lessonService.getByGroupAndDateBetween(student.getGroup(), startDate, endDate));
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("endDate", endDate);
 		return "student/timetable";

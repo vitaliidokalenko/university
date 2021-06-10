@@ -76,7 +76,7 @@ public class TeacherService {
 		logger.debug("Getting substitutes for teacher id: {}", teacher.getId());
 		return teacher.getCourses()
 				.stream()
-				.map(c -> teacherDao.getByCoursesId(c.getId()))
+				.map(c -> teacherDao.getByCourses(c))
 				.flatMap(List::stream)
 				.filter(t -> !t.equals(teacher))
 				.collect(toSet());
