@@ -94,7 +94,7 @@ public class TeacherController {
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
 		model.addAttribute("teacher", teacher);
 		model.addAttribute("lessons",
-				lessonService.getByTeacherIdAndDateBetween(teacher.getId(), startDate, endDate));
+				lessonService.getByTeacherAndDateBetween(teacher, startDate, endDate));
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("endDate", endDate);
 		return "teacher/timetable";

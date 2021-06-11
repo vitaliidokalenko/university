@@ -61,7 +61,7 @@ public class LessonServiceTest {
 
 		lessonService.create(lesson);
 
-		verify(lessonDao).create(lesson);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class LessonServiceTest {
 
 		lessonService.create(actual);
 
-		verify(lessonDao).create(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class LessonServiceTest {
 
 		lessonService.create(actual);
 
-		verify(lessonDao).create(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -127,7 +127,8 @@ public class LessonServiceTest {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
-		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
+		Group group = Group.builder().id(1L).name("AA-11").build();
+		when(lessonDao.getByGroupsAndDateAndTimeframe(group, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
 		Exception exception = assertThrows(NotAvailableGroupException.class,
@@ -139,12 +140,13 @@ public class LessonServiceTest {
 	@Test
 	public void givenGroupIsAvailable_whenCreate_thenLessonIsCreating() {
 		Lesson actual = buildLesson();
-		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
+		Group group = Group.builder().id(1L).name("AA-11").build();
+		when(lessonDao.getByGroupsAndDateAndTimeframe(group, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.empty());
 
 		lessonService.create(actual);
 
-		verify(lessonDao).create(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -173,7 +175,7 @@ public class LessonServiceTest {
 
 		lessonService.create(lesson);
 
-		verify(lessonDao).create(lesson);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -237,7 +239,7 @@ public class LessonServiceTest {
 
 		lessonService.update(lesson);
 
-		verify(lessonDao).update(lesson);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -261,17 +263,14 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenTeacherIsAvailable_whenUpdate_thenLessonIsUpdating() {
-		Lesson lessonByCriteria = buildLesson();
-		lessonByCriteria.setId(1L);
-		Lesson actual = buildLesson();
-		actual.setId(1L);
-		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
-				actual.getDate(),
-				actual.getTimeframe())).thenReturn(Optional.of(lessonByCriteria));
+		Lesson lesson = buildLesson();
+		when(lessonDao.getByTeacherAndDateAndTimeframe(lesson.getTeacher(),
+				lesson.getDate(),
+				lesson.getTimeframe())).thenReturn(Optional.of(lesson));
 
-		lessonService.update(actual);
+		lessonService.update(lesson);
 
-		verify(lessonDao).update(actual);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -304,7 +303,7 @@ public class LessonServiceTest {
 
 		lessonService.update(actual);
 
-		verify(lessonDao).update(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -313,7 +312,8 @@ public class LessonServiceTest {
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
 		actual.setId(1L);
-		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
+		Group group = Group.builder().id(1L).name("AA-11").build();
+		when(lessonDao.getByGroupsAndDateAndTimeframe(group, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
 		Exception exception = assertThrows(NotAvailableGroupException.class,
@@ -328,12 +328,13 @@ public class LessonServiceTest {
 		lessonByCriteria.setId(1L);
 		Lesson actual = buildLesson();
 		actual.setId(1L);
-		when(lessonDao.getByGroupIdAndDateAndTimeframe(1L, actual.getDate(), actual.getTimeframe()))
+		Group group = Group.builder().id(1L).name("AA-11").build();
+		when(lessonDao.getByGroupsAndDateAndTimeframe(group, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
 		lessonService.update(actual);
 
-		verify(lessonDao).update(actual);
+		verify(lessonDao).save(actual);
 	}
 
 	@Test
@@ -357,7 +358,7 @@ public class LessonServiceTest {
 	@Test
 	public void whenGetAllPage_thenGetRightLessons() {
 		Page<Lesson> expected = new PageImpl<>(List.of(buildLesson()));
-		when(lessonDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+		when(lessonDao.findAll(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Lesson> actual = lessonService.getAllPage(PageRequest.of(0, 1));
 
@@ -365,27 +366,28 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void whenGetByTeacherIdAndDateBetween_thenGetRightListOfLessons() {
+	public void whenGetByTeacherAndDateBetween_thenGetRightListOfLessons() {
 		Lesson lesson = buildLesson();
 		List<Lesson> expected = List.of(lesson);
-		when(lessonDao.getByTeacherIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21")))
+		when(lessonDao.getByTeacherAndDateBetween(lesson.getTeacher(), LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21")))
 				.thenReturn(expected);
 
 		List<Lesson> actual = lessonService
-				.getByTeacherIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
+				.getByTeacherAndDateBetween(lesson.getTeacher(), LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
 
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void whenGetByGroupIdAndDateBetween_thenGetRightListOfLessons() {
+	public void whenGetByGroupAndDateBetween_thenGetRightListOfLessons() {
 		Lesson lesson = buildLesson();
 		List<Lesson> expected = List.of(lesson);
-		when(lessonDao.getByGroupIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21")))
+		Group group = Group.builder().id(1L).name("AA-11").build();
+		when(lessonDao.getByGroupsAndDateBetween(group, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21")))
 				.thenReturn(expected);
 
 		List<Lesson> actual = lessonService
-				.getByGroupIdAndDateBetween(1L, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
+				.getByGroupAndDateBetween(group, LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
 
 		assertEquals(expected, actual);
 	}
@@ -396,17 +398,18 @@ public class LessonServiceTest {
 		LocalDate endDate = LocalDate.parse("2021-01-22");
 		Lesson lesson = buildLesson();
 		List<Lesson> lessons = List.of(lesson);
+		Course course = Course.builder().id(1L).name("Art").build();
 		Teacher substituteTeacher = buildTeacher();
 		substituteTeacher.setId(2L);
-		when(lessonDao.getByTeacherIdAndDateBetween(1L, startDate, endDate))
+		when(lessonDao.getByTeacherAndDateBetween(lesson.getTeacher(), startDate, endDate))
 				.thenReturn(lessons);
-		when(teacherDao.getByCourseId(1L)).thenReturn(List.of(substituteTeacher));
+		when(teacherDao.getByCourses(course)).thenReturn(List.of(substituteTeacher));
 		when(lessonDao.getByTeacherAndDateAndTimeframe(substituteTeacher, lesson.getDate(), lesson.getTimeframe()))
 				.thenReturn(Optional.empty());
 
 		lessonService.replaceTeacherByDateBetween(buildTeacher(), startDate, endDate, null);
 
-		verify(lessonDao).update(lesson);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -417,7 +420,7 @@ public class LessonServiceTest {
 		List<Lesson> lessons = List.of(lesson);
 		Teacher substituteTeacher = buildTeacher();
 		substituteTeacher.setId(2L);
-		when(lessonDao.getByTeacherIdAndDateBetween(1L, startDate, endDate))
+		when(lessonDao.getByTeacherAndDateBetween(lesson.getTeacher(), startDate, endDate))
 				.thenReturn(lessons);
 		when(teacherDao.findById(1L)).thenReturn(Optional.of(substituteTeacher));
 		when(lessonDao.getByTeacherAndDateAndTimeframe(substituteTeacher, lesson.getDate(), lesson.getTimeframe()))
@@ -425,7 +428,7 @@ public class LessonServiceTest {
 
 		lessonService.replaceTeacherByDateBetween(buildTeacher(), startDate, endDate, List.of(1L));
 
-		verify(lessonDao).update(lesson);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -434,14 +437,16 @@ public class LessonServiceTest {
 		LocalDate endDate = LocalDate.parse("2021-01-22");
 		Lesson lesson = buildLesson();
 		List<Lesson> lessons = List.of(lesson);
+		Course course = Course.builder().id(1L).name("Art").build();
 		Teacher replacedTeacher = buildTeacher();
 		Teacher substituteTeacher = buildTeacher();
 		substituteTeacher.setId(2L);
-		when(lessonDao.getByTeacherIdAndDateBetween(1L, startDate, endDate))
+		when(lessonDao.getByTeacherAndDateBetween(replacedTeacher, startDate, endDate))
 				.thenReturn(lessons);
-		when(teacherDao.getByCourseId(1L)).thenReturn(List.of(substituteTeacher));
+		when(teacherDao.getByCourses(course))
+				.thenReturn(List.of(substituteTeacher));
 		when(lessonDao.getByTeacherAndDateAndTimeframe(substituteTeacher, lesson.getDate(), lesson.getTimeframe()))
-				.thenReturn(Optional.of(buildLesson()));
+				.thenReturn(Optional.of(lesson));
 
 		Exception exception = assertThrows(NotFoundSubstituteTeacherException.class,
 				() -> lessonService.replaceTeacherByDateBetween(replacedTeacher, startDate, endDate, null));

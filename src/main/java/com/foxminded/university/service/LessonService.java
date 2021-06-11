@@ -54,7 +54,7 @@ public class LessonService {
 	public void create(Lesson lesson) {
 		logger.debug("Creating lesson: {}", lesson);
 		verify(lesson);
-		lessonDao.create(lesson);
+		lessonDao.save(lesson);
 	}
 
 	@Transactional
@@ -66,14 +66,14 @@ public class LessonService {
 	@Transactional
 	public Page<Lesson> getAllPage(Pageable pageable) {
 		logger.debug("Getting pageable lessons");
-		return lessonDao.getAllPage(pageable);
+		return lessonDao.findAll(pageable);
 	}
 
 	@Transactional
 	public void update(Lesson lesson) {
 		logger.debug("Updating lesson: {}", lesson);
 		verify(lesson);
-		lessonDao.update(lesson);
+		lessonDao.save(lesson);
 	}
 
 	@Transactional
@@ -84,15 +84,15 @@ public class LessonService {
 	}
 
 	@Transactional
-	public List<Lesson> getByTeacherIdAndDateBetween(Long teacherId, LocalDate startDate, LocalDate endDate) {
-		logger.debug("Getting lessons by teacher id: {} and dates: between {} and {}", teacherId, startDate, endDate);
-		return lessonDao.getByTeacherIdAndDateBetween(teacherId, startDate, endDate);
+	public List<Lesson> getByTeacherAndDateBetween(Teacher teacher, LocalDate startDate, LocalDate endDate) {
+		logger.debug("Getting lessons by teacher: {} and dates: between {} and {}", teacher, startDate, endDate);
+		return lessonDao.getByTeacherAndDateBetween(teacher, startDate, endDate);
 	}
 
 	@Transactional
-	public List<Lesson> getByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate) {
-		logger.debug("Getting lessons by group id: {} and dates: between {} and {}", groupId, startDate, endDate);
-		return lessonDao.getByGroupIdAndDateBetween(groupId, startDate, endDate);
+	public List<Lesson> getByGroupAndDateBetween(Group group, LocalDate startDate, LocalDate endDate) {
+		logger.debug("Getting lessons by group: {} and dates: between {} and {}", group, startDate, endDate);
+		return lessonDao.getByGroupsAndDateBetween(group, startDate, endDate);
 	}
 
 	@Transactional
@@ -103,9 +103,9 @@ public class LessonService {
 				teacher.getSurname(),
 				startDate,
 				endDate);
-		List<Lesson> lessons = lessonDao.getByTeacherIdAndDateBetween(teacher.getId(), startDate, endDate);
+		List<Lesson> lessons = lessonDao.getByTeacherAndDateBetween(teacher, startDate, endDate);
 		if (substituteTeacherIds == null) {
-			lessons.forEach(l -> replaceTeacher(l, teacherDao.getByCourseId(l.getCourse().getId())));
+			lessons.forEach(l -> replaceTeacher(l, teacherDao.getByCourses(l.getCourse())));
 		} else {
 			List<Teacher> substituteTeachers = substituteTeacherIds.stream()
 					.map(id -> teacherDao.findById(id)
@@ -114,7 +114,7 @@ public class LessonService {
 					.collect(toList());
 			lessons.forEach(l -> replaceTeacher(l, substituteTeachers));
 		}
-		lessons.stream().forEach(lessonDao::update);
+		lessons.stream().forEach(lessonDao::save);
 	}
 
 	private void replaceTeacher(Lesson lesson, List<Teacher> substituteTeachers) {
@@ -188,7 +188,7 @@ public class LessonService {
 
 	private void verifyGroupIsAvailable(Group group, Lesson lesson) {
 		Optional<Lesson> lessonByCriteria = lessonDao
-				.getByGroupIdAndDateAndTimeframe(group.getId(), lesson.getDate(), lesson.getTimeframe());
+				.getByGroupsAndDateAndTimeframe(group, lesson.getDate(), lesson.getTimeframe());
 		if (lessonByCriteria.isPresent() && !lessonByCriteria.get().getId().equals(lesson.getId())) {
 			throw new NotAvailableGroupException(
 					format("Other lesson was scheduled for the group %s at the time %s, %s",

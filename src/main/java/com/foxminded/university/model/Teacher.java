@@ -15,7 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,15 +25,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NamedQuery(
-		name = "getAllTeachers",
-		query = "from Teacher t")
-@NamedQuery(
-		name = "countTeachers",
-		query = "select count(t) from Teacher t")
-@NamedQuery(
-		name = "getTeachersByCourseId",
-		query = "select t from Teacher t join t.courses c where c.id = :id")
 @Entity
 @Table(name = "teachers")
 @Getter

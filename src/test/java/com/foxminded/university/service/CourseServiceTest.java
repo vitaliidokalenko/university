@@ -42,7 +42,7 @@ public class CourseServiceTest {
 
 		courseService.create(course);
 
-		verify(courseDao).create(course);
+		verify(courseDao).save(course);
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class CourseServiceTest {
 	@Test
 	public void whenGetAll_thenGetRightListOfCourses() {
 		List<Course> expected = List.of(buildCourse());
-		when(courseDao.getAll()).thenReturn(expected);
+		when(courseDao.findAll()).thenReturn(expected);
 
 		List<Course> actual = courseService.getAll();
 
@@ -98,7 +98,7 @@ public class CourseServiceTest {
 
 		courseService.update(course);
 
-		verify(courseDao).update(course);
+		verify(courseDao).save(course);
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class CourseServiceTest {
 
 		courseService.create(actual);
 
-		verify(courseDao).create(actual);
+		verify(courseDao).save(actual);
 	}
 
 	@Test
@@ -148,7 +148,7 @@ public class CourseServiceTest {
 
 		courseService.update(actual);
 
-		verify(courseDao).update(actual);
+		verify(courseDao).save(actual);
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class CourseServiceTest {
 	@Test
 	public void whenGetAllPage_thenGetRightCourses() {
 		Page<Course> expected = new PageImpl<>(List.of(buildCourse()));
-		when(courseDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+		when(courseDao.findAll(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Course> actual = courseService.getAllPage(PageRequest.of(0, 1));
 

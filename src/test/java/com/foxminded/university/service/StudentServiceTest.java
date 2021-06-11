@@ -48,7 +48,7 @@ public class StudentServiceTest {
 
 		studentService.create(student);
 
-		verify(studentDao).create(student);
+		verify(studentDao).save(student);
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class StudentServiceTest {
 	@Test
 	public void whenGetAll_thenGetRightListOfStudents() {
 		List<Student> expected = List.of(buildStudent());
-		when(studentDao.getAll()).thenReturn(expected);
+		when(studentDao.findAll()).thenReturn(expected);
 
 		List<Student> actual = studentService.getAll();
 
@@ -140,7 +140,7 @@ public class StudentServiceTest {
 
 		studentService.update(student);
 
-		verify(studentDao).update(student);
+		verify(studentDao).save(student);
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class StudentServiceTest {
 	@Test
 	public void whenGetAllPage_thenGetRightStudents() {
 		Page<Student> expected = new PageImpl<>(List.of(buildStudent()));
-		when(studentDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+		when(studentDao.findAll(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Student> actual = studentService.getAllPage(PageRequest.of(0, 1));
 

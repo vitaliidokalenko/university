@@ -39,7 +39,7 @@ public class GroupServiceTest {
 
 		groupService.create(group);
 
-		verify(groupDao).create(group);
+		verify(groupDao).save(group);
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class GroupServiceTest {
 	@Test
 	public void whenGetAll_thenGetRightListOfGroups() {
 		List<Group> expected = List.of(buildGroup());
-		when(groupDao.getAll()).thenReturn(expected);
+		when(groupDao.findAll()).thenReturn(expected);
 
 		List<Group> actual = groupService.getAll();
 
@@ -76,7 +76,7 @@ public class GroupServiceTest {
 
 		groupService.update(group);
 
-		verify(groupDao).update(group);
+		verify(groupDao).save(group);
 	}
 
 	@Test
@@ -115,7 +115,7 @@ public class GroupServiceTest {
 
 		groupService.create(actual);
 
-		verify(groupDao).create(actual);
+		verify(groupDao).save(actual);
 	}
 
 	@Test
@@ -137,13 +137,13 @@ public class GroupServiceTest {
 
 		groupService.update(actual);
 
-		verify(groupDao).update(actual);
+		verify(groupDao).save(actual);
 	}
 
 	@Test
 	public void whenGetAllPage_thenGetRightGroups() {
 		Page<Group> expected = new PageImpl<>(List.of(buildGroup()));
-		when(groupDao.getAllPage(PageRequest.of(0, 1))).thenReturn(expected);
+		when(groupDao.findAll(PageRequest.of(0, 1))).thenReturn(expected);
 
 		Page<Group> actual = groupService.getAllPage(PageRequest.of(0, 1));
 

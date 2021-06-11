@@ -34,7 +34,7 @@ public class RoomService {
 	public void create(Room room) {
 		logger.debug("Creating room: {}", room);
 		verify(room);
-		roomDao.create(room);
+		roomDao.save(room);
 	}
 
 	@Transactional
@@ -46,20 +46,20 @@ public class RoomService {
 	@Transactional
 	public List<Room> getAll() {
 		logger.debug("Getting rooms");
-		return roomDao.getAll();
+		return roomDao.findAll();
 	}
 
 	@Transactional
 	public Page<Room> getAllPage(Pageable pageable) {
 		logger.debug("Getting pageable rooms");
-		return roomDao.getAllPage(pageable);
+		return roomDao.findAll(pageable);
 	}
 
 	@Transactional
 	public void update(Room room) {
 		logger.debug("Updating room: {}", room);
 		verify(room);
-		roomDao.update(room);
+		roomDao.save(room);
 	}
 
 	@Transactional

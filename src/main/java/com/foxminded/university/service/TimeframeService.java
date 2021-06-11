@@ -39,7 +39,7 @@ public class TimeframeService {
 	public void create(Timeframe timeframe) {
 		logger.debug("Creating timeframe: {}", timeframe);
 		verify(timeframe);
-		timeframeDao.create(timeframe);
+		timeframeDao.save(timeframe);
 	}
 
 	@Transactional
@@ -51,20 +51,20 @@ public class TimeframeService {
 	@Transactional
 	public List<Timeframe> getAll() {
 		logger.debug("Getting timeframes");
-		return timeframeDao.getAll();
+		return timeframeDao.findAll();
 	}
 
 	@Transactional
 	public Page<Timeframe> getAllPage(Pageable pageable) {
 		logger.debug("Getting pageable timeframes");
-		return timeframeDao.getAllPage(pageable);
+		return timeframeDao.findAll(pageable);
 	}
 
 	@Transactional
 	public void update(Timeframe timeframe) {
 		logger.debug("Updating timeframe: {}", timeframe);
 		verify(timeframe);
-		timeframeDao.update(timeframe);
+		timeframeDao.save(timeframe);
 	}
 
 	@Transactional

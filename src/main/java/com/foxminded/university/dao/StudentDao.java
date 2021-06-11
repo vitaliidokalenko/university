@@ -2,14 +2,12 @@ package com.foxminded.university.dao;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
 
-public interface StudentDao extends GenericDao<Student> {
+public interface StudentDao extends JpaRepository<Student, Long> {
 
-	public List<Student> getAll();
-
-	public List<Student> getByGroup(Group group);
-
-	public List<Student> getByCourseId(Long courseId);
+	List<Student> getByGroup(Group group);
 }

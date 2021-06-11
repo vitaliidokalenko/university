@@ -4,20 +4,23 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
 
-public interface LessonDao extends GenericDao<Lesson> {
+public interface LessonDao extends JpaRepository<Lesson, Long> {
 
-	public Optional<Lesson> getByGroupIdAndDateAndTimeframe(Long groupId, LocalDate date, Timeframe timeframe);
+	Optional<Lesson> getByGroupsAndDateAndTimeframe(Group group, LocalDate date, Timeframe timeframe);
 
-	public Optional<Lesson> getByTeacherAndDateAndTimeframe(Teacher teacher, LocalDate date, Timeframe timeframe);
+	Optional<Lesson> getByTeacherAndDateAndTimeframe(Teacher teacher, LocalDate date, Timeframe timeframe);
 
-	public Optional<Lesson> getByRoomAndDateAndTimeframe(Room room, LocalDate date, Timeframe timeframe);
+	Optional<Lesson> getByRoomAndDateAndTimeframe(Room room, LocalDate date, Timeframe timeframe);
 
-	public List<Lesson> getByTeacherIdAndDateBetween(Long teacherId, LocalDate startDate, LocalDate endDate);
+	List<Lesson> getByTeacherAndDateBetween(Teacher teacher, LocalDate startDate, LocalDate endDate);
 
-	public List<Lesson> getByGroupIdAndDateBetween(Long groupId, LocalDate startDate, LocalDate endDate);
+	List<Lesson> getByGroupsAndDateBetween(Group group, LocalDate startDate, LocalDate endDate);
 }
