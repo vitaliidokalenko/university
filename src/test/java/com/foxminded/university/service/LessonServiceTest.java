@@ -263,17 +263,14 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenTeacherIsAvailable_whenUpdate_thenLessonIsUpdating() {
-		Lesson lessonByCriteria = buildLesson();
-		lessonByCriteria.setId(1L);
-		Lesson actual = buildLesson();
-		actual.setId(1L);
-		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(),
-				actual.getDate(),
-				actual.getTimeframe())).thenReturn(Optional.of(lessonByCriteria));
+		Lesson lesson = buildLesson();
+		when(lessonDao.getByTeacherAndDateAndTimeframe(lesson.getTeacher(),
+				lesson.getDate(),
+				lesson.getTimeframe())).thenReturn(Optional.of(lesson));
 
-		lessonService.update(actual);
+		lessonService.update(lesson);
 
-		verify(lessonDao).save(actual);
+		verify(lessonDao).save(lesson);
 	}
 
 	@Test
@@ -396,7 +393,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenSubstituteTeachersIsNull_whenReplaceTeacherByDateBetween_thenLessonsIsUpdating() {
+	public void givenSubstituteTeacherIdsIsNull_whenReplaceTeacherByDateBetween_thenLessonsIsUpdating() {
 		LocalDate startDate = LocalDate.parse("2021-01-20");
 		LocalDate endDate = LocalDate.parse("2021-01-22");
 		Lesson lesson = buildLesson();
@@ -416,7 +413,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenSubstituteTeachersIsNotNull_whenReplaceTeacherByDateBetween_thenLessonsIsUpdating() {
+	public void givenSubstituteTeacherIdsIsNotNull_whenReplaceTeacherByDateBetween_thenLessonsIsUpdating() {
 		LocalDate startDate = LocalDate.parse("2021-01-20");
 		LocalDate endDate = LocalDate.parse("2021-01-22");
 		Lesson lesson = buildLesson();
@@ -435,7 +432,7 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenSubstituteTeachersIsNotAvailable_whenReplaceTeacherByDateBetween_thenNotFoundSubstituteTeacherExceptionThrown() {
+	public void givenSubstituteTeacherIsNotAvailable_whenReplaceTeacherByDateBetween_thenNotFoundSubstituteTeacherExceptionThrown() {
 		LocalDate startDate = LocalDate.parse("2021-01-20");
 		LocalDate endDate = LocalDate.parse("2021-01-22");
 		Lesson lesson = buildLesson();
@@ -449,7 +446,7 @@ public class LessonServiceTest {
 		when(teacherDao.getByCourses(course))
 				.thenReturn(List.of(substituteTeacher));
 		when(lessonDao.getByTeacherAndDateAndTimeframe(substituteTeacher, lesson.getDate(), lesson.getTimeframe()))
-				.thenReturn(Optional.of(buildLesson()));
+				.thenReturn(Optional.of(lesson));
 
 		Exception exception = assertThrows(NotFoundSubstituteTeacherException.class,
 				() -> lessonService.replaceTeacherByDateBetween(replacedTeacher, startDate, endDate, null));
