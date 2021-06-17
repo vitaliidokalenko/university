@@ -1,11 +1,8 @@
 package com.foxminded.university.service;
 
 import static java.lang.String.format;
-import static java.time.DayOfWeek.SATURDAY;
-import static java.time.DayOfWeek.SUNDAY;
 import static java.util.stream.Collectors.toList;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -32,7 +29,6 @@ import com.foxminded.university.service.exception.NotEnoughRoomCapacityException
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotFoundSubstituteTeacherException;
 import com.foxminded.university.service.exception.NotSuitableRoomForCourseException;
-import com.foxminded.university.service.exception.NotWeekDayException;
 
 @Service
 public class LessonService {
@@ -138,7 +134,6 @@ public class LessonService {
 		verifyRoomCapacityIsEnough(lesson);
 		verifyTeacherIsCompetentInCourse(lesson);
 		verifyRoomIsAssignedForLessonCourse(lesson);
-		verifyNotAtWeekend(lesson);
 	}
 
 	private void verifyTeacherIsAvailable(Lesson lesson) {
@@ -210,14 +205,6 @@ public class LessonService {
 			throw new NotSuitableRoomForCourseException(format("Course %s cannot be lectured in the room %s",
 					lesson.getCourse().getName(),
 					lesson.getRoom().getName()));
-		}
-	}
-
-	private void verifyNotAtWeekend(Lesson lesson) {
-		DayOfWeek day = lesson.getDate().getDayOfWeek();
-		if (day == SATURDAY || day == SUNDAY) {
-			throw new NotWeekDayException(
-					format("Lesson cannot be appointed at the weekend (%s)", lesson.getDate().toString()));
 		}
 	}
 }

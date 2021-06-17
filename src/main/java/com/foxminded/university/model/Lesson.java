@@ -19,6 +19,8 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.foxminded.university.controller.validator.constraint.NotWeekend;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -57,6 +59,7 @@ public class Lesson {
 
 	@NotNull
 	@FutureOrPresent
+	@NotWeekend
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate date;
 
