@@ -20,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.model.Group;
-import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
 
@@ -40,24 +39,6 @@ public class GroupServiceTest {
 		groupService.create(group);
 
 		verify(groupDao).save(group);
-	}
-
-	@Test
-	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Group group = buildGroup();
-		group.setName(null);
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> groupService.create(group));
-		assertEquals("Empty group name", exception.getMessage());
-	}
-
-	@Test
-	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Group group = buildGroup();
-		group.setName("");
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> groupService.create(group));
-		assertEquals("Empty group name", exception.getMessage());
 	}
 
 	@Test

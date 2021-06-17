@@ -24,7 +24,6 @@ import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Teacher;
-import com.foxminded.university.service.exception.IncompleteEntityException;
 import com.foxminded.university.service.exception.NotAvailableGroupException;
 import com.foxminded.university.service.exception.NotAvailableRoomException;
 import com.foxminded.university.service.exception.NotAvailableTeacherException;
@@ -133,7 +132,6 @@ public class LessonService {
 	}
 
 	private void verify(Lesson lesson) {
-		verifyFields(lesson);
 		verifyTeacherIsAvailable(lesson);
 		verifyRoomIsAvailable(lesson);
 		verifyGroups(lesson);
@@ -141,22 +139,6 @@ public class LessonService {
 		verifyTeacherIsCompetentInCourse(lesson);
 		verifyRoomIsAssignedForLessonCourse(lesson);
 		verifyNotAtWeekend(lesson);
-	}
-
-	private void verifyFields(Lesson lesson) {
-		if (lesson.getCourse() == null) {
-			throw new IncompleteEntityException("No course assigned to the lesson");
-		} else if (lesson.getDate() == null) {
-			throw new IncompleteEntityException("No date assigned to the lesson");
-		} else if (lesson.getGroups().isEmpty()) {
-			throw new IncompleteEntityException("No groups assigned to the lesson");
-		} else if (lesson.getRoom() == null) {
-			throw new IncompleteEntityException("No room assigned to the lesson");
-		} else if (lesson.getTeacher() == null) {
-			throw new IncompleteEntityException("No teacher assigned to the lesson");
-		} else if (lesson.getTimeframe() == null) {
-			throw new IncompleteEntityException("No timeframe assigned to the lesson");
-		}
 	}
 
 	private void verifyTeacherIsAvailable(Lesson lesson) {

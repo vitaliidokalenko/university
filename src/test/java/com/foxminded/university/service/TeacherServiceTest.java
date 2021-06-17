@@ -22,7 +22,6 @@ import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Teacher;
-import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,51 +40,6 @@ public class TeacherServiceTest {
 		teacherService.create(teacher);
 
 		verify(teacherDao).save(teacher);
-	}
-
-	@Test
-	public void givenGenderIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Teacher teacher = buildTeacher();
-		teacher.setGender(null);
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("Empty teacher gender", exception.getMessage());
-	}
-
-	@Test
-	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Teacher teacher = buildTeacher();
-		teacher.setName("");
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("Empty teacher name", exception.getMessage());
-	}
-
-	@Test
-	public void givenSurnameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Teacher teacher = buildTeacher();
-		teacher.setSurname("");
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("Empty teacher surname", exception.getMessage());
-	}
-
-	@Test
-	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Teacher teacher = buildTeacher();
-		teacher.setName(null);
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("Empty teacher name", exception.getMessage());
-	}
-
-	@Test
-	public void givenSurnameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Teacher teacher = buildTeacher();
-		teacher.setSurname(null);
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> teacherService.create(teacher));
-		assertEquals("Empty teacher surname", exception.getMessage());
 	}
 
 	@Test

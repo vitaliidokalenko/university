@@ -26,7 +26,6 @@ import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.service.exception.GroupOverflowException;
-import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,51 +48,6 @@ public class StudentServiceTest {
 		studentService.create(student);
 
 		verify(studentDao).save(student);
-	}
-
-	@Test
-	public void givenGenderIsNull_whenCreate_thenThrowException() {
-		Student student = buildStudent();
-		student.setGender(null);
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("Empty student gender", exception.getMessage());
-	}
-
-	@Test
-	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Student student = buildStudent();
-		student.setName(null);
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("Empty student name", exception.getMessage());
-	}
-
-	@Test
-	public void givenSurnameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Student student = buildStudent();
-		student.setSurname(null);
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("Empty student surname", exception.getMessage());
-	}
-
-	@Test
-	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Student student = buildStudent();
-		student.setName("");
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("Empty student name", exception.getMessage());
-	}
-
-	@Test
-	public void givenSurnameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Student student = buildStudent();
-		student.setSurname("");
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> studentService.create(student));
-		assertEquals("Empty student surname", exception.getMessage());
 	}
 
 	@Test

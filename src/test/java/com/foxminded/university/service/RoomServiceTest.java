@@ -20,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Room;
-import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
 
@@ -40,33 +39,6 @@ public class RoomServiceTest {
 		roomService.create(room);
 
 		verify(roomDao).save(room);
-	}
-
-	@Test
-	public void givenCapacityLessThanOne_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Room room = buildRoom();
-		room.setCapacity(0);
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> roomService.create(room));
-		assertEquals(format("Capacity of the room %s is less than 1", room.getName()), exception.getMessage());
-	}
-
-	@Test
-	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Room room = buildRoom();
-		room.setName("");
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> roomService.create(room));
-		assertEquals("Empty room name", exception.getMessage());
-	}
-
-	@Test
-	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Room room = buildRoom();
-		room.setName(null);
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> roomService.create(room));
-		assertEquals("Empty room name", exception.getMessage());
 	}
 
 	@Test

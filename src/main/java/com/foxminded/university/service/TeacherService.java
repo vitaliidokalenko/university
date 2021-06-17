@@ -13,12 +13,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.foxminded.university.dao.TeacherDao;
 import com.foxminded.university.model.Teacher;
-import com.foxminded.university.service.exception.IllegalFieldEntityException;
-import com.foxminded.university.service.exception.IncompleteEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Service
@@ -35,7 +32,6 @@ public class TeacherService {
 	@Transactional
 	public void create(Teacher teacher) {
 		logger.debug("Creating teacher: {}", teacher);
-		verify(teacher);
 		teacherDao.save(teacher);
 	}
 
@@ -60,7 +56,6 @@ public class TeacherService {
 	@Transactional
 	public void update(Teacher teacher) {
 		logger.debug("Updating teacher: {}", teacher);
-		verify(teacher);
 		teacherDao.save(teacher);
 	}
 
@@ -73,30 +68,12 @@ public class TeacherService {
 
 	@Transactional
 	public Set<Teacher> getSubstituteTeachers(Teacher teacher) {
-		logger.debug("Getting substitutes for teacher id: {}", teacher.getId());
+		logger.debug("Getting substitutes for teacher: {}", teacher);
 		return teacher.getCourses()
 				.stream()
 				.map(c -> teacherDao.getByCourses(c))
 				.flatMap(List::stream)
 				.filter(t -> !t.equals(teacher))
 				.collect(toSet());
-	}
-
-	private void verify(Teacher teacher) {
-		verifyFields(teacher);
-	}
-
-	private void verifyFields(Teacher teacher) {
-		if (StringUtils.isEmpty(teacher.getName())) {
-			throw new IllegalFieldEntityException("Empty teacher name");
-		} else if (StringUtils.isEmpty(teacher.getSurname())) {
-			throw new IllegalFieldEntityException("Empty teacher surname");
-		} else if (teacher.getGender() == null) {
-			throw new IllegalFieldEntityException("Empty teacher gender");
-		} else if (teacher.getCourses().isEmpty()) {
-			throw new IncompleteEntityException(format("No courses assigned to the teacher %s %s",
-					teacher.getName(),
-					teacher.getSurname()));
-		}
 	}
 }

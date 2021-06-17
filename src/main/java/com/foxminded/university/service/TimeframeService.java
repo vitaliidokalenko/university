@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.foxminded.university.config.UniversityConfigProperties;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
-import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.IncorrectDurationException;
 import com.foxminded.university.service.exception.IncorrectTimelineException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
@@ -75,20 +74,9 @@ public class TimeframeService {
 	}
 
 	private void verify(Timeframe timeframe) {
-		verifyFields(timeframe);
 		verifyTimeLineIsProper(timeframe);
 		verifyDuration(timeframe);
 		verifySequenceIsUnique(timeframe);
-	}
-
-	private void verifyFields(Timeframe timeframe) {
-		if (timeframe.getSequence() < 1) {
-			throw new IllegalFieldEntityException("Timeframe sequence less than 1");
-		} else if (timeframe.getStartTime() == null) {
-			throw new IllegalFieldEntityException("Empty timeframe start time");
-		} else if (timeframe.getEndTime() == null) {
-			throw new IllegalFieldEntityException("Empty timeframe end time");
-		}
 	}
 
 	private void verifyDuration(Timeframe timeframe) {

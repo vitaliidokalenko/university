@@ -11,13 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.foxminded.university.config.UniversityConfigProperties;
 import com.foxminded.university.dao.StudentDao;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.service.exception.GroupOverflowException;
-import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Service
@@ -73,18 +71,7 @@ public class StudentService {
 	}
 
 	private void verify(Student student) {
-		verifyFields(student);
 		verifyGroupIsFull(student);
-	}
-
-	private void verifyFields(Student student) {
-		if (StringUtils.isEmpty(student.getName())) {
-			throw new IllegalFieldEntityException("Empty student name");
-		} else if (StringUtils.isEmpty(student.getSurname())) {
-			throw new IllegalFieldEntityException("Empty student surname");
-		} else if (student.getGender() == null) {
-			throw new IllegalFieldEntityException("Empty student gender");
-		}
 	}
 
 	private void verifyGroupIsFull(Student student) {
