@@ -102,7 +102,8 @@ public class TimeframeControllerTest {
 
 	@Test
 	public void givenNewTimeframe_whenSave_thenTimeframeIsCreating() throws Exception {
-		Timeframe timeframe = new Timeframe();
+		Timeframe timeframe = buildTimeframe();
+		timeframe.setId(null);
 
 		mockMvc.perform(post("/timeframes/save").flashAttr("timeframe", timeframe))
 				.andExpect(status().isFound())

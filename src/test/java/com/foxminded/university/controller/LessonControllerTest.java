@@ -244,7 +244,7 @@ public class LessonControllerTest {
 		return Lesson.builder()
 				.id(1L)
 				.course(course)
-				.date(LocalDate.parse("2021-01-21"))
+				.date(LocalDate.parse("2070-01-21"))
 				.groups(groups)
 				.room(room)
 				.teacher(teacher)

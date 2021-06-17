@@ -8,6 +8,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,9 +28,16 @@ public class Timeframe {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@NotNull
+	@Positive
 	private int sequence;
+
+	@NotNull
 	@Column(name = "start_time")
 	private LocalTime startTime;
+
+	@NotNull
 	@Column(name = "end_time")
 	private LocalTime endTime;
 }

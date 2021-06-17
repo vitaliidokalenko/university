@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +30,11 @@ public class Group {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@NotBlank
+	@Size(max = 10)
 	private String name;
+
 	@OneToMany(mappedBy = "group")
 	private List<Student> students;
 

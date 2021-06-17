@@ -2,6 +2,8 @@ package com.foxminded.university.controller;
 
 import static java.lang.String.format;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -54,7 +56,7 @@ public class TimeframeController {
 	}
 
 	@PostMapping("/save")
-	public String save(Timeframe timeframe) {
+	public String save(@Valid Timeframe timeframe) {
 		if (timeframe.getId() == null) {
 			timeframeService.create(timeframe);
 		} else {

@@ -5,6 +5,8 @@ import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -70,7 +72,7 @@ public class TeacherController {
 	}
 
 	@PostMapping("/save")
-	public String save(Teacher teacher) {
+	public String save(@Valid Teacher teacher) {
 		retrieveRelationsFields(teacher);
 		if (teacher.getId() == null) {
 			teacherService.create(teacher);

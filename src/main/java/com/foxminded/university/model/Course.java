@@ -12,6 +12,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,8 +34,15 @@ public class Course {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@NotBlank
+	@Size(max = 50)
 	private String name;
+
+	@Size(max = 250)
 	private String description;
+
+	@NotEmpty
 	@ManyToMany
 	@JoinTable(name = "courses_rooms",
 			joinColumns = @JoinColumn(name = "course_id"),

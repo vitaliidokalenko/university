@@ -2,6 +2,8 @@ package com.foxminded.university.controller;
 
 import static java.lang.String.format;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -54,7 +56,7 @@ public class GroupController {
 	}
 
 	@PostMapping("/save")
-	public String save(Group group) {
+	public String save(@Valid Group group) {
 		if (group.getId() == null) {
 			groupService.create(group);
 		} else {

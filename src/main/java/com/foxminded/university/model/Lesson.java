@@ -13,6 +13,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -32,19 +35,32 @@ public class Lesson {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@NotEmpty
 	@ManyToMany
 	@JoinTable(name = "lessons_groups",
 			joinColumns = @JoinColumn(name = "lesson_id"),
 			inverseJoinColumns = @JoinColumn(name = "group_id"))
 	private Set<Group> groups = new HashSet<>();
+
+	@NotNull
 	@ManyToOne
 	private Teacher teacher;
+
+	@NotNull
 	@ManyToOne
 	private Course course;
+
+	@NotNull
 	@ManyToOne
 	private Room room;
+
+	@NotNull
+	@FutureOrPresent
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate date;
+
+	@NotNull
 	@ManyToOne
 	private Timeframe timeframe;
 }

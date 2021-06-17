@@ -2,6 +2,8 @@ package com.foxminded.university.controller;
 
 import static java.lang.String.format;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -60,7 +62,7 @@ public class RoomController {
 	}
 
 	@PostMapping("/save")
-	public String save(Room room) {
+	public String save(@Valid Room room) {
 		if (room.getId() == null) {
 			roomService.create(room);
 		} else {
