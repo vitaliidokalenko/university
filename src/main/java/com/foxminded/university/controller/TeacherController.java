@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,8 +73,13 @@ public class TeacherController {
 	}
 
 	@PostMapping("/save")
-	public String save(@Valid Teacher teacher) {
+	public String save(@Valid Teacher teacher, BindingResult result, Model model) {
 		retrieveRelationsFields(teacher);
+		if (result.hasErrors()) {
+			model.addAttribute("courses", courseService.getAll());
+			model.addAttribute("genders", Gender.values());
+			return "student/edit";
+		}
 		if (teacher.getId() == null) {
 			teacherService.create(teacher);
 		} else {

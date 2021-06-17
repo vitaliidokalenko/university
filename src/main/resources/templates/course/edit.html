@@ -10,24 +10,29 @@
 	<form action="#" th:action="@{/courses/save}" th:object="${course}" method="post">
 		<div class="container">
 			<p class="h3 text-secondary">Edit course</p>
-			<dl class="row">
+			<dl th:if="${course.id != null}" class="row">
 				<dt class="col-sm-2">
 					<label for="id">Id</label>
 				</dt>
 				<dd class="col-sm-10">
 					<input type="text" readonly="readonly" th:field="*{id}" id="id">
 				</dd>
+			</dl>
+			<dl class="row">
 				<dt class="col-sm-2">
 					<label for="name">Name</label>
 				</dt>
 				<dd class="col-sm-10">
 					<input type="text" th:field="*{name}" id="name" placeholder="Name" required>
+					<span class="font-italic text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
 				</dd>
 				<dt class="col-sm-2">
 					<label for="description">Description</label>
 				</dt>
 				<dd class="col-sm-10">
 					<input type="text" th:field="*{description}" id="description" placeholder="Description">
+					<span class="font-italic text-danger" th:if="${#fields.hasErrors('description')}"
+						th:errors="*{description}"></span>
 				</dd>
 				<dt class="col-sm-2">
 					<label for="rooms">Rooms</label>
@@ -39,6 +44,7 @@
 								th:for="${#ids.prev('rooms')}" th:text="${room.name}"></label>
 						</div>
 					</div>
+					<span class="font-italic text-danger" th:if="${#fields.hasErrors('rooms')}" th:errors="*{rooms}"></span>
 				</dd>
 			</dl>
 			<input class="btn btn-success" type="submit" role="button" value="Submit">
