@@ -1,4 +1,4 @@
-package com.foxminded.university.controller.validator.constraint;
+package com.foxminded.university.validator.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,20 +8,16 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import com.foxminded.university.controller.validator.AgeValidator;
+import com.foxminded.university.validator.NotWeekendValidator;
 
-@Constraint(validatedBy = AgeValidator.class)
+@Constraint(validatedBy = NotWeekendValidator.class)
 @Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Age {
+public @interface NotWeekend {
 
-	public String message() default "{com.foxminded.university.constraints.Age.message}";
+	public String message() default "{com.foxminded.university.constraints.NotWeekend.message}";
 
 	public Class<?>[] groups() default {};
 
 	public Class<? extends Payload>[] payload() default {};
-
-	int min() default 0;
-
-	int max() default Integer.MAX_VALUE;
 }

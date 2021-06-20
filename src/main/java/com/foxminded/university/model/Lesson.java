@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.foxminded.university.controller.validator.constraint.NotWeekend;
+import com.foxminded.university.validator.annotation.NotWeekend;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

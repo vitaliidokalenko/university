@@ -25,8 +25,8 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.foxminded.university.controller.validator.constraint.Age;
-import com.foxminded.university.controller.validator.constraint.Phone;
+import com.foxminded.university.validator.annotation.Age;
+import com.foxminded.university.validator.annotation.Phone;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

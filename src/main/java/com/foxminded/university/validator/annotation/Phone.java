@@ -1,4 +1,4 @@
-package com.foxminded.university.controller.validator.constraint;
+package com.foxminded.university.validator.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

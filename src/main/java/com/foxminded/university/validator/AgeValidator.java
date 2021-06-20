@@ -1,4 +1,4 @@
-package com.foxminded.university.controller.validator;
+package com.foxminded.university.validator;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -6,7 +6,7 @@ import java.time.temporal.ChronoUnit;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.foxminded.university.controller.validator.constraint.Age;
+import com.foxminded.university.validator.annotation.Age;
 
 public class AgeValidator implements ConstraintValidator<Age, LocalDate> {
 

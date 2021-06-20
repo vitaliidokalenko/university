@@ -1,4 +1,4 @@
-package com.foxminded.university.controller.validator;
+package com.foxminded.university.validator;
 
 import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.SUNDAY;
@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import com.foxminded.university.controller.validator.constraint.NotWeekend;
+import com.foxminded.university.validator.annotation.NotWeekend;
 
 public class NotWeekendValidator implements ConstraintValidator<NotWeekend, LocalDate> {
 
