@@ -148,6 +148,16 @@ public class TeacherControllerTest {
 	}
 
 	@Test
+	public void givenNotValidTeacher_whenSave_thenForwardedEditView() throws Exception {
+		Teacher teacher = buildTeacher();
+		teacher.setName(null);
+
+		mockMvc.perform(post("/teachers/save").flashAttr("teacher", teacher))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("teacher/edit"));
+	}
+
+	@Test
 	public void givenTeacher_whenDelete_thenTeacherIsDeleting() throws Exception {
 		Teacher teacher = buildTeacher();
 

@@ -140,6 +140,18 @@ public class CourseControllerTest {
 	}
 
 	@Test
+	public void givenNotValidCourse_whenSave_thenForwardedEditView() throws Exception {
+		Course course = Course.builder()
+				.name(" ")
+				.rooms(null)
+				.build();
+
+		mockMvc.perform(post("/courses/save").flashAttr("course", course))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("course/edit"));
+	}
+
+	@Test
 	public void givenCourse_whenDelete_thenCourseIsDeleting() throws Exception {
 		Course course = buildCourse();
 

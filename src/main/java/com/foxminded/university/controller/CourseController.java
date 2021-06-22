@@ -64,11 +64,11 @@ public class CourseController {
 
 	@PostMapping("/save")
 	public String save(@Valid Course course, BindingResult result, Model model) {
-		retrieveRelationsFields(course);
 		if (result.hasErrors()) {
 			model.addAttribute("rooms", roomService.getAll());
 			return "course/edit";
 		}
+		retrieveRelationsFields(course);
 		if (course.getId() == null) {
 			courseService.create(course);
 		} else {

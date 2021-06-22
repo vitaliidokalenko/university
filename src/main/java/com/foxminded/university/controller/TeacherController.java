@@ -74,12 +74,12 @@ public class TeacherController {
 
 	@PostMapping("/save")
 	public String save(@Valid Teacher teacher, BindingResult result, Model model) {
-		retrieveRelationsFields(teacher);
 		if (result.hasErrors()) {
 			model.addAttribute("courses", courseService.getAll());
 			model.addAttribute("genders", Gender.values());
-			return "student/edit";
+			return "teacher/edit";
 		}
+		retrieveRelationsFields(teacher);
 		if (teacher.getId() == null) {
 			teacherService.create(teacher);
 		} else {

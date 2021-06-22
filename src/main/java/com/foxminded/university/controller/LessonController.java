@@ -91,7 +91,6 @@ public class LessonController {
 
 	@PostMapping("/save")
 	public String save(@Valid Lesson lesson, BindingResult result, Model model) {
-		retrieveRelationsFields(lesson);
 		if (result.hasErrors()) {
 			model.addAttribute("groups", groupService.getAll());
 			model.addAttribute("teachers", teacherService.getAll());
@@ -100,6 +99,7 @@ public class LessonController {
 			model.addAttribute("timeframes", timeframeService.getAll());
 			return "lesson/edit";
 		}
+		retrieveRelationsFields(lesson);
 		if (lesson.getId() == null) {
 			lessonService.create(lesson);
 		} else {

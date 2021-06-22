@@ -80,13 +80,13 @@ public class StudentController {
 
 	@PostMapping("/save")
 	public String save(@Valid Student student, BindingResult result, Model model) {
-		retrieveRelationsFields(student);
 		if (result.hasErrors()) {
 			model.addAttribute("courses", courseService.getAll());
 			model.addAttribute("groups", groupService.getAll());
 			model.addAttribute("genders", Gender.values());
 			return "student/edit";
 		}
+		retrieveRelationsFields(student);
 		if (student.getId() == null) {
 			studentService.create(student);
 		} else {

@@ -127,6 +127,17 @@ public class GroupControllerTest {
 	}
 
 	@Test
+	public void givenNotValidGroup_whenSave_thenForwardedEditView() throws Exception {
+		Group group = Group.builder()
+				.name(" ")
+				.build();
+
+		mockMvc.perform(post("/groups/save").flashAttr("group", group))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("group/edit"));
+	}
+
+	@Test
 	public void givenGroup_whenDelete_thenGroupIsDeleting() throws Exception {
 		Group group = buildGroup();
 

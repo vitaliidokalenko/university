@@ -176,6 +176,16 @@ public class LessonControllerTest {
 	}
 
 	@Test
+	public void givenNotValidLesson_whenSave_thenForwardedEditView() throws Exception {
+		Lesson lesson = buildLesson();
+		lesson.setTeacher(null);
+
+		mockMvc.perform(post("/lessons/save").flashAttr("lesson", lesson))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("lesson/edit"));
+	}
+
+	@Test
 	public void givenLesson_whenDelete_thenLessonIsDeleting() throws Exception {
 		Lesson lesson = buildLesson();
 

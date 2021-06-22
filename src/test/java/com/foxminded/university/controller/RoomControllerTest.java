@@ -121,6 +121,15 @@ public class RoomControllerTest {
 	}
 
 	@Test
+	public void givenNotValidRoom_whenSave_thenForwardedEditView() throws Exception {
+		Room room = Room.builder().id(1L).name(" ").capacity(0).build();
+
+		mockMvc.perform(post("/rooms/save").flashAttr("room", room))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("room/edit"));
+	}
+
+	@Test
 	public void givenRoom_whenDelete_thenRoomIsDeleting() throws Exception {
 		Room room = buildRoom();
 

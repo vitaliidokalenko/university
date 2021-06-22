@@ -124,6 +124,16 @@ public class TimeframeControllerTest {
 	}
 
 	@Test
+	public void givenNotValidTimeframe_whenSave_thenForwardedEditView() throws Exception {
+		Timeframe timeframe = buildTimeframe();
+		timeframe.setSequence(0);
+
+		mockMvc.perform(post("/timeframes/save").flashAttr("timeframe", timeframe))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("timeframe/edit"));
+	}
+
+	@Test
 	public void givenTimeframe_whenDelete_thenTimeframeIsDeleting() throws Exception {
 		Timeframe timeframe = buildTimeframe();
 
