@@ -18,6 +18,7 @@
 					<input type="text" readonly="readonly" th:field="*{id}" id="id">
 				</dd>
 			</dl>
+			<span class="font-italic text-danger" th:if="${#fields.hasErrors('global')}" th:errors="*{global}"></span>
 			<dl class="row">
 				<dt class="col-sm-2">
 					<label for="sequence">Sequence</label>

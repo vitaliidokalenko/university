@@ -17,7 +17,6 @@ import com.foxminded.university.config.UniversityConfigProperties;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.exception.IncorrectDurationException;
-import com.foxminded.university.service.exception.IncorrectTimelineException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueSequenceException;
 
@@ -74,7 +73,6 @@ public class TimeframeService {
 	}
 
 	private void verify(Timeframe timeframe) {
-		verifyTimeLineIsProper(timeframe);
 		verifyDuration(timeframe);
 		verifySequenceIsUnique(timeframe);
 	}
@@ -93,12 +91,6 @@ public class TimeframeService {
 		if (timeframeBySequence.isPresent() && !timeframeBySequence.get().getId().equals(timeframe.getId())) {
 			throw new NotUniqueSequenceException(
 					format("The timeframe with sequence: %d already exists", timeframe.getSequence()));
-		}
-	}
-
-	private void verifyTimeLineIsProper(Timeframe timeframe) {
-		if (timeframe.getStartTime().isAfter(timeframe.getEndTime())) {
-			throw new IncorrectTimelineException("Start time is after end time");
 		}
 	}
 }

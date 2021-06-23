@@ -24,7 +24,6 @@ import com.foxminded.university.config.UniversityConfigProperties;
 import com.foxminded.university.dao.TimeframeDao;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.exception.IncorrectDurationException;
-import com.foxminded.university.service.exception.IncorrectTimelineException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueSequenceException;
 
@@ -48,15 +47,6 @@ public class TimeframeServiceTest {
 		timeframeService.create(timeframe);
 
 		verify(timeframeDao).save(timeframe);
-	}
-
-	@Test
-	public void givenStartTimeIsAfterEndTime_whenCreate_thenIncorrectTimelineExceptionThrown() {
-		Timeframe timeframe = buildTimeframe();
-		timeframe.setStartTime(LocalTime.parse("10:00"));
-
-		Exception exception = assertThrows(IncorrectTimelineException.class, () -> timeframeService.create(timeframe));
-		assertEquals("Start time is after end time", exception.getMessage());
 	}
 
 	@Test
