@@ -10,18 +10,21 @@
 	<form th:action="@{/lessons/save}" th:object="${lesson}" method="post">
 		<div class="container">
 			<p class="h3 text-secondary">Edit lesson</p>
-			<dl class="row">
+			<dl th:if="${lesson.id != null}" class="row">
 				<dt class="col-sm-2">
 					<label for="id">Id</label>
 				</dt>
 				<dd class="col-sm-10">
 					<input type="text" readonly="readonly" th:field="*{id}" id="id">
 				</dd>
+			</dl>
+			<dl class="row">
 				<dt class="col-sm-2">
 					<label for="date">Date</label>
 				</dt>
 				<dd class="col-sm-10">
 					<input class="form-control" type="date" id="date" th:value="*{date}" th:field="*{date}" required>
+					<span class="font-italic text-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></span>
 				</dd>
 				<dt class="col-sm-2">
 					<label for="timeframe">Timeframe</label>
@@ -31,6 +34,7 @@
 						<option th:each="timeframe : ${timeframes}" th:value="${timeframe.id}"
 							th:text="${timeframe.startTime} + ' - ' + ${timeframe.endTime}"></option>
 					</select>
+					<span class="font-italic text-danger" th:if="${#fields.hasErrors('timeframe')}" th:errors="*{timeframe}"></span>
 				</dd>
 				<dt class="col-sm-2">Groups</dt>
 				<dd class="col-sm-10">
@@ -40,6 +44,7 @@
 								th:for="${#ids.prev('groups')}" th:text="${group.name}"></label>
 						</div>
 					</div>
+					<span class="font-italic text-danger" th:if="${#fields.hasErrors('groups')}" th:errors="*{groups}"></span>
 				</dd>
 				<dt class="col-sm-2">Teacher</dt>
 				<dd class="col-sm-10">
@@ -47,18 +52,21 @@
 						<option th:each="teacher : ${teachers}" th:value="${teacher.id}"
 							th:text="${teacher.name} + ' ' + ${teacher.surname}"></option>
 					</select>
+					<span class="font-italic text-danger" th:if="${#fields.hasErrors('teacher')}" th:errors="*{teacher}"></span>
 				</dd>
 				<dt class="col-sm-2">Course</dt>
 				<dd class="col-sm-10">
 					<select class="form-control" th:field="*{course.id}" required>
 						<option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.name}"></option>
 					</select>
+					<span class="font-italic text-danger" th:if="${#fields.hasErrors('course')}" th:errors="*{course}"></span>
 				</dd>
 				<dt class="col-sm-2">Room</dt>
 				<dd class="col-sm-10">
 					<select class="form-control" th:field="*{room.id}" required>
 						<option th:each="room : ${rooms}" th:value="${room.id}" th:text="${room.name}"></option>
 					</select>
+					<span class="font-italic text-danger" th:if="${#fields.hasErrors('room')}" th:errors="*{room}"></span>
 				</dd>
 			</dl>
 			<input class="btn btn-success" type="submit" role="button" value="Submit">

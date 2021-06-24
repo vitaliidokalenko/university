@@ -6,13 +6,15 @@ import static java.util.stream.Collectors.toSet;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,7 +90,15 @@ public class LessonController {
 	}
 
 	@PostMapping("/save")
-	public String save(@ModelAttribute Lesson lesson) {
+	public String save(@Valid Lesson lesson, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			model.addAttribute("groups", groupService.getAll());
+			model.addAttribute("teachers", teacherService.getAll());
+			model.addAttribute("courses", courseService.getAll());
+			model.addAttribute("rooms", roomService.getAll());
+			model.addAttribute("timeframes", timeframeService.getAll());
+			return "lesson/edit";
+		}
 		retrieveRelationsFields(lesson);
 		if (lesson.getId() == null) {
 			lessonService.create(lesson);

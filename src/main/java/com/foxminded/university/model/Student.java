@@ -17,8 +17,16 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.foxminded.university.validator.annotation.Age;
+import com.foxminded.university.validator.annotation.Phone;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,21 +46,41 @@ public class Student {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@NotBlank
+	@Size(max = 50)
 	private String name;
+
+	@NotBlank
+	@Size(max = 50)
 	private String surname;
+
 	@ManyToOne
 	private Group group;
+
 	@ManyToMany
 	@JoinTable(name = "students_courses",
 			joinColumns = @JoinColumn(name = "student_id"),
 			inverseJoinColumns = @JoinColumn(name = "course_id"))
 	private Set<Course> courses = new HashSet<>();
+
+	@Phone
 	private String phone;
+
+	@Email
+	@Size(max = 50)
 	private String email;
+
+	@Size(max = 100)
 	private String address;
+
+	@Past
+	@Age(min = 14)
 	@Column(name = "birth_date")
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate birthDate;
+
+	@NotNull
 	@Enumerated(EnumType.STRING)
 	private Gender gender;
 

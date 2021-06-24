@@ -2,10 +2,13 @@ package com.foxminded.university.controller;
 
 import static java.lang.String.format;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,7 +57,10 @@ public class TimeframeController {
 	}
 
 	@PostMapping("/save")
-	public String save(Timeframe timeframe) {
+	public String save(@Valid Timeframe timeframe, BindingResult result) {
+		if (result.hasErrors()) {
+			return "timeframe/edit";
+		}
 		if (timeframe.getId() == null) {
 			timeframeService.create(timeframe);
 		} else {

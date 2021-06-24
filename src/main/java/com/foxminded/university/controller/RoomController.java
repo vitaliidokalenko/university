@@ -2,10 +2,13 @@ package com.foxminded.university.controller;
 
 import static java.lang.String.format;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,7 +63,10 @@ public class RoomController {
 	}
 
 	@PostMapping("/save")
-	public String save(Room room) {
+	public String save(@Valid Room room, BindingResult result) {
+		if (result.hasErrors()) {
+			return "room/edit";
+		}
 		if (room.getId() == null) {
 			roomService.create(room);
 		} else {

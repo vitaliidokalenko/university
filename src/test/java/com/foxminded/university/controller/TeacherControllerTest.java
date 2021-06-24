@@ -122,10 +122,10 @@ public class TeacherControllerTest {
 
 	@Test
 	public void givenNewTeacher_whenSave_thenTeacherIsCreating() throws Exception {
-		Teacher teacher = Teacher.builder()
-				.courses(Set.of(Course.builder().id(1L).build()))
-				.build();
+		Teacher teacher = buildTeacher();
+		teacher.setId(null);
 		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
+		when(courseService.findById(2L)).thenReturn(Optional.of(Course.builder().id(2L).name("Law").build()));
 
 		mockMvc.perform(post("/teachers/save").flashAttr("teacher", teacher))
 				.andExpect(status().isFound())
@@ -136,17 +136,25 @@ public class TeacherControllerTest {
 
 	@Test
 	public void givenTeacher_whenSave_thenTeacherIsUpdating() throws Exception {
-		Teacher teacher = Teacher.builder()
-				.id(1L)
-				.courses(Set.of(Course.builder().id(1L).build()))
-				.build();
+		Teacher teacher = buildTeacher();
 		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
+		when(courseService.findById(2L)).thenReturn(Optional.of(Course.builder().id(2L).name("Law").build()));
 
 		mockMvc.perform(post("/teachers/save").flashAttr("teacher", teacher))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/teachers"));
 
 		verify(teacherService).update(teacher);
+	}
+
+	@Test
+	public void givenNotValidTeacher_whenSave_thenForwardedEditView() throws Exception {
+		Teacher teacher = buildTeacher();
+		teacher.setName(null);
+
+		mockMvc.perform(post("/teachers/save").flashAttr("teacher", teacher))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("teacher/edit"));
 	}
 
 	@Test
@@ -201,6 +209,8 @@ public class TeacherControllerTest {
 				.id(1L)
 				.name("Homer")
 				.surname("Simpson")
+				.email("simpson@gmail.com")
+				.birthDate(LocalDate.parse("1988-11-11"))
 				.courses(Set.of(Course.builder().id(1L).name("Art").build(),
 						Course.builder().id(2L).name("Law").build()))
 				.gender(Gender.MALE)

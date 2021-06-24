@@ -11,11 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.foxminded.university.dao.RoomDao;
 import com.foxminded.university.model.Room;
-import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
 
@@ -70,16 +68,7 @@ public class RoomService {
 	}
 
 	private void verify(Room room) {
-		verifyFields(room);
 		verifyNameIsUnique(room);
-	}
-
-	private void verifyFields(Room room) {
-		if (StringUtils.isEmpty(room.getName())) {
-			throw new IllegalFieldEntityException("Empty room name");
-		} else if (room.getCapacity() < 1) {
-			throw new IllegalFieldEntityException(format("Capacity of the room %s is less than 1", room.getName()));
-		}
 	}
 
 	private void verifyNameIsUnique(Room room) {

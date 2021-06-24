@@ -3,10 +3,13 @@ package com.foxminded.university.controller;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -60,7 +63,11 @@ public class CourseController {
 	}
 
 	@PostMapping("/save")
-	public String save(Course course) {
+	public String save(@Valid Course course, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			model.addAttribute("rooms", roomService.getAll());
+			return "course/edit";
+		}
 		retrieveRelationsFields(course);
 		if (course.getId() == null) {
 			courseService.create(course);

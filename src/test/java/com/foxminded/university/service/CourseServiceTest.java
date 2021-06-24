@@ -22,8 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import com.foxminded.university.dao.CourseDao;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
-import com.foxminded.university.service.exception.IllegalFieldEntityException;
-import com.foxminded.university.service.exception.IncompleteEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
 
@@ -43,33 +41,6 @@ public class CourseServiceTest {
 		courseService.create(course);
 
 		verify(courseDao).save(course);
-	}
-
-	@Test
-	public void givenNameIsNull_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Course course = buildCourse();
-		course.setName(null);
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> courseService.create(course));
-		assertEquals("Empty course name", exception.getMessage());
-	}
-
-	@Test
-	public void givenNameIsEmpty_whenCreate_thenIllegalFieldEntityExceptionThrown() {
-		Course course = buildCourse();
-		course.setName("");
-
-		Exception exception = assertThrows(IllegalFieldEntityException.class, () -> courseService.create(course));
-		assertEquals("Empty course name", exception.getMessage());
-	}
-
-	@Test
-	public void givenRoomsIsEmpty_whenCreate_thenIncompleteEntityExceptionThrown() {
-		Course course = buildCourse();
-		course.setRooms(Set.of());
-
-		Exception exception = assertThrows(IncompleteEntityException.class, () -> courseService.create(course));
-		assertEquals(format("No rooms assigned to the course: %s", course.getName()), exception.getMessage());
 	}
 
 	@Test

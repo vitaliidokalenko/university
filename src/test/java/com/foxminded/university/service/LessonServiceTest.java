@@ -41,7 +41,6 @@ import com.foxminded.university.service.exception.NotEnoughRoomCapacityException
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotFoundSubstituteTeacherException;
 import com.foxminded.university.service.exception.NotSuitableRoomForCourseException;
-import com.foxminded.university.service.exception.NotWeekDayException;
 
 @ExtendWith(MockitoExtension.class)
 public class LessonServiceTest {
@@ -204,26 +203,6 @@ public class LessonServiceTest {
 	}
 
 	@Test
-	public void givenDateIsOnSaturday_whenCreate_thenNotWeekDayExceptionThrown() {
-		Lesson lesson = buildLesson();
-		lesson.setDate(LocalDate.parse("2021-01-23"));
-
-		Exception exception = assertThrows(NotWeekDayException.class, () -> lessonService.create(lesson));
-		assertEquals(format("Lesson cannot be appointed at the weekend (%s)", lesson.getDate().toString()),
-				exception.getMessage());
-	}
-
-	@Test
-	public void givenDateIsOnSunday_whenCreate_thenNotWeekDayExceptionThrown() {
-		Lesson lesson = buildLesson();
-		lesson.setDate(LocalDate.parse("2021-01-24"));
-
-		Exception exception = assertThrows(NotWeekDayException.class, () -> lessonService.create(lesson));
-		assertEquals(format("Lesson cannot be appointed at the weekend (%s)", lesson.getDate().toString()),
-				exception.getMessage());
-	}
-
-	@Test
 	public void givenId_whenFindById_thenGetRightLesson() {
 		Optional<Lesson> expected = Optional.of(buildLesson());
 		when(lessonDao.findById(1L)).thenReturn(expected);
@@ -369,11 +348,15 @@ public class LessonServiceTest {
 	public void whenGetByTeacherAndDateBetween_thenGetRightListOfLessons() {
 		Lesson lesson = buildLesson();
 		List<Lesson> expected = List.of(lesson);
-		when(lessonDao.getByTeacherAndDateBetween(lesson.getTeacher(), LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21")))
-				.thenReturn(expected);
+		when(lessonDao.getByTeacherAndDateBetween(lesson.getTeacher(),
+				LocalDate.parse("2021-01-21"),
+				LocalDate.parse("2021-01-21")))
+						.thenReturn(expected);
 
 		List<Lesson> actual = lessonService
-				.getByTeacherAndDateBetween(lesson.getTeacher(), LocalDate.parse("2021-01-21"), LocalDate.parse("2021-01-21"));
+				.getByTeacherAndDateBetween(lesson.getTeacher(),
+						LocalDate.parse("2021-01-21"),
+						LocalDate.parse("2021-01-21"));
 
 		assertEquals(expected, actual);
 	}

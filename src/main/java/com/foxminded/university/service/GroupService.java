@@ -11,11 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.foxminded.university.dao.GroupDao;
 import com.foxminded.university.model.Group;
-import com.foxminded.university.service.exception.IllegalFieldEntityException;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
 
@@ -70,14 +68,7 @@ public class GroupService {
 	}
 
 	private void verify(Group group) {
-		verifyFields(group);
 		verifyNameIsUnique(group);
-	}
-
-	private void verifyFields(Group group) {
-		if (StringUtils.isEmpty(group.getName())) {
-			throw new IllegalFieldEntityException("Empty group name");
-		}
 	}
 
 	private void verifyNameIsUnique(Group group) {

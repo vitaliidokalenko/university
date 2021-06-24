@@ -176,6 +176,16 @@ public class LessonControllerTest {
 	}
 
 	@Test
+	public void givenNotValidLesson_whenSave_thenForwardedEditView() throws Exception {
+		Lesson lesson = buildLesson();
+		lesson.setTeacher(null);
+
+		mockMvc.perform(post("/lessons/save").flashAttr("lesson", lesson))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("lesson/edit"));
+	}
+
+	@Test
 	public void givenLesson_whenDelete_thenLessonIsDeleting() throws Exception {
 		Lesson lesson = buildLesson();
 
@@ -244,7 +254,7 @@ public class LessonControllerTest {
 		return Lesson.builder()
 				.id(1L)
 				.course(course)
-				.date(LocalDate.parse("2021-01-21"))
+				.date(LocalDate.parse("2070-01-21"))
 				.groups(groups)
 				.room(room)
 				.teacher(teacher)

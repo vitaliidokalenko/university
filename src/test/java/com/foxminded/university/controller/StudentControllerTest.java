@@ -130,12 +130,11 @@ public class StudentControllerTest {
 
 	@Test
 	public void givenNewStudent_whenSave_thenStudentIsCreating() throws Exception {
-		Student student = Student.builder()
-				.courses(Set.of(Course.builder().id(1L).build()))
-				.group(Group.builder().id(1L).build())
-				.build();
+		Student student = buildStudent();
+		student.setId(null);
 		when(groupService.findById(1L)).thenReturn(Optional.of(Group.builder().id(1L).name("AA-11").build()));
-		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Law").build()));
+		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
+		when(courseService.findById(2L)).thenReturn(Optional.of(Course.builder().id(2L).name("Law").build()));
 
 		mockMvc.perform(post("/students/save").flashAttr("student", student))
 				.andExpect(status().isFound())
@@ -146,19 +145,26 @@ public class StudentControllerTest {
 
 	@Test
 	public void givenStudent_whenSave_thenStudentIsUpdating() throws Exception {
-		Student student = Student.builder()
-				.id(1L)
-				.courses(Set.of(Course.builder().id(1L).build()))
-				.group(Group.builder().id(1L).build())
-				.build();
+		Student student = buildStudent();
 		when(groupService.findById(1L)).thenReturn(Optional.of(Group.builder().id(1L).name("AA-11").build()));
-		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Law").build()));
+		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
+		when(courseService.findById(2L)).thenReturn(Optional.of(Course.builder().id(2L).name("Law").build()));
 
 		mockMvc.perform(post("/students/save").flashAttr("student", student))
 				.andExpect(status().isFound())
 				.andExpect(redirectedUrl("/students"));
 
 		verify(studentService).update(student);
+	}
+
+	@Test
+	public void givenNotValidStudent_whenSave_thenForwardedEditView() throws Exception {
+		Student student = buildStudent();
+		student.setName(null);
+
+		mockMvc.perform(post("/students/save").flashAttr("student", student))
+				.andExpect(status().isOk())
+				.andExpect(forwardedUrl("student/edit"));
 	}
 
 	@Test
@@ -195,6 +201,9 @@ public class StudentControllerTest {
 	private Student buildStudent() {
 		return Student.builder()
 				.id(1L)
+				.name("Homer")
+				.surname("Simpson")
+				.birthDate(LocalDate.parse("1995-01-01"))
 				.courses(Set.of(Course.builder().id(1L).name("Art").build(),
 						Course.builder().id(2L).name("Law").build()))
 				.gender(Gender.MALE)
