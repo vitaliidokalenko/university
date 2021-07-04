@@ -12,6 +12,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,6 +38,7 @@ public class Group {
 	private String name;
 
 	@OneToMany(mappedBy = "group")
+	@JsonIgnoreProperties({ "courses", "group" })
 	private List<Student> students;
 
 	@Override

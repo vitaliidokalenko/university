@@ -25,6 +25,7 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.foxminded.university.validator.annotation.Age;
 import com.foxminded.university.validator.annotation.Phone;
 
@@ -56,12 +57,14 @@ public class Student {
 	private String surname;
 
 	@ManyToOne
+	@JsonIgnoreProperties("students")
 	private Group group;
 
 	@ManyToMany
 	@JoinTable(name = "students_courses",
 			joinColumns = @JoinColumn(name = "student_id"),
 			inverseJoinColumns = @JoinColumn(name = "course_id"))
+	@JsonIgnoreProperties("rooms")
 	private Set<Course> courses = new HashSet<>();
 
 	@Phone
