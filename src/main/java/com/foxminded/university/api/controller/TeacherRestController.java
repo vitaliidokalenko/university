@@ -1,6 +1,8 @@
 package com.foxminded.university.api.controller;
 
 import static java.lang.String.format;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.foxminded.university.model.Lesson;
@@ -30,7 +33,7 @@ import com.foxminded.university.service.TeacherService;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/teachers")
 public class TeacherRestController {
 
 	private final TeacherService teacherService;
@@ -42,37 +45,37 @@ public class TeacherRestController {
 		this.lessonService = lessonService;
 	}
 
-	@GetMapping("/teachers")
+	@GetMapping
 	public Page<Teacher> getAll(Pageable pageable) {
 		return teacherService.getAllPage(pageable);
 	}
 
-	@GetMapping("/teachers/{id}")
-	public ResponseEntity<Teacher> getById(@PathVariable Long id) {
-		Teacher teacher = teacherService.findById(id)
+	@GetMapping("/{id}")
+	public Teacher getById(@PathVariable Long id) {
+		return teacherService.findById(id)
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
-		return ResponseEntity.ok(teacher);
 	}
 
-	@PostMapping("/teachers")
+	@PostMapping
 	public ResponseEntity<Object> create(@Valid @RequestBody Teacher teacher) {
 		teacherService.create(teacher);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.created(linkTo(methodOn(TeacherRestController.class).getById(teacher.getId())).toUri())
+				.build();
 	}
 
-	@PutMapping("/teachers/{id}")
-	public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody Teacher teacher) {
+	@ResponseStatus(HttpStatus.OK)
+	@PutMapping("/{id}")
+	public void update(@PathVariable Long id, @Valid @RequestBody Teacher teacher) {
 		teacherService.update(teacher);
-		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/teachers/{id}")
-	public ResponseEntity<Object> delete(@PathVariable Long id) {
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@DeleteMapping("/{id}")
+	public void delete(@PathVariable Long id) {
 		teacherService.deleteById(id);
-		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/teachers/{id}/timetable")
+	@GetMapping("/{id}/timetable")
 	public List<Lesson> getTimetable(@PathVariable Long id,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
@@ -81,7 +84,7 @@ public class TeacherRestController {
 		return lessonService.getByTeacherAndDateBetween(teacher, startDate, endDate);
 	}
 
-	@GetMapping("/teachers/{id}/substitutes")
+	@GetMapping("/{id}/substitutes")
 	public Set<Teacher> getSubstitutes(@PathVariable Long id) {
 		Teacher teacher = teacherService.findById(id)
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));

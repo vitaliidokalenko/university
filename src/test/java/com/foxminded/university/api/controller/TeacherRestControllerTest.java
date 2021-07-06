@@ -30,7 +30,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.foxminded.university.api.controller.TeacherRestController;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
@@ -122,7 +121,7 @@ public class TeacherRestControllerTest {
 		mockMvc.perform(delete("/api/v1/teachers/{id}", 1)
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+				.andExpect(status().isNoContent());
 
 		verify(teacherService).deleteById(1L);
 	}

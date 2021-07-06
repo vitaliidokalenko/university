@@ -28,7 +28,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.foxminded.university.api.controller.TimeframeRestController;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.TimeframeService;
 
@@ -111,7 +110,7 @@ public class TimeframeRestControllerTest {
 		mockMvc.perform(delete("/api/v1/timeframes/{id}", 1)
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+				.andExpect(status().isNoContent());
 
 		verify(timeframeService).deleteById(1L);
 	}

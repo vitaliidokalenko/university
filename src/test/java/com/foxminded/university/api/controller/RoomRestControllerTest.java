@@ -27,7 +27,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.foxminded.university.api.controller.RoomRestController;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.service.RoomService;
 
@@ -110,7 +109,7 @@ public class RoomRestControllerTest {
 		mockMvc.perform(delete("/api/v1/rooms/{id}", 1)
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
+				.andExpect(status().isNoContent());
 
 		verify(roomService).deleteById(1L);
 	}

@@ -1,6 +1,8 @@
 package com.foxminded.university.api.controller;
 
 import static java.lang.String.format;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import javax.validation.Valid;
 
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.foxminded.university.model.Course;
@@ -22,7 +25,7 @@ import com.foxminded.university.service.CourseService;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/courses")
 public class CourseRestController {
 
 	private final CourseService courseService;
@@ -31,33 +34,33 @@ public class CourseRestController {
 		this.courseService = courseService;
 	}
 
-	@GetMapping("/courses")
+	@GetMapping
 	public Page<Course> getAll(Pageable pageable) {
 		return courseService.getAllPage(pageable);
 	}
 
-	@GetMapping("/courses/{id}")
-	public ResponseEntity<Course> getById(@PathVariable Long id) {
-		Course course = courseService.findById(id)
+	@GetMapping("/{id}")
+	public Course getById(@PathVariable Long id) {
+		return courseService.findById(id)
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find course by id: %d", id)));
-		return ResponseEntity.ok(course);
 	}
 
-	@PostMapping("/courses")
+	@PostMapping
 	public ResponseEntity<Object> create(@Valid @RequestBody Course course) {
 		courseService.create(course);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.created(linkTo(methodOn(CourseRestController.class).getById(course.getId())).toUri())
+				.build();
 	}
 
-	@PutMapping("/courses/{id}")
-	public ResponseEntity<Object> update(@PathVariable Long id, @Valid @RequestBody Course course) {
+	@ResponseStatus(HttpStatus.OK)
+	@PutMapping("/{id}")
+	public void update(@PathVariable Long id, @Valid @RequestBody Course course) {
 		courseService.update(course);
-		return ResponseEntity.ok().build();
 	}
 
-	@DeleteMapping("/courses/{id}")
-	public ResponseEntity<Object> delete(@PathVariable Long id) {
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@DeleteMapping("/{id}")
+	public void delete(@PathVariable Long id) {
 		courseService.deleteById(id);
-		return ResponseEntity.ok().build();
 	}
 }
