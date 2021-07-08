@@ -67,6 +67,7 @@ public class LessonService {
 	@Transactional
 	public void update(Lesson lesson) {
 		logger.debug("Updating lesson: {}", lesson);
+		verifyExistence(lesson);
 		verify(lesson);
 		lessonDao.save(lesson);
 	}
@@ -205,6 +206,12 @@ public class LessonService {
 			throw new NotSuitableRoomForCourseException(format("Course %s cannot be lectured in the room %s",
 					lesson.getCourse().getName(),
 					lesson.getRoom().getName()));
+		}
+	}
+
+	private void verifyExistence(Lesson lesson) {
+		if (!lessonDao.existsById(lesson.getId())) {
+			throw new NotFoundEntityException(format("Cannot find lesson by id: %d", lesson.getId()));
 		}
 	}
 }

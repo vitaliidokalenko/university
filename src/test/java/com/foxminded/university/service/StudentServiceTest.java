@@ -90,6 +90,7 @@ public class StudentServiceTest {
 	public void givenStudent_whenUpdate_thenStudentIsUpdating() {
 		Student student = buildStudent();
 		int maxGroupSize = 2;
+		when(studentDao.existsById(student.getId())).thenReturn(true);
 		when(properties.getMaxGroupSize()).thenReturn(maxGroupSize);
 
 		studentService.update(student);
@@ -123,6 +124,14 @@ public class StudentServiceTest {
 		Page<Student> actual = studentService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		when(studentDao.existsById(1L)).thenReturn(false);
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> studentService.update(buildStudent()));
+		assertEquals("Cannot find student by id: 1", exception.getMessage());
 	}
 
 	private Student buildStudent() {

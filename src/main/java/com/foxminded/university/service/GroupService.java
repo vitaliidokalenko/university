@@ -56,6 +56,7 @@ public class GroupService {
 	@Transactional
 	public void update(Group group) {
 		logger.debug("Updating group: {}", group);
+		verifyExistence(group);
 		verify(group);
 		groupDao.save(group);
 	}
@@ -75,6 +76,12 @@ public class GroupService {
 		Optional<Group> groupByName = groupDao.findByName(group.getName());
 		if (groupByName.isPresent() && !groupByName.get().getId().equals(group.getId())) {
 			throw new NotUniqueNameException(format("The group with name %s already exists", group.getName()));
+		}
+	}
+
+	private void verifyExistence(Group group) {
+		if (!groupDao.existsById(group.getId())) {
+			throw new NotFoundEntityException(format("Cannot find group by id: %d", group.getId()));
 		}
 	}
 }

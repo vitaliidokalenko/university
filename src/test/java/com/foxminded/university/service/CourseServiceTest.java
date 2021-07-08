@@ -66,6 +66,7 @@ public class CourseServiceTest {
 	@Test
 	public void givenCourse_whenUpdate_thenCourseIsUpdating() {
 		Course course = buildCourse();
+		when(courseDao.existsById(course.getId())).thenReturn(true);
 
 		courseService.update(course);
 
@@ -115,6 +116,7 @@ public class CourseServiceTest {
 	public void givenNameIsUnique_whenUpdate_thenCourseIsUpdating() {
 		Course actual = buildCourse();
 		Course retrieved = buildCourse();
+		when(courseDao.existsById(1L)).thenReturn(true);
 		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
 		courseService.update(actual);
@@ -127,6 +129,7 @@ public class CourseServiceTest {
 		Course actual = buildCourse();
 		Course retrieved = buildCourse();
 		retrieved.setId(2L);
+		when(courseDao.existsById(actual.getId())).thenReturn(true);
 		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
 		Exception exception = assertThrows(NotUniqueNameException.class, () -> courseService.update(actual));
@@ -141,6 +144,14 @@ public class CourseServiceTest {
 		Page<Course> actual = courseService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		when(courseDao.existsById(1L)).thenReturn(false);
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> courseService.update(buildCourse()));
+		assertEquals("Cannot find course by id: 1", exception.getMessage());
 	}
 
 	private Course buildCourse() {

@@ -56,6 +56,7 @@ public class TeacherService {
 	@Transactional
 	public void update(Teacher teacher) {
 		logger.debug("Updating teacher: {}", teacher);
+		verifyExistence(teacher);
 		teacherDao.save(teacher);
 	}
 
@@ -75,5 +76,11 @@ public class TeacherService {
 				.flatMap(List::stream)
 				.filter(t -> !t.equals(teacher))
 				.collect(toSet());
+	}
+
+	private void verifyExistence(Teacher teacher) {
+		if (!teacherDao.existsById(teacher.getId())) {
+			throw new NotFoundEntityException(format("Cannot find teacher by id: %d", teacher.getId()));
+		}
 	}
 }

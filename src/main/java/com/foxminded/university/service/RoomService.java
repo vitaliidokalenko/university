@@ -56,6 +56,7 @@ public class RoomService {
 	@Transactional
 	public void update(Room room) {
 		logger.debug("Updating room: {}", room);
+		verifyExistence(room);
 		verify(room);
 		roomDao.save(room);
 	}
@@ -75,6 +76,12 @@ public class RoomService {
 		Optional<Room> roomByName = roomDao.findByName(room.getName());
 		if (roomByName.isPresent() && !roomByName.get().getId().equals(room.getId())) {
 			throw new NotUniqueNameException(format("The room with name %s already exists", room.getName()));
+		}
+	}
+
+	private void verifyExistence(Room room) {
+		if (!roomDao.existsById(room.getId())) {
+			throw new NotFoundEntityException(format("Cannot find room by id: %d", room.getId()));
 		}
 	}
 }

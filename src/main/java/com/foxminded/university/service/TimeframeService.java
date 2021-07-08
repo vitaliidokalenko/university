@@ -61,6 +61,7 @@ public class TimeframeService {
 	@Transactional
 	public void update(Timeframe timeframe) {
 		logger.debug("Updating timeframe: {}", timeframe);
+		verifyExistence(timeframe);
 		verify(timeframe);
 		timeframeDao.save(timeframe);
 	}
@@ -91,6 +92,12 @@ public class TimeframeService {
 		if (timeframeBySequence.isPresent() && !timeframeBySequence.get().getId().equals(timeframe.getId())) {
 			throw new NotUniqueSequenceException(
 					format("The timeframe with sequence: %d already exists", timeframe.getSequence()));
+		}
+	}
+
+	private void verifyExistence(Timeframe timeframe) {
+		if (!timeframeDao.existsById(timeframe.getId())) {
+			throw new NotFoundEntityException(format("Cannot find timeframe by id: %d", timeframe.getId()));
 		}
 	}
 }

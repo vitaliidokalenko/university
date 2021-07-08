@@ -215,6 +215,7 @@ public class LessonServiceTest {
 	@Test
 	public void givenLesson_whenUpdate_thenLessonIsUpdating() {
 		Lesson lesson = buildLesson();
+		when(lessonDao.existsById(lesson.getId())).thenReturn(true);
 
 		lessonService.update(lesson);
 
@@ -227,6 +228,7 @@ public class LessonServiceTest {
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
 		actual.setId(1L);
+		when(lessonDao.existsById(actual.getId())).thenReturn(true);
 		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(), actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
@@ -243,6 +245,7 @@ public class LessonServiceTest {
 	@Test
 	public void givenTeacherIsAvailable_whenUpdate_thenLessonIsUpdating() {
 		Lesson lesson = buildLesson();
+		when(lessonDao.existsById(lesson.getId())).thenReturn(true);
 		when(lessonDao.getByTeacherAndDateAndTimeframe(lesson.getTeacher(),
 				lesson.getDate(),
 				lesson.getTimeframe())).thenReturn(Optional.of(lesson));
@@ -258,6 +261,7 @@ public class LessonServiceTest {
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
 		actual.setId(1L);
+		when(lessonDao.existsById(actual.getId())).thenReturn(true);
 		when(lessonDao.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
@@ -276,6 +280,7 @@ public class LessonServiceTest {
 		lessonByCriteria.setId(1L);
 		Lesson actual = buildLesson();
 		actual.setId(1L);
+		when(lessonDao.existsById(actual.getId())).thenReturn(true);
 		when(lessonDao
 				.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
 						.thenReturn(Optional.of(lessonByCriteria));
@@ -292,6 +297,7 @@ public class LessonServiceTest {
 		Lesson actual = buildLesson();
 		actual.setId(1L);
 		Group group = Group.builder().id(1L).name("AA-11").build();
+		when(lessonDao.existsById(actual.getId())).thenReturn(true);
 		when(lessonDao.getByGroupsAndDateAndTimeframe(group, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
@@ -308,6 +314,7 @@ public class LessonServiceTest {
 		Lesson actual = buildLesson();
 		actual.setId(1L);
 		Group group = Group.builder().id(1L).name("AA-11").build();
+		when(lessonDao.existsById(actual.getId())).thenReturn(true);
 		when(lessonDao.getByGroupsAndDateAndTimeframe(group, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
@@ -436,6 +443,14 @@ public class LessonServiceTest {
 		assertEquals(
 				"Substitute teacher was not found for the lesson id: 1, course: Art, date: 2021-01-21, start time: 08:00",
 				exception.getMessage());
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		when(lessonDao.existsById(1L)).thenReturn(false);
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> lessonService.update(buildLesson()));
+		assertEquals("Cannot find lesson by id: 1", exception.getMessage());
 	}
 
 	private Lesson buildLesson() {

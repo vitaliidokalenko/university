@@ -85,6 +85,7 @@ public class TimeframeServiceTest {
 	public void givenTimeframe_whenUpdate_thenTimeframeIsUpdating() {
 		Timeframe timeframe = buildTimeframe();
 		Duration duration = Duration.parse("PT1H20M");
+		when(timeframeDao.existsById(timeframe.getId())).thenReturn(true);
 		when(properties.getLessonDuration()).thenReturn(duration);
 
 		timeframeService.update(timeframe);
@@ -132,6 +133,15 @@ public class TimeframeServiceTest {
 		Page<Timeframe> actual = timeframeService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		when(timeframeDao.existsById(1L)).thenReturn(false);
+
+		Exception exception = assertThrows(NotFoundEntityException.class,
+				() -> timeframeService.update(buildTimeframe()));
+		assertEquals("Cannot find timeframe by id: 1", exception.getMessage());
 	}
 
 	private Timeframe buildTimeframe() {

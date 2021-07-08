@@ -59,6 +59,7 @@ public class StudentService {
 	@Transactional
 	public void update(Student student) {
 		logger.debug("Updating student: {}", student);
+		verifyExistence(student);
 		verify(student);
 		studentDao.save(student);
 	}
@@ -79,6 +80,12 @@ public class StudentService {
 			throw new GroupOverflowException(format("The group %s is overflow (size = %d)",
 					student.getGroup().getName(),
 					properties.getMaxGroupSize()));
+		}
+	}
+
+	private void verifyExistence(Student student) {
+		if (!studentDao.existsById(student.getId())) {
+			throw new NotFoundEntityException(format("Cannot find student by id: %d", student.getId()));
 		}
 	}
 }

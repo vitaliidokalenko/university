@@ -64,6 +64,7 @@ public class RoomServiceTest {
 	@Test
 	public void givenRoom_whenUpdate_thenRoomIsUpdating() {
 		Room room = buildRoom();
+		when(roomDao.existsById(room.getId())).thenReturn(true);
 
 		roomService.update(room);
 
@@ -114,6 +115,7 @@ public class RoomServiceTest {
 		Room room = buildRoom();
 		Room retrieved = buildRoom();
 		retrieved.setId(2L);
+		when(roomDao.existsById(room.getId())).thenReturn(true);
 		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
 
 		Exception exception = assertThrows(NotUniqueNameException.class, () -> roomService.update(room));
@@ -124,11 +126,20 @@ public class RoomServiceTest {
 	public void givenNameIsUnique_whenUpdate_thenRoomIsUpdating() {
 		Room room = buildRoom();
 		Room retrieved = buildRoom();
+		when(roomDao.existsById(room.getId())).thenReturn(true);
 		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
 
 		roomService.update(room);
 
 		verify(roomDao).save(room);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		when(roomDao.existsById(1L)).thenReturn(false);
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> roomService.update(buildRoom()));
+		assertEquals("Cannot find room by id: 1", exception.getMessage());
 	}
 
 	@Test

@@ -55,7 +55,7 @@ public class CourseService {
 
 	@Transactional
 	public void update(Course course) {
-		logger.debug("Updating course: {}", course);
+		verifyExistence(course);
 		verify(course);
 		courseDao.save(course);
 	}
@@ -75,6 +75,12 @@ public class CourseService {
 		Optional<Course> courseByName = courseDao.findByName(course.getName());
 		if (courseByName.isPresent() && !courseByName.get().getId().equals(course.getId())) {
 			throw new NotUniqueNameException(format("The course with name %s already exists", course.getName()));
+		}
+	}
+
+	private void verifyExistence(Course course) {
+		if (!courseDao.existsById(course.getId())) {
+			throw new NotFoundEntityException(format("Cannot find course by id: %d", course.getId()));
 		}
 	}
 }
