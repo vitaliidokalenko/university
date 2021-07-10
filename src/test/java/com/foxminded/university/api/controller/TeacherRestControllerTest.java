@@ -2,7 +2,6 @@ package com.foxminded.university.api.controller;
 
 import static java.time.LocalTime.parse;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -11,7 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,8 +63,7 @@ public class TeacherRestControllerTest {
 				.param("size", "1")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.content[0].id", is(1)))
-				.andExpect(jsonPath("$.content[0].name", is("Homer")))
+				.andExpect(content().json(mapper.writeValueAsString(expected)))
 				.andExpect(status().isOk());
 	}
 
@@ -78,8 +75,7 @@ public class TeacherRestControllerTest {
 		mockMvc.perform(get("/api/v1/teachers/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.id", is(1)))
-				.andExpect(jsonPath("$.name", is("Homer")))
+				.andExpect(content().json(mapper.writeValueAsString(expected)))
 				.andExpect(status().isOk());
 	}
 
@@ -99,7 +95,7 @@ public class TeacherRestControllerTest {
 		mockMvc.perform(post("/api/v1/teachers")
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.writeValueAsBytes(teacher)))
+				.content(mapper.writeValueAsString(teacher)))
 				.andExpect(header().string("Location", containsString("/api/v1/teachers/1")))
 				.andExpect(redirectedUrlPattern("http://*/api/v1/teachers/1"))
 				.andExpect(status().isCreated());
@@ -114,7 +110,7 @@ public class TeacherRestControllerTest {
 		mockMvc.perform(put("/api/v1/teachers/{id}", 1)
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.writeValueAsBytes(teacher)))
+				.content(mapper.writeValueAsString(teacher)))
 				.andExpect(status().isOk());
 
 		verify(teacherService).update(teacher);
@@ -144,12 +140,7 @@ public class TeacherRestControllerTest {
 						.param("endDate", "2021-01-21")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$[0].id", is(1)))
-				.andExpect(jsonPath("$[0].date", is("2021-01-21")))
-				.andExpect(jsonPath("$[0].teacher.name", is("Homer")))
-				.andExpect(jsonPath("$[0].course.name", is("Art")))
-				.andExpect(jsonPath("$[0].room.name", is("111")))
-				.andExpect(jsonPath("$[0].timeframe.startTime", is("08:00:00")))
+				.andExpect(content().json(mapper.writeValueAsString(expected)))
 				.andExpect(status().isOk());
 	}
 
@@ -174,12 +165,7 @@ public class TeacherRestControllerTest {
 				get("/api/v1/teachers/{id}/substitutes", 1)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$[0].id", is(2)))
-				.andExpect(jsonPath("$[0].name", is("Andrii")))
-				.andExpect(jsonPath("$[0].surname", is("Salov")))
-				.andExpect(jsonPath("$[0].email", is("andrii_salov@gmail.com")))
-				.andExpect(jsonPath("$[0].birthDate", is("1986-07-07")))
-				.andExpect(jsonPath("$[0].gender", is("MALE")))
+				.andExpect(content().json(mapper.writeValueAsString(substituteTeachers)))
 				.andExpect(status().isOk());
 	}
 

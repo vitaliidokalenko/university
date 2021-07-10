@@ -1,7 +1,6 @@
 package com.foxminded.university.api.controller;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -10,7 +9,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,8 +53,7 @@ public class CourseRestControllerTest {
 				.param("size", "1")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.content[0].id", is(1)))
-				.andExpect(jsonPath("$.content[0].name", is("Art")))
+				.andExpect(content().json(mapper.writeValueAsString(expected)))
 				.andExpect(status().isOk());
 	}
 
@@ -68,8 +65,7 @@ public class CourseRestControllerTest {
 		mockMvc.perform(get("/api/v1/courses/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.id", is(1)))
-				.andExpect(jsonPath("$.name", is("Art")))
+				.andExpect(content().json(mapper.writeValueAsString(expected)))
 				.andExpect(status().isOk());
 	}
 
@@ -89,7 +85,7 @@ public class CourseRestControllerTest {
 		mockMvc.perform(post("/api/v1/courses")
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.writeValueAsBytes(course)))
+				.content(mapper.writeValueAsString(course)))
 				.andExpect(header().string("Location", containsString("/api/v1/courses/1")))
 				.andExpect(redirectedUrlPattern("http://*/api/v1/courses/1"))
 				.andExpect(status().isCreated());
@@ -104,7 +100,7 @@ public class CourseRestControllerTest {
 		mockMvc.perform(put("/api/v1/courses/{id}", 1)
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.writeValueAsBytes(course)))
+				.content(mapper.writeValueAsString(course)))
 				.andExpect(status().isOk());
 
 		verify(courseService).update(course);
