@@ -5,8 +5,6 @@ import static java.lang.String.format;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,10 +15,11 @@ import com.foxminded.university.model.Course;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotUniqueNameException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class CourseService {
-
-	private static final Logger logger = LoggerFactory.getLogger(CourseService.class);
 
 	private CourseDao courseDao;
 
@@ -30,26 +29,26 @@ public class CourseService {
 
 	@Transactional
 	public void create(Course course) {
-		logger.debug("Creating course: {}", course);
+		log.debug("Creating course: {}", course);
 		verify(course);
 		courseDao.save(course);
 	}
 
 	@Transactional
 	public Optional<Course> findById(Long id) {
-		logger.debug("Finding course by id: {}", id);
+		log.debug("Finding course by id: {}", id);
 		return courseDao.findById(id);
 	}
 
 	@Transactional
 	public List<Course> getAll() {
-		logger.debug("Getting courses");
+		log.debug("Getting courses");
 		return courseDao.findAll();
 	}
 
 	@Transactional
 	public Page<Course> getAllPage(Pageable pageable) {
-		logger.debug("Getting pageable courses");
+		log.debug("Getting pageable courses");
 		return courseDao.findAll(pageable);
 	}
 
@@ -62,7 +61,7 @@ public class CourseService {
 
 	@Transactional
 	public void deleteById(Long id) {
-		logger.debug("Deleting course by id: {}", id);
+		log.debug("Deleting course by id: {}", id);
 		courseDao.delete(courseDao.findById(id)
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find course by id: %d", id))));
 	}

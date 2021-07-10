@@ -8,8 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,10 +28,11 @@ import com.foxminded.university.service.exception.NotFoundEntityException;
 import com.foxminded.university.service.exception.NotFoundSubstituteTeacherException;
 import com.foxminded.university.service.exception.NotSuitableRoomForCourseException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class LessonService {
-
-	private static final Logger logger = LoggerFactory.getLogger(LessonService.class);
 
 	private LessonDao lessonDao;
 	private StudentDao studentDao;
@@ -47,26 +46,26 @@ public class LessonService {
 
 	@Transactional
 	public void create(Lesson lesson) {
-		logger.debug("Creating lesson: {}", lesson);
+		log.debug("Creating lesson: {}", lesson);
 		verify(lesson);
 		lessonDao.save(lesson);
 	}
 
 	@Transactional
 	public Optional<Lesson> findById(Long id) {
-		logger.debug("Finding lesson by id: {}", id);
+		log.debug("Finding lesson by id: {}", id);
 		return lessonDao.findById(id);
 	}
 
 	@Transactional
 	public Page<Lesson> getAllPage(Pageable pageable) {
-		logger.debug("Getting pageable lessons");
+		log.debug("Getting pageable lessons");
 		return lessonDao.findAll(pageable);
 	}
 
 	@Transactional
 	public void update(Lesson lesson) {
-		logger.debug("Updating lesson: {}", lesson);
+		log.debug("Updating lesson: {}", lesson);
 		verifyExistence(lesson);
 		verify(lesson);
 		lessonDao.save(lesson);
@@ -74,27 +73,27 @@ public class LessonService {
 
 	@Transactional
 	public void deleteById(Long id) {
-		logger.debug("Deleting lesson by id: {}", id);
+		log.debug("Deleting lesson by id: {}", id);
 		lessonDao.delete(lessonDao.findById(id)
 				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find lesson by id: %d", id))));
 	}
 
 	@Transactional
 	public List<Lesson> getByTeacherAndDateBetween(Teacher teacher, LocalDate startDate, LocalDate endDate) {
-		logger.debug("Getting lessons by teacher: {} and dates: between {} and {}", teacher, startDate, endDate);
+		log.debug("Getting lessons by teacher: {} and dates: between {} and {}", teacher, startDate, endDate);
 		return lessonDao.getByTeacherAndDateBetween(teacher, startDate, endDate);
 	}
 
 	@Transactional
 	public List<Lesson> getByGroupAndDateBetween(Group group, LocalDate startDate, LocalDate endDate) {
-		logger.debug("Getting lessons by group: {} and dates: between {} and {}", group, startDate, endDate);
+		log.debug("Getting lessons by group: {} and dates: between {} and {}", group, startDate, endDate);
 		return lessonDao.getByGroupsAndDateBetween(group, startDate, endDate);
 	}
 
 	@Transactional
 	public void replaceTeacherByDateBetween(Teacher teacher, LocalDate startDate, LocalDate endDate,
 			List<Long> substituteTeacherIds) {
-		logger.debug("Replacing teacher: {} {} for lessons between {} and {}",
+		log.debug("Replacing teacher: {} {} for lessons between {} and {}",
 				teacher.getName(),
 				teacher.getSurname(),
 				startDate,
