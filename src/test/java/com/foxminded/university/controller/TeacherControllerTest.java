@@ -28,7 +28,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
@@ -56,7 +55,6 @@ public class TeacherControllerTest {
 	@BeforeEach
 	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(teacherController)
-				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
@@ -81,17 +79,6 @@ public class TeacherControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("teacher/teacher"))
 				.andExpect(model().attribute("teacher", expected));
-	}
-
-	@Test
-	public void givenTeacherIsNotPresent_whenFindById_thenRequestForwardedErrorView() throws Exception {
-		when(teacherService.findById(1L)).thenReturn(Optional.empty());
-
-		mockMvc.perform(get("/teachers/{id}", 1))
-				.andExpect(status().isOk())
-				.andExpect(model().attribute("exception", "NotFoundEntityException"))
-				.andExpect(model().attribute("message", "Cannot find teacher by id: 1"))
-				.andExpect(forwardedUrl("error"));
 	}
 
 	@Test

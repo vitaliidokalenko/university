@@ -25,7 +25,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.service.GroupService;
@@ -42,7 +41,6 @@ public class GroupControllerTest {
 	@BeforeEach
 	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(groupController)
-				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
@@ -67,17 +65,6 @@ public class GroupControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("group/group"))
 				.andExpect(model().attribute("group", expected));
-	}
-
-	@Test
-	public void givenGroupIsNotPresent_whenFindById_thenRequestForwardedErrorView() throws Exception {
-		when(groupService.findById(1L)).thenReturn(Optional.empty());
-
-		mockMvc.perform(get("/groups/{id}", 1))
-				.andExpect(status().isOk())
-				.andExpect(model().attribute("exception", "NotFoundEntityException"))
-				.andExpect(model().attribute("message", "Cannot find group by id: 1"))
-				.andExpect(forwardedUrl("error"));
 	}
 
 	@Test
