@@ -1,5 +1,6 @@
 package com.foxminded.university.api.controller;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -8,7 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -70,23 +73,24 @@ public class GroupRestControllerTest {
 	}
 
 	@Test
-	public void givenGroupIsNotPresent_whenGetById_thenStatusIsBadRequest() throws Exception {
+	public void givenGroupIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
 		when(groupService.findById(1L)).thenReturn(Optional.empty());
 
 		mockMvc.perform(get("/api/v1/groups/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void givenNewGroup_whenCreate_thenGroupIsCreated() throws Exception {
 		Group group = buildGroup();
-		group.setId(null);
 
 		mockMvc.perform(post("/api/v1/groups")
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsBytes(group)))
+				.andExpect(header().string("Location", containsString("/api/v1/groups/1")))
+				.andExpect(redirectedUrlPattern("http://*/api/v1/groups/1"))
 				.andExpect(status().isCreated());
 
 		verify(groupService).create(group);

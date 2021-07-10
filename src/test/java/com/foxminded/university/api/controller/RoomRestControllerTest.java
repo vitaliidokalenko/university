@@ -1,5 +1,6 @@
 package com.foxminded.university.api.controller;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -8,7 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -69,23 +72,24 @@ public class RoomRestControllerTest {
 	}
 
 	@Test
-	public void givenRoomIsNotPresent_whenGetById_thenStatusIsBadRequest() throws Exception {
+	public void givenRoomIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
 		when(roomService.findById(1L)).thenReturn(Optional.empty());
 
 		mockMvc.perform(get("/api/v1/rooms/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void givenNewRoom_whenCreate_thenRoomIsCreated() throws Exception {
 		Room room = buildRoom();
-		room.setId(null);
 
 		mockMvc.perform(post("/api/v1/rooms")
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsBytes(room)))
+				.andExpect(header().string("Location", containsString("/api/v1/rooms/1")))
+				.andExpect(redirectedUrlPattern("http://*/api/v1/rooms/1"))
 				.andExpect(status().isCreated());
 
 		verify(roomService).create(room);

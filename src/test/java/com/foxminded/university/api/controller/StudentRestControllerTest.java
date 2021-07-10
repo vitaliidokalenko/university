@@ -1,6 +1,7 @@
 package com.foxminded.university.api.controller;
 
 import static java.time.LocalTime.parse;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,7 +10,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
@@ -82,23 +85,24 @@ public class StudentRestControllerTest {
 	}
 
 	@Test
-	public void givenStudentIsNotPresent_whenGetById_thenStatusIsBadRequest() throws Exception {
+	public void givenStudentIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
 		when(studentService.findById(1L)).thenReturn(Optional.empty());
 
 		mockMvc.perform(get("/api/v1/students/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void givenNewStudent_whenCreate_thenStudentIsCreated() throws Exception {
 		Student student = buildStudent();
-		student.setId(null);
 
 		mockMvc.perform(post("/api/v1/students")
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsBytes(student)))
+				.andExpect(header().string("Location", containsString("/api/v1/students/1")))
+				.andExpect(redirectedUrlPattern("http://*/api/v1/students/1"))
 				.andExpect(status().isCreated());
 
 		verify(studentService).create(student);

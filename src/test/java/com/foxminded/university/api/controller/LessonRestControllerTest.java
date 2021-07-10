@@ -1,6 +1,7 @@
 package com.foxminded.university.api.controller;
 
 import static java.time.LocalTime.parse;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,7 +10,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
@@ -80,23 +83,24 @@ public class LessonRestControllerTest {
 	}
 
 	@Test
-	public void givenLessonIsNotPresent_whenGetById_thenStatusIsBadRequest() throws Exception {
+	public void givenLessonIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
 		when(lessonService.findById(1L)).thenReturn(Optional.empty());
 
 		mockMvc.perform(get("/api/v1/lessons/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void givenNewLesson_whenCreate_thenLessonIsCreated() throws Exception {
 		Lesson lesson = buildLesson();
-		lesson.setId(null);
 
 		mockMvc.perform(post("/api/v1/lessons")
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsBytes(lesson)))
+				.andExpect(header().string("Location", containsString("/api/v1/lessons/1")))
+				.andExpect(redirectedUrlPattern("http://*/api/v1/lessons/1"))
 				.andExpect(status().isCreated());
 
 		verify(lessonService).create(lesson);

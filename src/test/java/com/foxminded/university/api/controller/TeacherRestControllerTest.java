@@ -1,6 +1,7 @@
 package com.foxminded.university.api.controller;
 
 import static java.time.LocalTime.parse;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,7 +10,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
@@ -81,23 +84,24 @@ public class TeacherRestControllerTest {
 	}
 
 	@Test
-	public void givenTeacherIsNotPresent_whenGetById_thenStatusIsBadRequest() throws Exception {
+	public void givenTeacherIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
 		when(teacherService.findById(1L)).thenReturn(Optional.empty());
 
 		mockMvc.perform(get("/api/v1/teachers/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void givenNewTeacher_whenCreate_thenTeacherIsCreated() throws Exception {
 		Teacher teacher = buildTeacher();
-		teacher.setId(null);
 
 		mockMvc.perform(post("/api/v1/teachers")
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsBytes(teacher)))
+				.andExpect(header().string("Location", containsString("/api/v1/teachers/1")))
+				.andExpect(redirectedUrlPattern("http://*/api/v1/teachers/1"))
 				.andExpect(status().isCreated());
 
 		verify(teacherService).create(teacher);

@@ -1,5 +1,6 @@
 package com.foxminded.university.api.controller;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -8,7 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -71,23 +74,24 @@ public class CourseRestControllerTest {
 	}
 
 	@Test
-	public void givenCourseIsNotPresent_whenGetById_thenStatusIsBadRequest() throws Exception {
+	public void givenCourseIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
 		when(courseService.findById(1L)).thenReturn(Optional.empty());
 
 		mockMvc.perform(get("/api/v1/courses/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void givenNewCourse_whenCreate_thenCourseIsCreated() throws Exception {
 		Course course = buildCourse();
-		course.setId(null);
 
 		mockMvc.perform(post("/api/v1/courses")
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(mapper.writeValueAsBytes(course)))
+				.andExpect(header().string("Location", containsString("/api/v1/courses/1")))
+				.andExpect(redirectedUrlPattern("http://*/api/v1/courses/1"))
 				.andExpect(status().isCreated());
 
 		verify(courseService).create(course);
