@@ -42,6 +42,16 @@ public class GroupServiceTest {
 	}
 
 	@Test
+	public void givenId_whenFindById_thenGetRightGroup() {
+		Group expected = buildGroup();
+		when(groupDao.findById(1L)).thenReturn(Optional.of(expected));
+
+		Group actual = groupService.findById(1L);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void whenGetAll_thenGetRightListOfGroups() {
 		List<Group> expected = List.of(buildGroup());
 		when(groupDao.findAll()).thenReturn(expected);
@@ -132,14 +142,6 @@ public class GroupServiceTest {
 		Page<Group> actual = groupService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
-		when(groupDao.existsById(1L)).thenReturn(false);
-
-		Exception exception = assertThrows(NotFoundEntityException.class, () -> groupService.update(buildGroup()));
-		assertEquals("Cannot find group by id: 1", exception.getMessage());
 	}
 
 	private Group buildGroup() {

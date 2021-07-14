@@ -1,6 +1,5 @@
 package com.foxminded.university.api.controller;
 
-import static java.lang.String.format;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.foxminded.university.model.Room;
 import com.foxminded.university.service.RoomService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RestController
 @RequestMapping("/api/v1/rooms")
@@ -41,8 +39,7 @@ public class RoomRestController {
 
 	@GetMapping("/{id}")
 	public Room getById(@PathVariable Long id) {
-		return roomService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find room by id: %d", id)));
+		return roomService.findById(id);
 	}
 
 	@PostMapping

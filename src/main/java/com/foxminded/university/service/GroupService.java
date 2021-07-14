@@ -35,9 +35,10 @@ public class GroupService {
 	}
 
 	@Transactional
-	public Optional<Group> findById(Long id) {
+	public Group findById(Long id) {
 		log.debug("Finding group by id: {}", id);
-		return groupDao.findById(id);
+		return groupDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find group by id: %d", id)));
 	}
 
 	@Transactional
@@ -55,7 +56,6 @@ public class GroupService {
 	@Transactional
 	public void update(Group group) {
 		log.debug("Updating group: {}", group);
-		verifyExistence(group);
 		verify(group);
 		groupDao.save(group);
 	}
@@ -63,8 +63,7 @@ public class GroupService {
 	@Transactional
 	public void deleteById(Long id) {
 		log.debug("Deleting group by id: {}", id);
-		groupDao.delete(groupDao.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find group by id: %d", id))));
+		groupDao.delete(findById(id));
 	}
 
 	private void verify(Group group) {
@@ -75,12 +74,6 @@ public class GroupService {
 		Optional<Group> groupByName = groupDao.findByName(group.getName());
 		if (groupByName.isPresent() && !groupByName.get().getId().equals(group.getId())) {
 			throw new NotUniqueNameException(format("The group with name %s already exists", group.getName()));
-		}
-	}
-
-	private void verifyExistence(Group group) {
-		if (!groupDao.existsById(group.getId())) {
-			throw new NotFoundEntityException(format("Cannot find group by id: %d", group.getId()));
 		}
 	}
 }

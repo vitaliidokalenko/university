@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.service.RoomService;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(RoomRestController.class)
@@ -58,7 +58,7 @@ public class RoomRestControllerTest {
 	@Test
 	public void givenId_whenGetById_thenGetRightRoom() throws Exception {
 		Room expected = buildRoom();
-		when(roomService.findById(1L)).thenReturn(Optional.of(expected));
+		when(roomService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/api/v1/rooms/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -69,7 +69,7 @@ public class RoomRestControllerTest {
 
 	@Test
 	public void givenRoomIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
-		when(roomService.findById(1L)).thenReturn(Optional.empty());
+		when(roomService.findById(1L)).thenThrow(new NotFoundEntityException());
 
 		mockMvc.perform(get("/api/v1/rooms/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))

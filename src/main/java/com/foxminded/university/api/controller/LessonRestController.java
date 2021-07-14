@@ -1,6 +1,5 @@
 package com.foxminded.university.api.controller;
 
-import static java.lang.String.format;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -29,7 +28,6 @@ import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.TeacherService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RestController
 @RequestMapping("/api/v1/lessons")
@@ -50,8 +48,7 @@ public class LessonRestController {
 
 	@GetMapping("/{id}")
 	public Lesson getById(@PathVariable Long id) {
-		return lessonService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find lesson by id: %d", id)));
+		return lessonService.findById(id);
 	}
 
 	@PostMapping
@@ -79,8 +76,7 @@ public class LessonRestController {
 			@RequestParam(value = "substituteTeacherId", required = false) List<Long> substituteTeacherIds,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		Teacher teacher = teacherService.findById(teacherId)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", teacherId)));
+		Teacher teacher = teacherService.findById(teacherId);
 		lessonService.replaceTeacherByDateBetween(teacher, startDate, endDate, substituteTeacherIds);
 	}
 }

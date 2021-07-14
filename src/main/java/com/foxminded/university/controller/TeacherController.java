@@ -1,6 +1,5 @@
 package com.foxminded.university.controller;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
@@ -24,7 +23,6 @@ import com.foxminded.university.model.Teacher;
 import com.foxminded.university.service.CourseService;
 import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.TeacherService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Controller
 @RequestMapping("/teachers")
@@ -49,8 +47,7 @@ public class TeacherController {
 
 	@GetMapping("/{id}")
 	public String findById(@PathVariable Long id, Model model) {
-		Teacher teacher = teacherService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
+		Teacher teacher = teacherService.findById(id);
 		model.addAttribute("teacher", teacher);
 		return "teacher/teacher";
 	}
@@ -64,8 +61,7 @@ public class TeacherController {
 
 	@GetMapping("/{id}/edit")
 	public String update(@PathVariable Long id, Model model) {
-		Teacher teacher = teacherService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
+		Teacher teacher = teacherService.findById(id);
 		model.addAttribute("teacher", teacher);
 		model.addAttribute("courses", courseService.getAll());
 		model.addAttribute("genders", Gender.values());
@@ -98,8 +94,7 @@ public class TeacherController {
 	public String getTimetable(Model model, @PathVariable Long id,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		Teacher teacher = teacherService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
+		Teacher teacher = teacherService.findById(id);
 		model.addAttribute("teacher", teacher);
 		model.addAttribute("lessons",
 				lessonService.getByTeacherAndDateBetween(teacher, startDate, endDate));
@@ -110,8 +105,7 @@ public class TeacherController {
 
 	@GetMapping("/{id}/replace")
 	public String replace(Model model, @PathVariable Long id) {
-		Teacher teacher = teacherService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
+		Teacher teacher = teacherService.findById(id);
 		model.addAttribute("teacher", teacher);
 		model.addAttribute("substituteTeachers", teacherService.getSubstituteTeachers(teacher));
 		return "teacher/replace";
@@ -120,9 +114,7 @@ public class TeacherController {
 	private void retrieveRelationsFields(Teacher teacher) {
 		teacher.setCourses(teacher.getCourses()
 				.stream()
-				.map(c -> courseService.findById(c.getId())
-						.orElseThrow(() -> new NotFoundEntityException(
-								format("Cannot find course by id: %d", c.getId()))))
+				.map(c -> courseService.findById(c.getId()))
 				.collect(toSet()));
 	}
 }

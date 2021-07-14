@@ -43,10 +43,10 @@ public class RoomServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightRoom() {
-		Optional<Room> expected = Optional.of(buildRoom());
-		when(roomDao.findById(1L)).thenReturn(expected);
+		Room expected = buildRoom();
+		when(roomDao.findById(1L)).thenReturn(Optional.of(expected));
 
-		Optional<Room> actual = roomService.findById(1L);
+		Room actual = roomService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
@@ -132,14 +132,6 @@ public class RoomServiceTest {
 		roomService.update(room);
 
 		verify(roomDao).save(room);
-	}
-
-	@Test
-	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
-		when(roomDao.existsById(1L)).thenReturn(false);
-
-		Exception exception = assertThrows(NotFoundEntityException.class, () -> roomService.update(buildRoom()));
-		assertEquals("Cannot find room by id: 1", exception.getMessage());
 	}
 
 	@Test

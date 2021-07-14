@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +57,7 @@ public class RoomControllerTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightRoom() throws Exception {
 		Room expected = buildRoom();
-		when(roomService.findById(1L)).thenReturn(Optional.of(expected));
+		when(roomService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/rooms/{id}", 1))
 				.andExpect(status().isOk())
@@ -77,7 +76,7 @@ public class RoomControllerTest {
 	@Test
 	public void whenUpdate_thenAddedRightRoomAttribute() throws Exception {
 		Room expected = buildRoom();
-		when(roomService.findById(1L)).thenReturn(Optional.of(expected));
+		when(roomService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/rooms/{id}/edit", 1))
 				.andExpect(status().isOk())

@@ -35,9 +35,10 @@ public class CourseService {
 	}
 
 	@Transactional
-	public Optional<Course> findById(Long id) {
+	public Course findById(Long id) {
 		log.debug("Finding course by id: {}", id);
-		return courseDao.findById(id);
+		return courseDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find course by id: %d", id)));
 	}
 
 	@Transactional
@@ -54,16 +55,16 @@ public class CourseService {
 
 	@Transactional
 	public void update(Course course) {
-		verifyExistence(course);
-		verify(course);
-		courseDao.save(course);
+		if (findById(course.getId()) != null) {
+			verify(course);
+			courseDao.save(course);
+		}
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		log.debug("Deleting course by id: {}", id);
-		courseDao.delete(courseDao.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find course by id: %d", id))));
+		courseDao.delete(findById(id));
 	}
 
 	private void verify(Course course) {
@@ -74,12 +75,6 @@ public class CourseService {
 		Optional<Course> courseByName = courseDao.findByName(course.getName());
 		if (courseByName.isPresent() && !courseByName.get().getId().equals(course.getId())) {
 			throw new NotUniqueNameException(format("The course with name %s already exists", course.getName()));
-		}
-	}
-
-	private void verifyExistence(Course course) {
-		if (!courseDao.existsById(course.getId())) {
-			throw new NotFoundEntityException(format("Cannot find course by id: %d", course.getId()));
 		}
 	}
 }

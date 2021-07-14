@@ -45,10 +45,10 @@ public class CourseServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightCourse() {
-		Optional<Course> expected = Optional.of(buildCourse());
-		when(courseDao.findById(1L)).thenReturn(expected);
+		Course expected = buildCourse();
+		when(courseDao.findById(1L)).thenReturn(Optional.of(expected));
 
-		Optional<Course> actual = courseService.findById(1L);
+		Course actual = courseService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
@@ -144,14 +144,6 @@ public class CourseServiceTest {
 		Page<Course> actual = courseService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
-		when(courseDao.existsById(1L)).thenReturn(false);
-
-		Exception exception = assertThrows(NotFoundEntityException.class, () -> courseService.update(buildCourse()));
-		assertEquals("Cannot find course by id: 1", exception.getMessage());
 	}
 
 	private Course buildCourse() {

@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +58,7 @@ public class TimeframeControllerTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightTimeframe() throws Exception {
 		Timeframe expected = buildTimeframe();
-		when(timeframeService.findById(1L)).thenReturn(Optional.of(expected));
+		when(timeframeService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/timeframes/{id}", 1))
 				.andExpect(status().isOk())
@@ -79,7 +78,7 @@ public class TimeframeControllerTest {
 	@Test
 	public void whenUpdate_thenAddedRightTimeframeAttribute() throws Exception {
 		Timeframe expected = buildTimeframe();
-		when(timeframeService.findById(1L)).thenReturn(Optional.of(expected));
+		when(timeframeService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/timeframes/{id}/edit", 1))
 				.andExpect(status().isOk())

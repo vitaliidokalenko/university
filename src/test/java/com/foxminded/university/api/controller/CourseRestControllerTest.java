@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Test;
@@ -32,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.service.CourseService;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(CourseRestController.class)
@@ -60,7 +60,7 @@ public class CourseRestControllerTest {
 	@Test
 	public void givenId_whenGetById_thenGetRightCourse() throws Exception {
 		Course expected = buildCourse();
-		when(courseService.findById(1L)).thenReturn(Optional.of(expected));
+		when(courseService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/api/v1/courses/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -71,7 +71,7 @@ public class CourseRestControllerTest {
 
 	@Test
 	public void givenCourseIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
-		when(courseService.findById(1L)).thenReturn(Optional.empty());
+		when(courseService.findById(1L)).thenThrow(new NotFoundEntityException());
 
 		mockMvc.perform(get("/api/v1/courses/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))

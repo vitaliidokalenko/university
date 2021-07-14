@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,7 +58,7 @@ public class GroupControllerTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightGroup() throws Exception {
 		Group expected = buildGroup();
-		when(groupService.findById(1L)).thenReturn(Optional.of(expected));
+		when(groupService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/groups/{id}", 1))
 				.andExpect(status().isOk())
@@ -78,7 +77,7 @@ public class GroupControllerTest {
 	@Test
 	public void whenUpdate_thenAddedRightGroupAttribute() throws Exception {
 		Group expected = buildGroup();
-		when(groupService.findById(1L)).thenReturn(Optional.of(expected));
+		when(groupService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/groups/{id}/edit", 1))
 				.andExpect(status().isOk())

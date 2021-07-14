@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Test;
@@ -40,6 +39,7 @@ import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.TeacherService;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(TeacherRestController.class)
@@ -70,7 +70,7 @@ public class TeacherRestControllerTest {
 	@Test
 	public void givenId_whenGetById_thenGetRightTeacher() throws Exception {
 		Teacher expected = buildTeacher();
-		when(teacherService.findById(1L)).thenReturn(Optional.of(expected));
+		when(teacherService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/api/v1/teachers/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -81,7 +81,7 @@ public class TeacherRestControllerTest {
 
 	@Test
 	public void givenTeacherIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
-		when(teacherService.findById(1L)).thenReturn(Optional.empty());
+		when(teacherService.findById(1L)).thenThrow(new NotFoundEntityException());
 
 		mockMvc.perform(get("/api/v1/teachers/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -132,7 +132,7 @@ public class TeacherRestControllerTest {
 		List<Lesson> expected = List.of(buildLesson());
 		LocalDate startDate = LocalDate.parse("2021-01-21");
 		LocalDate endDate = LocalDate.parse("2021-01-21");
-		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+		when(teacherService.findById(1L)).thenReturn(teacher);
 		when(lessonService.getByTeacherAndDateBetween(teacher, startDate, endDate)).thenReturn(expected);
 
 		mockMvc.perform(
@@ -158,7 +158,7 @@ public class TeacherRestControllerTest {
 				.gender(Gender.MALE)
 				.build();
 		Set<Teacher> substituteTeachers = Set.of(substituteTeacher);
-		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+		when(teacherService.findById(1L)).thenReturn(teacher);
 		when(teacherService.getSubstituteTeachers(teacher)).thenReturn(substituteTeachers);
 
 		mockMvc.perform(

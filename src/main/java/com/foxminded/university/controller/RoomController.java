@@ -1,7 +1,5 @@
 package com.foxminded.university.controller;
 
-import static java.lang.String.format;
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.foxminded.university.model.Room;
 import com.foxminded.university.service.RoomService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Controller
 @RequestMapping("/rooms")
@@ -37,8 +34,7 @@ public class RoomController {
 
 	@GetMapping("/{id}")
 	public String findById(@PathVariable Long id, Model model) {
-		Room room = roomService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find room by id: %d", id)));
+		Room room = roomService.findById(id);
 		model.addAttribute("room", room);
 		return "room/room";
 	}
@@ -50,8 +46,7 @@ public class RoomController {
 
 	@GetMapping("/{id}/edit")
 	public String update(@PathVariable Long id, Model model) {
-		Room room = roomService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find room by id: %d", id)));
+		Room room = roomService.findById(id);
 		model.addAttribute("room", room);
 		return "room/edit";
 	}

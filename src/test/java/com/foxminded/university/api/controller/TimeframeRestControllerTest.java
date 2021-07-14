@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.TimeframeService;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(TimeframeRestController.class)
@@ -59,7 +59,7 @@ public class TimeframeRestControllerTest {
 	@Test
 	public void givenId_whenGetById_thenGetRightTimeframe() throws Exception {
 		Timeframe expected = buildTimeframe();
-		when(timeframeService.findById(1L)).thenReturn(Optional.of(expected));
+		when(timeframeService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/api/v1/timeframes/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -70,7 +70,7 @@ public class TimeframeRestControllerTest {
 
 	@Test
 	public void givenTimeframeIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
-		when(timeframeService.findById(1L)).thenReturn(Optional.empty());
+		when(timeframeService.findById(1L)).thenThrow(new NotFoundEntityException());
 
 		mockMvc.perform(get("/api/v1/timeframes/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))

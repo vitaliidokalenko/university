@@ -1,6 +1,5 @@
 package com.foxminded.university.api.controller;
 
-import static java.lang.String.format;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.foxminded.university.model.Course;
 import com.foxminded.university.service.CourseService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RestController
 @RequestMapping("/api/v1/courses")
@@ -41,8 +39,7 @@ public class CourseRestController {
 
 	@GetMapping("/{id}")
 	public Course getById(@PathVariable Long id) {
-		return courseService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find course by id: %d", id)));
+		return courseService.findById(id);
 	}
 
 	@PostMapping

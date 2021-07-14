@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +62,7 @@ public class CourseControllerTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightCourse() throws Exception {
 		Course expected = buildCourse();
-		when(courseService.findById(1L)).thenReturn(Optional.of(expected));
+		when(courseService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/courses/{id}", 1))
 				.andExpect(status().isOk())
@@ -85,7 +84,7 @@ public class CourseControllerTest {
 	@Test
 	public void whenUpdate_thenAddedRightCourseAttribute() throws Exception {
 		Course expected = buildCourse();
-		when(courseService.findById(1L)).thenReturn(Optional.of(expected));
+		when(courseService.findById(1L)).thenReturn(expected);
 		when(roomService.getAll()).thenReturn(buildRooms());
 
 		mockMvc.perform(get("/courses/{id}/edit", 1))
@@ -101,7 +100,7 @@ public class CourseControllerTest {
 				.name("Art")
 				.rooms(Set.of(Room.builder().id(1L).build()))
 				.build();
-		when(roomService.findById(1L)).thenReturn(Optional.of(Room.builder().id(1L).name("111").capacity(30).build()));
+		when(roomService.findById(1L)).thenReturn(Room.builder().id(1L).name("111").capacity(30).build());
 
 		mockMvc.perform(post("/courses/save").flashAttr("course", course))
 				.andExpect(status().isFound())
@@ -117,7 +116,7 @@ public class CourseControllerTest {
 				.name("Art")
 				.rooms(Set.of(Room.builder().id(1L).build()))
 				.build();
-		when(roomService.findById(1L)).thenReturn(Optional.of(Room.builder().id(1L).name("111").capacity(30).build()));
+		when(roomService.findById(1L)).thenReturn(Room.builder().id(1L).name("111").capacity(30).build());
 
 		mockMvc.perform(post("/courses/save").flashAttr("course", course))
 				.andExpect(status().isFound())

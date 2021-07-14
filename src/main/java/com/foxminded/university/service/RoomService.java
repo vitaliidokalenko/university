@@ -35,9 +35,10 @@ public class RoomService {
 	}
 
 	@Transactional
-	public Optional<Room> findById(Long id) {
+	public Room findById(Long id) {
 		log.debug("Finding room by id: {}", id);
-		return roomDao.findById(id);
+		return roomDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find room by id: %d", id)));
 	}
 
 	@Transactional
@@ -55,7 +56,6 @@ public class RoomService {
 	@Transactional
 	public void update(Room room) {
 		log.debug("Updating room: {}", room);
-		verifyExistence(room);
 		verify(room);
 		roomDao.save(room);
 	}
@@ -63,8 +63,7 @@ public class RoomService {
 	@Transactional
 	public void deleteById(Long id) {
 		log.debug("Deleting room by id: {}", id);
-		roomDao.delete(roomDao.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find room by id: %d", id))));
+		roomDao.delete(findById(id));
 	}
 
 	private void verify(Room room) {
@@ -75,12 +74,6 @@ public class RoomService {
 		Optional<Room> roomByName = roomDao.findByName(room.getName());
 		if (roomByName.isPresent() && !roomByName.get().getId().equals(room.getId())) {
 			throw new NotUniqueNameException(format("The room with name %s already exists", room.getName()));
-		}
-	}
-
-	private void verifyExistence(Room room) {
-		if (!roomDao.existsById(room.getId())) {
-			throw new NotFoundEntityException(format("Cannot find room by id: %d", room.getId()));
 		}
 	}
 }

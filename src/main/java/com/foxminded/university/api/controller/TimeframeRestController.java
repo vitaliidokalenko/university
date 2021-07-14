@@ -1,6 +1,5 @@
 package com.foxminded.university.api.controller;
 
-import static java.lang.String.format;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.TimeframeService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RestController
 @RequestMapping("/api/v1/timeframes")
@@ -41,8 +39,7 @@ public class TimeframeRestController {
 
 	@GetMapping("/{id}")
 	public Timeframe getById(@PathVariable Long id) {
-		return timeframeService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find timeframe by id: %d", id)));
+		return timeframeService.findById(id);
 	}
 
 	@PostMapping

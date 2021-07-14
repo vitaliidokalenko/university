@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.service.GroupService;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(GroupRestController.class)
@@ -59,7 +59,7 @@ public class GroupRestControllerTest {
 	@Test
 	public void givenId_whenGetById_thenGetRightGroup() throws Exception {
 		Group expected = buildGroup();
-		when(groupService.findById(1L)).thenReturn(Optional.of(expected));
+		when(groupService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/api/v1/groups/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -70,7 +70,7 @@ public class GroupRestControllerTest {
 
 	@Test
 	public void givenGroupIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
-		when(groupService.findById(1L)).thenReturn(Optional.empty());
+		when(groupService.findById(1L)).thenThrow(new NotFoundEntityException());
 
 		mockMvc.perform(get("/api/v1/groups/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))

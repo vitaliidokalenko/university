@@ -40,9 +40,10 @@ public class TimeframeService {
 	}
 
 	@Transactional
-	public Optional<Timeframe> findById(Long id) {
+	public Timeframe findById(Long id) {
 		log.debug("Finding timeframe by id: {}", id);
-		return timeframeDao.findById(id);
+		return timeframeDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find timeframe by id: %d", id)));
 	}
 
 	@Transactional
@@ -60,7 +61,6 @@ public class TimeframeService {
 	@Transactional
 	public void update(Timeframe timeframe) {
 		log.debug("Updating timeframe: {}", timeframe);
-		verifyExistence(timeframe);
 		verify(timeframe);
 		timeframeDao.save(timeframe);
 	}
@@ -68,8 +68,7 @@ public class TimeframeService {
 	@Transactional
 	public void deleteById(Long id) {
 		log.debug("Deleting timeframe by id: {}", id);
-		timeframeDao.delete(timeframeDao.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find timeframe by id: %d", id))));
+		timeframeDao.delete(findById(id));
 	}
 
 	private void verify(Timeframe timeframe) {
@@ -91,12 +90,6 @@ public class TimeframeService {
 		if (timeframeBySequence.isPresent() && !timeframeBySequence.get().getId().equals(timeframe.getId())) {
 			throw new NotUniqueSequenceException(
 					format("The timeframe with sequence: %d already exists", timeframe.getSequence()));
-		}
-	}
-
-	private void verifyExistence(Timeframe timeframe) {
-		if (!timeframeDao.existsById(timeframe.getId())) {
-			throw new NotFoundEntityException(format("Cannot find timeframe by id: %d", timeframe.getId()));
 		}
 	}
 }

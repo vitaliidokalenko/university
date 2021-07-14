@@ -204,10 +204,10 @@ public class LessonServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightLesson() {
-		Optional<Lesson> expected = Optional.of(buildLesson());
-		when(lessonDao.findById(1L)).thenReturn(expected);
+		Lesson expected = buildLesson();
+		when(lessonDao.findById(1L)).thenReturn(Optional.of(expected));
 
-		Optional<Lesson> actual = lessonService.findById(1L);
+		Lesson actual = lessonService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
@@ -443,14 +443,6 @@ public class LessonServiceTest {
 		assertEquals(
 				"Substitute teacher was not found for the lesson id: 1, course: Art, date: 2021-01-21, start time: 08:00",
 				exception.getMessage());
-	}
-
-	@Test
-	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
-		when(lessonDao.existsById(1L)).thenReturn(false);
-
-		Exception exception = assertThrows(NotFoundEntityException.class, () -> lessonService.update(buildLesson()));
-		assertEquals("Cannot find lesson by id: 1", exception.getMessage());
 	}
 
 	private Lesson buildLesson() {

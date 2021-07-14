@@ -1,6 +1,5 @@
 package com.foxminded.university.api.controller;
 
-import static java.lang.String.format;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.foxminded.university.model.Group;
 import com.foxminded.university.service.GroupService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RestController
 @RequestMapping("/api/v1/groups")
@@ -41,8 +39,7 @@ public class GroupRestController {
 
 	@GetMapping("/{id}")
 	public Group getById(@PathVariable Long id) {
-		return groupService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find group by id: %d", id)));
+		return groupService.findById(id);
 	}
 
 	@PostMapping

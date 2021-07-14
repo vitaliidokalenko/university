@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Test;
@@ -39,6 +38,7 @@ import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.TeacherService;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(LessonRestController.class)
@@ -69,7 +69,7 @@ public class LessonRestControllerTest {
 	@Test
 	public void givenId_whenGetById_thenGetRightLesson() throws Exception {
 		Lesson expected = buildLesson();
-		when(lessonService.findById(1L)).thenReturn(Optional.of(expected));
+		when(lessonService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/api/v1/lessons/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -80,7 +80,7 @@ public class LessonRestControllerTest {
 
 	@Test
 	public void givenLessonIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
-		when(lessonService.findById(1L)).thenReturn(Optional.empty());
+		when(lessonService.findById(1L)).thenThrow(new NotFoundEntityException());
 
 		mockMvc.perform(get("/api/v1/lessons/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -129,7 +129,7 @@ public class LessonRestControllerTest {
 	public void givenTeacherAndDatesAndSubstituteTeacherId_whenReplaceTeacher_thenTeacherIsReplacing()
 			throws Exception {
 		Teacher teacher = Teacher.builder().id(1L).name("Homer").surname("Simpson").build();
-		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+		when(teacherService.findById(1L)).thenReturn(teacher);
 
 		mockMvc.perform(
 				put("/api/v1/lessons/teacher").param("teacherId", "1")

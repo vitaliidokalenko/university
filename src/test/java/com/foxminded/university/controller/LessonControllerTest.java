@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -81,7 +80,7 @@ public class LessonControllerTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightLesson() throws Exception {
 		Lesson expected = buildLesson();
-		when(lessonService.findById(1L)).thenReturn(Optional.of(expected));
+		when(lessonService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/lessons/{id}", 1))
 				.andExpect(status().isOk())
@@ -111,7 +110,7 @@ public class LessonControllerTest {
 	@Test
 	public void whenUpdate_thenAddedRightLessonAttribute() throws Exception {
 		Lesson expected = buildLesson();
-		when(lessonService.findById(1L)).thenReturn(Optional.of(expected));
+		when(lessonService.findById(1L)).thenReturn(expected);
 		when(groupService.getAll()).thenReturn(buildGroups());
 		when(teacherService.getAll()).thenReturn(buildTeachers());
 		when(courseService.getAll()).thenReturn(buildCourses());
@@ -133,11 +132,11 @@ public class LessonControllerTest {
 	public void givenNewLesson_whenSave_thenLessonIsCreating() throws Exception {
 		Lesson lesson = buildLesson();
 		lesson.setId(null);
-		when(courseService.findById(1L)).thenReturn(Optional.of(buildCourses().get(0)));
-		when(roomService.findById(1L)).thenReturn(Optional.of(buildRooms().get(0)));
-		when(teacherService.findById(1L)).thenReturn(Optional.of(buildTeachers().get(0)));
-		when(timeframeService.findById(1L)).thenReturn(Optional.of(buildTimeframes().get(0)));
-		when(groupService.findById(1L)).thenReturn(Optional.of(buildGroups().get(0)));
+		when(courseService.findById(1L)).thenReturn(buildCourses().get(0));
+		when(roomService.findById(1L)).thenReturn(buildRooms().get(0));
+		when(teacherService.findById(1L)).thenReturn(buildTeachers().get(0));
+		when(timeframeService.findById(1L)).thenReturn(buildTimeframes().get(0));
+		when(groupService.findById(1L)).thenReturn(buildGroups().get(0));
 
 		mockMvc.perform(post("/lessons/save").flashAttr("lesson", lesson))
 				.andExpect(status().isFound())
@@ -149,11 +148,11 @@ public class LessonControllerTest {
 	@Test
 	public void givenLesson_whenSave_thenLessonIsUpdating() throws Exception {
 		Lesson lesson = buildLesson();
-		when(courseService.findById(1L)).thenReturn(Optional.of(buildCourses().get(0)));
-		when(roomService.findById(1L)).thenReturn(Optional.of(buildRooms().get(0)));
-		when(teacherService.findById(1L)).thenReturn(Optional.of(buildTeachers().get(0)));
-		when(timeframeService.findById(1L)).thenReturn(Optional.of(buildTimeframes().get(0)));
-		when(groupService.findById(1L)).thenReturn(Optional.of(buildGroups().get(0)));
+		when(courseService.findById(1L)).thenReturn(buildCourses().get(0));
+		when(roomService.findById(1L)).thenReturn(buildRooms().get(0));
+		when(teacherService.findById(1L)).thenReturn(buildTeachers().get(0));
+		when(timeframeService.findById(1L)).thenReturn(buildTimeframes().get(0));
+		when(groupService.findById(1L)).thenReturn(buildGroups().get(0));
 
 		mockMvc.perform(post("/lessons/save").flashAttr("lesson", lesson))
 				.andExpect(status().isFound())
@@ -187,7 +186,7 @@ public class LessonControllerTest {
 	public void givenTeacherAndDatesAndNotSubstituteTeacherId_whenReplaceTeacher_thenTeacherIsReplacing()
 			throws Exception {
 		Teacher teacher = buildTeachers().get(0);
-		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+		when(teacherService.findById(1L)).thenReturn(teacher);
 
 		mockMvc.perform(
 				post("/lessons/replace/teacher").param("teacherId", "1")
@@ -206,7 +205,7 @@ public class LessonControllerTest {
 	public void givenTeacherAndDatesAndSubstituteTeacherId_whenReplaceTeacher_thenTeacherIsReplacing()
 			throws Exception {
 		Teacher teacher = buildTeachers().get(0);
-		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+		when(teacherService.findById(1L)).thenReturn(teacher);
 
 		mockMvc.perform(
 				post("/lessons/replace/teacher").param("teacherId", "1")

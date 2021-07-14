@@ -1,6 +1,5 @@
 package com.foxminded.university.controller;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
 
 import javax.validation.Valid;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.service.CourseService;
 import com.foxminded.university.service.RoomService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Controller
 @RequestMapping("/courses")
@@ -41,8 +39,7 @@ public class CourseController {
 
 	@GetMapping("/{id}")
 	public String findById(@PathVariable Long id, Model model) {
-		Course course = courseService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find course by id: %d", id)));
+		Course course = courseService.findById(id);
 		model.addAttribute("course", course);
 		return "course/course";
 	}
@@ -55,8 +52,7 @@ public class CourseController {
 
 	@GetMapping("/{id}/edit")
 	public String update(@PathVariable Long id, Model model) {
-		Course course = courseService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find course by id: %d", id)));
+		Course course = courseService.findById(id);
 		model.addAttribute("course", course);
 		model.addAttribute("rooms", roomService.getAll());
 		return "course/edit";
@@ -86,9 +82,7 @@ public class CourseController {
 	private void retrieveRelationsFields(Course course) {
 		course.setRooms(course.getRooms()
 				.stream()
-				.map(r -> roomService.findById(r.getId())
-						.orElseThrow(() -> new NotFoundEntityException(
-								format("Cannot find room by id: %d", r.getId()))))
+				.map(r -> roomService.findById(r.getId()))
 				.collect(toSet()));
 	}
 }

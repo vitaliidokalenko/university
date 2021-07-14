@@ -4,7 +4,6 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -35,9 +34,10 @@ public class TeacherService {
 	}
 
 	@Transactional
-	public Optional<Teacher> findById(Long id) {
+	public Teacher findById(Long id) {
 		log.debug("Finding teacher by id: {}", id);
-		return teacherDao.findById(id);
+		return teacherDao.findById(id)
+				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id)));
 	}
 
 	@Transactional
@@ -55,15 +55,13 @@ public class TeacherService {
 	@Transactional
 	public void update(Teacher teacher) {
 		log.debug("Updating teacher: {}", teacher);
-		verifyExistence(teacher);
 		teacherDao.save(teacher);
 	}
 
 	@Transactional
 	public void deleteById(Long id) {
 		log.debug("Deleting teacher by id: {}", id);
-		teacherDao.delete(teacherDao.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", id))));
+		teacherDao.delete(findById(id));
 	}
 
 	@Transactional
@@ -75,11 +73,5 @@ public class TeacherService {
 				.flatMap(List::stream)
 				.filter(t -> !t.equals(teacher))
 				.collect(toSet());
-	}
-
-	private void verifyExistence(Teacher teacher) {
-		if (!teacherDao.existsById(teacher.getId())) {
-			throw new NotFoundEntityException(format("Cannot find teacher by id: %d", teacher.getId()));
-		}
 	}
 }

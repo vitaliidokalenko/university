@@ -63,10 +63,10 @@ public class TimeframeServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightTimeframe() {
-		Optional<Timeframe> expected = Optional.of(buildTimeframe());
-		when(timeframeDao.findById(1L)).thenReturn(expected);
+		Timeframe expected = buildTimeframe();
+		when(timeframeDao.findById(1L)).thenReturn(Optional.of(expected));
 
-		Optional<Timeframe> actual = timeframeService.findById(1L);
+		Timeframe actual = timeframeService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
@@ -133,15 +133,6 @@ public class TimeframeServiceTest {
 		Page<Timeframe> actual = timeframeService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
-		when(timeframeDao.existsById(1L)).thenReturn(false);
-
-		Exception exception = assertThrows(NotFoundEntityException.class,
-				() -> timeframeService.update(buildTimeframe()));
-		assertEquals("Cannot find timeframe by id: 1", exception.getMessage());
 	}
 
 	private Timeframe buildTimeframe() {

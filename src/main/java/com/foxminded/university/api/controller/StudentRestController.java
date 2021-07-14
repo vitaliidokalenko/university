@@ -1,6 +1,5 @@
 package com.foxminded.university.api.controller;
 
-import static java.lang.String.format;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -29,7 +28,6 @@ import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.StudentService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RestController
 @RequestMapping("/api/v1/students")
@@ -50,8 +48,7 @@ public class StudentRestController {
 
 	@GetMapping("/{id}")
 	public Student getById(@PathVariable Long id) {
-		return studentService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find student by id: %d", id)));
+		return studentService.findById(id);
 	}
 
 	@PostMapping
@@ -77,8 +74,7 @@ public class StudentRestController {
 	public List<Lesson> getTimetable(@PathVariable Long id,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		Student student = studentService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find student by id: %d", id)));
+		Student student = studentService.findById(id);
 		return lessonService.getByGroupAndDateBetween(student.getGroup(), startDate, endDate);
 	}
 }

@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Test;
@@ -41,6 +40,7 @@ import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.StudentService;
+import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(StudentRestController.class)
@@ -71,7 +71,7 @@ public class StudentRestControllerTest {
 	@Test
 	public void givenId_whenGetById_thenGetRightStudent() throws Exception {
 		Student expected = buildStudent();
-		when(studentService.findById(1L)).thenReturn(Optional.of(expected));
+		when(studentService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/api/v1/students/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
@@ -82,8 +82,7 @@ public class StudentRestControllerTest {
 
 	@Test
 	public void givenStudentIsNotPresent_whenGetById_thenStatusIsNotFound() throws Exception {
-		when(studentService.findById(1L)).thenReturn(Optional.empty());
-
+		when(studentService.findById(1L)).thenThrow(new NotFoundEntityException());
 		mockMvc.perform(get("/api/v1/students/{id}", 1)
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
@@ -133,7 +132,7 @@ public class StudentRestControllerTest {
 		List<Lesson> expected = List.of(buildLesson());
 		LocalDate startDate = LocalDate.parse("2021-01-21");
 		LocalDate endDate = LocalDate.parse("2021-01-21");
-		when(studentService.findById(1L)).thenReturn(Optional.of(student));
+		when(studentService.findById(1L)).thenReturn(student);
 		when(lessonService.getByGroupAndDateBetween(student.getGroup(), startDate, endDate)).thenReturn(expected);
 
 		mockMvc.perform(

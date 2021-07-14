@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -77,7 +76,7 @@ public class StudentControllerTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightStudent() throws Exception {
 		Student expected = buildStudent();
-		when(studentService.findById(1L)).thenReturn(Optional.of(expected));
+		when(studentService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/students/{id}", 1))
 				.andExpect(status().isOk())
@@ -102,7 +101,7 @@ public class StudentControllerTest {
 	@Test
 	public void whenUpdate_thenAddedRightStudentAttribute() throws Exception {
 		Student expected = buildStudent();
-		when(studentService.findById(1L)).thenReturn(Optional.of(expected));
+		when(studentService.findById(1L)).thenReturn(expected);
 		when(courseService.getAll()).thenReturn(buildCourses());
 		when(groupService.getAll()).thenReturn(buildGroups());
 
@@ -119,9 +118,9 @@ public class StudentControllerTest {
 	public void givenNewStudent_whenSave_thenStudentIsCreating() throws Exception {
 		Student student = buildStudent();
 		student.setId(null);
-		when(groupService.findById(1L)).thenReturn(Optional.of(Group.builder().id(1L).name("AA-11").build()));
-		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
-		when(courseService.findById(2L)).thenReturn(Optional.of(Course.builder().id(2L).name("Law").build()));
+		when(groupService.findById(1L)).thenReturn(Group.builder().id(1L).name("AA-11").build());
+		when(courseService.findById(1L)).thenReturn(Course.builder().id(1L).name("Art").build());
+		when(courseService.findById(2L)).thenReturn(Course.builder().id(2L).name("Law").build());
 
 		mockMvc.perform(post("/students/save").flashAttr("student", student))
 				.andExpect(status().isFound())
@@ -133,9 +132,9 @@ public class StudentControllerTest {
 	@Test
 	public void givenStudent_whenSave_thenStudentIsUpdating() throws Exception {
 		Student student = buildStudent();
-		when(groupService.findById(1L)).thenReturn(Optional.of(Group.builder().id(1L).name("AA-11").build()));
-		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
-		when(courseService.findById(2L)).thenReturn(Optional.of(Course.builder().id(2L).name("Law").build()));
+		when(groupService.findById(1L)).thenReturn(Group.builder().id(1L).name("AA-11").build());
+		when(courseService.findById(1L)).thenReturn(Course.builder().id(1L).name("Art").build());
+		when(courseService.findById(2L)).thenReturn(Course.builder().id(2L).name("Law").build());
 
 		mockMvc.perform(post("/students/save").flashAttr("student", student))
 				.andExpect(status().isFound())
@@ -171,7 +170,7 @@ public class StudentControllerTest {
 		List<Lesson> expected = List.of(buildLesson());
 		LocalDate startDate = LocalDate.parse("2021-01-21");
 		LocalDate endDate = LocalDate.parse("2021-01-21");
-		when(studentService.findById(1L)).thenReturn(Optional.of(student));
+		when(studentService.findById(1L)).thenReturn(student);
 		when(lessonService.getByGroupAndDateBetween(student.getGroup(), startDate, endDate))
 				.thenReturn(expected);
 
