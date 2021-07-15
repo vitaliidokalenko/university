@@ -58,8 +58,10 @@ public class StudentService {
 	@Transactional
 	public void update(Student student) {
 		log.debug("Updating student: {}", student);
-		verify(student);
-		studentDao.save(student);
+		if (findById(student.getId()) != null) {
+			verify(student);
+			studentDao.save(student);
+		}
 	}
 
 	@Transactional

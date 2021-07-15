@@ -67,8 +67,10 @@ public class LessonService {
 	@Transactional
 	public void update(Lesson lesson) {
 		log.debug("Updating lesson: {}", lesson);
-		verify(lesson);
-		lessonDao.save(lesson);
+		if (findById(lesson.getId()) != null) {
+			verify(lesson);
+			lessonDao.save(lesson);
+		}
 	}
 
 	@Transactional

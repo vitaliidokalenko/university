@@ -61,8 +61,10 @@ public class TimeframeService {
 	@Transactional
 	public void update(Timeframe timeframe) {
 		log.debug("Updating timeframe: {}", timeframe);
-		verify(timeframe);
-		timeframeDao.save(timeframe);
+		if (findById(timeframe.getId()) != null) {
+			verify(timeframe);
+			timeframeDao.save(timeframe);
+		}
 	}
 
 	@Transactional

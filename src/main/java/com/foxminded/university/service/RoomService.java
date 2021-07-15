@@ -56,8 +56,10 @@ public class RoomService {
 	@Transactional
 	public void update(Room room) {
 		log.debug("Updating room: {}", room);
-		verify(room);
-		roomDao.save(room);
+		if (findById(room.getId()) != null) {
+			verify(room);
+			roomDao.save(room);
+		}
 	}
 
 	@Transactional

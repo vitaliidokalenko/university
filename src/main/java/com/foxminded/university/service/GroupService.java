@@ -56,8 +56,10 @@ public class GroupService {
 	@Transactional
 	public void update(Group group) {
 		log.debug("Updating group: {}", group);
-		verify(group);
-		groupDao.save(group);
+		if (findById(group.getId()) != null) {
+			verify(group);
+			groupDao.save(group);
+		}
 	}
 
 	@Transactional

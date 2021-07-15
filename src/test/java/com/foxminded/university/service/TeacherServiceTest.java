@@ -65,7 +65,7 @@ public class TeacherServiceTest {
 	@Test
 	public void givenTeacher_whenUpdate_thenTeacherIsUpdating() {
 		Teacher teacher = buildTeacher();
-		when(teacherDao.existsById(teacher.getId())).thenReturn(true);
+		when(teacherDao.findById(teacher.getId())).thenReturn(Optional.of(teacher));
 
 		teacherService.update(teacher);
 
@@ -112,6 +112,23 @@ public class TeacherServiceTest {
 		Set<Teacher> actual = teacherService.getSubstituteTeachers(teacher);
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenFindById_thenNotFoundEntityExceptionThrown() {
+		when(teacherDao.findById(1L)).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> teacherService.findById(1L));
+		assertEquals("Cannot find teacher by id: 1", exception.getMessage());
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		Teacher teacher = buildTeacher();
+		when(teacherDao.findById(teacher.getId())).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> teacherService.update(teacher));
+		assertEquals("Cannot find teacher by id: 1", exception.getMessage());
 	}
 
 	private Teacher buildTeacher() {

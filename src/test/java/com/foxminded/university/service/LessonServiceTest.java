@@ -215,7 +215,7 @@ public class LessonServiceTest {
 	@Test
 	public void givenLesson_whenUpdate_thenLessonIsUpdating() {
 		Lesson lesson = buildLesson();
-		when(lessonDao.existsById(lesson.getId())).thenReturn(true);
+		when(lessonDao.findById(lesson.getId())).thenReturn(Optional.of(lesson));
 
 		lessonService.update(lesson);
 
@@ -227,8 +227,7 @@ public class LessonServiceTest {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
-		actual.setId(1L);
-		when(lessonDao.existsById(actual.getId())).thenReturn(true);
+		when(lessonDao.findById(actual.getId())).thenReturn(Optional.of(actual));
 		when(lessonDao.getByTeacherAndDateAndTimeframe(actual.getTeacher(), actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
@@ -245,7 +244,7 @@ public class LessonServiceTest {
 	@Test
 	public void givenTeacherIsAvailable_whenUpdate_thenLessonIsUpdating() {
 		Lesson lesson = buildLesson();
-		when(lessonDao.existsById(lesson.getId())).thenReturn(true);
+		when(lessonDao.findById(lesson.getId())).thenReturn(Optional.of(lesson));
 		when(lessonDao.getByTeacherAndDateAndTimeframe(lesson.getTeacher(),
 				lesson.getDate(),
 				lesson.getTimeframe())).thenReturn(Optional.of(lesson));
@@ -260,8 +259,7 @@ public class LessonServiceTest {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
-		actual.setId(1L);
-		when(lessonDao.existsById(actual.getId())).thenReturn(true);
+		when(lessonDao.findById(actual.getId())).thenReturn(Optional.of(actual));
 		when(lessonDao.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
@@ -279,8 +277,7 @@ public class LessonServiceTest {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(1L);
 		Lesson actual = buildLesson();
-		actual.setId(1L);
-		when(lessonDao.existsById(actual.getId())).thenReturn(true);
+		when(lessonDao.findById(actual.getId())).thenReturn(Optional.of(actual));
 		when(lessonDao
 				.getByRoomAndDateAndTimeframe(actual.getRoom(), actual.getDate(), actual.getTimeframe()))
 						.thenReturn(Optional.of(lessonByCriteria));
@@ -295,9 +292,8 @@ public class LessonServiceTest {
 		Lesson lessonByCriteria = buildLesson();
 		lessonByCriteria.setId(2L);
 		Lesson actual = buildLesson();
-		actual.setId(1L);
 		Group group = Group.builder().id(1L).name("AA-11").build();
-		when(lessonDao.existsById(actual.getId())).thenReturn(true);
+		when(lessonDao.findById(actual.getId())).thenReturn(Optional.of(actual));
 		when(lessonDao.getByGroupsAndDateAndTimeframe(group, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
@@ -310,11 +306,9 @@ public class LessonServiceTest {
 	@Test
 	public void givenGroupIsAvailable_whenUpdate_thenLessonIsUpdating() {
 		Lesson lessonByCriteria = buildLesson();
-		lessonByCriteria.setId(1L);
 		Lesson actual = buildLesson();
-		actual.setId(1L);
 		Group group = Group.builder().id(1L).name("AA-11").build();
-		when(lessonDao.existsById(actual.getId())).thenReturn(true);
+		when(lessonDao.findById(actual.getId())).thenReturn(Optional.of(actual));
 		when(lessonDao.getByGroupsAndDateAndTimeframe(group, actual.getDate(), actual.getTimeframe()))
 				.thenReturn(Optional.of(lessonByCriteria));
 
@@ -443,6 +437,23 @@ public class LessonServiceTest {
 		assertEquals(
 				"Substitute teacher was not found for the lesson id: 1, course: Art, date: 2021-01-21, start time: 08:00",
 				exception.getMessage());
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenFindById_thenNotFoundEntityExceptionThrown() {
+		when(lessonDao.findById(1L)).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> lessonService.findById(1L));
+		assertEquals("Cannot find lesson by id: 1", exception.getMessage());
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		Lesson lesson = buildLesson();
+		when(lessonDao.findById(lesson.getId())).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> lessonService.update(lesson));
+		assertEquals("Cannot find lesson by id: 1", exception.getMessage());
 	}
 
 	private Lesson buildLesson() {

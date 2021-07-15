@@ -55,6 +55,7 @@ public class CourseService {
 
 	@Transactional
 	public void update(Course course) {
+		log.debug("Updating course: {}", course);
 		if (findById(course.getId()) != null) {
 			verify(course);
 			courseDao.save(course);

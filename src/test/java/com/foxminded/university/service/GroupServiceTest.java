@@ -64,7 +64,7 @@ public class GroupServiceTest {
 	@Test
 	public void givenGroup_whenUpdate_thenGroupIsUpdating() {
 		Group group = buildGroup();
-		when(groupDao.existsById(group.getId())).thenReturn(true);
+		when(groupDao.findById(group.getId())).thenReturn(Optional.of(group));
 
 		groupService.update(group);
 
@@ -115,7 +115,7 @@ public class GroupServiceTest {
 		Group actual = buildGroup();
 		Group retrieved = buildGroup();
 		retrieved.setId(2L);
-		when(groupDao.existsById(actual.getId())).thenReturn(true);
+		when(groupDao.findById(actual.getId())).thenReturn(Optional.of(actual));
 		when(groupDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
 		Exception exception = assertThrows(NotUniqueNameException.class, () -> groupService.update(actual));
@@ -126,7 +126,7 @@ public class GroupServiceTest {
 	public void givenNameIsUnique_whenUpdate_thenGroupIsUpdating() {
 		Group actual = buildGroup();
 		Group retrieved = buildGroup();
-		when(groupDao.existsById(actual.getId())).thenReturn(true);
+		when(groupDao.findById(actual.getId())).thenReturn(Optional.of(actual));
 		when(groupDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
 		groupService.update(actual);
@@ -142,6 +142,23 @@ public class GroupServiceTest {
 		Page<Group> actual = groupService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenFindById_thenNotFoundEntityExceptionThrown() {
+		when(groupDao.findById(1L)).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> groupService.findById(1L));
+		assertEquals("Cannot find group by id: 1", exception.getMessage());
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		Group group = buildGroup();
+		when(groupDao.findById(group.getId())).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> groupService.update(group));
+		assertEquals("Cannot find group by id: 1", exception.getMessage());
 	}
 
 	private Group buildGroup() {

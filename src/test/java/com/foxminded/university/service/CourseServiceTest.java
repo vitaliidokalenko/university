@@ -66,7 +66,7 @@ public class CourseServiceTest {
 	@Test
 	public void givenCourse_whenUpdate_thenCourseIsUpdating() {
 		Course course = buildCourse();
-		when(courseDao.existsById(course.getId())).thenReturn(true);
+		when(courseDao.findById(course.getId())).thenReturn(Optional.of(course));
 
 		courseService.update(course);
 
@@ -116,7 +116,7 @@ public class CourseServiceTest {
 	public void givenNameIsUnique_whenUpdate_thenCourseIsUpdating() {
 		Course actual = buildCourse();
 		Course retrieved = buildCourse();
-		when(courseDao.existsById(1L)).thenReturn(true);
+		when(courseDao.findById(actual.getId())).thenReturn(Optional.of(actual));
 		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
 		courseService.update(actual);
@@ -129,7 +129,7 @@ public class CourseServiceTest {
 		Course actual = buildCourse();
 		Course retrieved = buildCourse();
 		retrieved.setId(2L);
-		when(courseDao.existsById(actual.getId())).thenReturn(true);
+		when(courseDao.findById(actual.getId())).thenReturn(Optional.of(actual));
 		when(courseDao.findByName(actual.getName())).thenReturn(Optional.of(retrieved));
 
 		Exception exception = assertThrows(NotUniqueNameException.class, () -> courseService.update(actual));
@@ -144,6 +144,23 @@ public class CourseServiceTest {
 		Page<Course> actual = courseService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenFindById_thenNotFoundEntityExceptionThrown() {
+		when(courseDao.findById(1L)).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> courseService.findById(1L));
+		assertEquals("Cannot find course by id: 1", exception.getMessage());
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		Course course = buildCourse();
+		when(courseDao.findById(course.getId())).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> courseService.update(course));
+		assertEquals("Cannot find course by id: 1", exception.getMessage());
 	}
 
 	private Course buildCourse() {

@@ -55,7 +55,9 @@ public class TeacherService {
 	@Transactional
 	public void update(Teacher teacher) {
 		log.debug("Updating teacher: {}", teacher);
-		teacherDao.save(teacher);
+		if (findById(teacher.getId()) != null) {
+			teacherDao.save(teacher);
+		}
 	}
 
 	@Transactional
