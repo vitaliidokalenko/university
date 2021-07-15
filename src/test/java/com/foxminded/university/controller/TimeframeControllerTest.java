@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.TimeframeService;
 
@@ -42,7 +40,6 @@ public class TimeframeControllerTest {
 	@BeforeEach
 	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(timeframeController)
-				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
@@ -61,23 +58,12 @@ public class TimeframeControllerTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightTimeframe() throws Exception {
 		Timeframe expected = buildTimeframe();
-		when(timeframeService.findById(1L)).thenReturn(Optional.of(expected));
+		when(timeframeService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/timeframes/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("timeframe/timeframe"))
 				.andExpect(model().attribute("timeframe", expected));
-	}
-
-	@Test
-	public void givenTimeframeIsNotPresent_whenFindById_thenRequestForwardedErrorView() throws Exception {
-		when(timeframeService.findById(1L)).thenReturn(Optional.empty());
-
-		mockMvc.perform(get("/timeframes/{id}", 1))
-				.andExpect(status().isOk())
-				.andExpect(model().attribute("exception", "NotFoundEntityException"))
-				.andExpect(model().attribute("message", "Cannot find timeframe by id: 1"))
-				.andExpect(forwardedUrl("error"));
 	}
 
 	@Test
@@ -92,7 +78,7 @@ public class TimeframeControllerTest {
 	@Test
 	public void whenUpdate_thenAddedRightTimeframeAttribute() throws Exception {
 		Timeframe expected = buildTimeframe();
-		when(timeframeService.findById(1L)).thenReturn(Optional.of(expected));
+		when(timeframeService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/timeframes/{id}/edit", 1))
 				.andExpect(status().isOk())

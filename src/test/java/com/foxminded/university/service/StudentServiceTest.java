@@ -68,10 +68,10 @@ public class StudentServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightStudent() {
-		Optional<Student> expected = Optional.of(buildStudent());
-		when(studentDao.findById(1L)).thenReturn(expected);
+		Student expected = buildStudent();
+		when(studentDao.findById(1L)).thenReturn(Optional.of(expected));
 
-		Optional<Student> actual = studentService.findById(1L);
+		Student actual = studentService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
@@ -90,6 +90,7 @@ public class StudentServiceTest {
 	public void givenStudent_whenUpdate_thenStudentIsUpdating() {
 		Student student = buildStudent();
 		int maxGroupSize = 2;
+		when(studentDao.findById(student.getId())).thenReturn(Optional.of(student));
 		when(properties.getMaxGroupSize()).thenReturn(maxGroupSize);
 
 		studentService.update(student);
@@ -123,6 +124,23 @@ public class StudentServiceTest {
 		Page<Student> actual = studentService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenFindById_thenNotFoundEntityExceptionThrown() {
+		when(studentDao.findById(1L)).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> studentService.findById(1L));
+		assertEquals("Cannot find student by id: 1", exception.getMessage());
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		Student student = buildStudent();
+		when(studentDao.findById(student.getId())).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> studentService.update(student));
+		assertEquals("Cannot find student by id: 1", exception.getMessage());
 	}
 
 	private Student buildStudent() {

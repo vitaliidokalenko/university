@@ -19,6 +19,7 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.foxminded.university.validator.annotation.NotWeekend;
 
 import lombok.AllArgsConstructor;
@@ -43,14 +44,17 @@ public class Lesson {
 	@JoinTable(name = "lessons_groups",
 			joinColumns = @JoinColumn(name = "lesson_id"),
 			inverseJoinColumns = @JoinColumn(name = "group_id"))
+	@JsonIgnoreProperties("students")
 	private Set<Group> groups = new HashSet<>();
 
 	@NotNull
 	@ManyToOne
+	@JsonIgnoreProperties("courses")
 	private Teacher teacher;
 
 	@NotNull
 	@ManyToOne
+	@JsonIgnoreProperties("rooms")
 	private Course course;
 
 	@NotNull

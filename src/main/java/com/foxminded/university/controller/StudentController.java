@@ -1,6 +1,5 @@
 package com.foxminded.university.controller;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
@@ -25,7 +24,6 @@ import com.foxminded.university.service.CourseService;
 import com.foxminded.university.service.GroupService;
 import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.StudentService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Controller
 @RequestMapping("/students")
@@ -53,8 +51,7 @@ public class StudentController {
 
 	@GetMapping("/{id}")
 	public String findById(@PathVariable Long id, Model model) {
-		Student student = studentService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find student by id: %d", id)));
+		Student student = studentService.findById(id);
 		model.addAttribute("student", student);
 		return "student/student";
 	}
@@ -69,8 +66,7 @@ public class StudentController {
 
 	@GetMapping("/{id}/edit")
 	public String update(@PathVariable Long id, Model model) {
-		Student student = studentService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find student by id: %d", id)));
+		Student student = studentService.findById(id);
 		model.addAttribute("student", student);
 		model.addAttribute("courses", courseService.getAll());
 		model.addAttribute("groups", groupService.getAll());
@@ -105,8 +101,7 @@ public class StudentController {
 	public String getTimetable(Model model, @PathVariable Long id,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		Student student = studentService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find student by id: %d", id)));
+		Student student = studentService.findById(id);
 		model.addAttribute("student", student);
 		model.addAttribute("lessons",
 				lessonService.getByGroupAndDateBetween(student.getGroup(), startDate, endDate));
@@ -116,14 +111,10 @@ public class StudentController {
 	}
 
 	private void retrieveRelationsFields(Student student) {
-		student.setGroup(groupService.findById(student.getGroup().getId())
-				.orElseThrow(() -> new NotFoundEntityException(
-						format("Cannot find group by id: %d", student.getGroup().getId()))));
+		student.setGroup(groupService.findById(student.getGroup().getId()));
 		student.setCourses(student.getCourses()
 				.stream()
-				.map(c -> courseService.findById(c.getId())
-						.orElseThrow(() -> new NotFoundEntityException(
-								format("Cannot find course by id: %d", c.getId()))))
+				.map(c -> courseService.findById(c.getId()))
 				.collect(toSet()));
 	}
 }

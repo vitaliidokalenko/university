@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +25,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.service.CourseService;
@@ -46,7 +44,6 @@ public class CourseControllerTest {
 	@BeforeEach
 	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(courseController)
-				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
@@ -65,23 +62,12 @@ public class CourseControllerTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightCourse() throws Exception {
 		Course expected = buildCourse();
-		when(courseService.findById(1L)).thenReturn(Optional.of(expected));
+		when(courseService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/courses/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("course/course"))
 				.andExpect(model().attribute("course", expected));
-	}
-
-	@Test
-	public void givenCourseIsNotPresent_whenFindById_thenRequestForwardedErrorView() throws Exception {
-		when(courseService.findById(1L)).thenReturn(Optional.empty());
-
-		mockMvc.perform(get("/courses/{id}", 1))
-				.andExpect(status().isOk())
-				.andExpect(model().attribute("exception", "NotFoundEntityException"))
-				.andExpect(model().attribute("message", "Cannot find course by id: 1"))
-				.andExpect(forwardedUrl("error"));
 	}
 
 	@Test
@@ -98,7 +84,7 @@ public class CourseControllerTest {
 	@Test
 	public void whenUpdate_thenAddedRightCourseAttribute() throws Exception {
 		Course expected = buildCourse();
-		when(courseService.findById(1L)).thenReturn(Optional.of(expected));
+		when(courseService.findById(1L)).thenReturn(expected);
 		when(roomService.getAll()).thenReturn(buildRooms());
 
 		mockMvc.perform(get("/courses/{id}/edit", 1))
@@ -114,7 +100,7 @@ public class CourseControllerTest {
 				.name("Art")
 				.rooms(Set.of(Room.builder().id(1L).build()))
 				.build();
-		when(roomService.findById(1L)).thenReturn(Optional.of(Room.builder().id(1L).name("111").capacity(30).build()));
+		when(roomService.findById(1L)).thenReturn(Room.builder().id(1L).name("111").capacity(30).build());
 
 		mockMvc.perform(post("/courses/save").flashAttr("course", course))
 				.andExpect(status().isFound())
@@ -130,7 +116,7 @@ public class CourseControllerTest {
 				.name("Art")
 				.rooms(Set.of(Room.builder().id(1L).build()))
 				.build();
-		when(roomService.findById(1L)).thenReturn(Optional.of(Room.builder().id(1L).name("111").capacity(30).build()));
+		when(roomService.findById(1L)).thenReturn(Room.builder().id(1L).name("111").capacity(30).build());
 
 		mockMvc.perform(post("/courses/save").flashAttr("course", course))
 				.andExpect(status().isFound())

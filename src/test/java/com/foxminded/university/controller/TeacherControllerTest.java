@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +27,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
@@ -56,7 +54,6 @@ public class TeacherControllerTest {
 	@BeforeEach
 	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(teacherController)
-				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
@@ -75,23 +72,12 @@ public class TeacherControllerTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightTeacher() throws Exception {
 		Teacher expected = buildTeacher();
-		when(teacherService.findById(1L)).thenReturn(Optional.of(expected));
+		when(teacherService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/teachers/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("teacher/teacher"))
 				.andExpect(model().attribute("teacher", expected));
-	}
-
-	@Test
-	public void givenTeacherIsNotPresent_whenFindById_thenRequestForwardedErrorView() throws Exception {
-		when(teacherService.findById(1L)).thenReturn(Optional.empty());
-
-		mockMvc.perform(get("/teachers/{id}", 1))
-				.andExpect(status().isOk())
-				.andExpect(model().attribute("exception", "NotFoundEntityException"))
-				.andExpect(model().attribute("message", "Cannot find teacher by id: 1"))
-				.andExpect(forwardedUrl("error"));
 	}
 
 	@Test
@@ -109,7 +95,7 @@ public class TeacherControllerTest {
 	@Test
 	public void whenUpdate_thenAddedRightTeacherAttribute() throws Exception {
 		Teacher expected = buildTeacher();
-		when(teacherService.findById(1L)).thenReturn(Optional.of(expected));
+		when(teacherService.findById(1L)).thenReturn(expected);
 		when(courseService.getAll()).thenReturn(buildCourses());
 
 		mockMvc.perform(get("/teachers/{id}/edit", 1))
@@ -124,8 +110,8 @@ public class TeacherControllerTest {
 	public void givenNewTeacher_whenSave_thenTeacherIsCreating() throws Exception {
 		Teacher teacher = buildTeacher();
 		teacher.setId(null);
-		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
-		when(courseService.findById(2L)).thenReturn(Optional.of(Course.builder().id(2L).name("Law").build()));
+		when(courseService.findById(1L)).thenReturn(Course.builder().id(1L).name("Art").build());
+		when(courseService.findById(2L)).thenReturn(Course.builder().id(2L).name("Law").build());
 
 		mockMvc.perform(post("/teachers/save").flashAttr("teacher", teacher))
 				.andExpect(status().isFound())
@@ -137,8 +123,8 @@ public class TeacherControllerTest {
 	@Test
 	public void givenTeacher_whenSave_thenTeacherIsUpdating() throws Exception {
 		Teacher teacher = buildTeacher();
-		when(courseService.findById(1L)).thenReturn(Optional.of(Course.builder().id(1L).name("Art").build()));
-		when(courseService.findById(2L)).thenReturn(Optional.of(Course.builder().id(2L).name("Law").build()));
+		when(courseService.findById(1L)).thenReturn(Course.builder().id(1L).name("Art").build());
+		when(courseService.findById(2L)).thenReturn(Course.builder().id(2L).name("Law").build());
 
 		mockMvc.perform(post("/teachers/save").flashAttr("teacher", teacher))
 				.andExpect(status().isFound())
@@ -174,7 +160,7 @@ public class TeacherControllerTest {
 		List<Lesson> expected = List.of(buildLesson());
 		LocalDate startDate = LocalDate.parse("2021-01-21");
 		LocalDate endDate = LocalDate.parse("2021-01-21");
-		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+		when(teacherService.findById(1L)).thenReturn(teacher);
 		when(lessonService.getByTeacherAndDateBetween(teacher, startDate, endDate))
 				.thenReturn(expected);
 
@@ -194,7 +180,7 @@ public class TeacherControllerTest {
 		Teacher substituteTeacher = buildTeacher();
 		substituteTeacher.setId(2L);
 		Set<Teacher> substituteTeachers = Set.of(substituteTeacher);
-		when(teacherService.findById(1L)).thenReturn(Optional.of(teacher));
+		when(teacherService.findById(1L)).thenReturn(teacher);
 		when(teacherService.getSubstituteTeachers(teacher)).thenReturn(substituteTeachers);
 
 		mockMvc.perform(get("/teachers/{id}/replace", 1))

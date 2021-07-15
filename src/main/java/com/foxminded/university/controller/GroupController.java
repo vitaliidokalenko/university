@@ -1,7 +1,5 @@
 package com.foxminded.university.controller;
 
-import static java.lang.String.format;
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.foxminded.university.model.Group;
 import com.foxminded.university.service.GroupService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Controller
 @RequestMapping("/groups")
@@ -37,8 +34,7 @@ public class GroupController {
 
 	@GetMapping("/{id}")
 	public String findById(@PathVariable Long id, Model model) {
-		Group group = groupService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find group by id: %d", id)));
+		Group group = groupService.findById(id);
 		model.addAttribute("group", group);
 		return "group/group";
 	}
@@ -50,8 +46,7 @@ public class GroupController {
 
 	@GetMapping("/{id}/edit")
 	public String update(@PathVariable Long id, Model model) {
-		Group group = groupService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find group by id: %d", id)));
+		Group group = groupService.findById(id);
 		model.addAttribute("group", group);
 		return "group/edit";
 	}

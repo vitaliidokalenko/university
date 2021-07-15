@@ -2,7 +2,6 @@ package com.foxminded.university.model;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -25,19 +24,24 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.foxminded.university.validator.annotation.Age;
 import com.foxminded.university.validator.annotation.Phone;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "students")
 @Getter
 @Setter
+@EqualsAndHashCode(of = { "id", "name", "surname", "email" })
+@ToString(of = { "id", "name", "surname" })
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -56,12 +60,14 @@ public class Student {
 	private String surname;
 
 	@ManyToOne
+	@JsonIgnoreProperties("students")
 	private Group group;
 
 	@ManyToMany
 	@JoinTable(name = "students_courses",
 			joinColumns = @JoinColumn(name = "student_id"),
 			inverseJoinColumns = @JoinColumn(name = "course_id"))
+	@JsonIgnoreProperties("rooms")
 	private Set<Course> courses = new HashSet<>();
 
 	@Phone
@@ -83,32 +89,4 @@ public class Student {
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	private Gender gender;
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(email, id, name, surname);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Student other = (Student) obj;
-		return Objects.equals(email, other.email)
-				&& Objects.equals(id, other.id)
-				&& Objects.equals(name, other.name)
-				&& Objects.equals(surname, other.surname);
-	}
-
-	@Override
-	public String toString() {
-		return "Student [id=" + id + ", name=" + name + ", surname=" + surname + "]";
-	}
 }

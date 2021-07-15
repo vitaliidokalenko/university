@@ -1,7 +1,5 @@
 package com.foxminded.university.controller;
 
-import static java.lang.String.format;
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.foxminded.university.model.Timeframe;
 import com.foxminded.university.service.TimeframeService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Controller
 @RequestMapping("/timeframes")
@@ -37,8 +34,7 @@ public class TimeframeController {
 
 	@GetMapping("/{id}")
 	public String findById(@PathVariable Long id, Model model) {
-		Timeframe timeframe = timeframeService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find timeframe by id: %d", id)));
+		Timeframe timeframe = timeframeService.findById(id);
 		model.addAttribute("timeframe", timeframe);
 		return "timeframe/timeframe";
 	}
@@ -50,8 +46,7 @@ public class TimeframeController {
 
 	@GetMapping("/{id}/edit")
 	public String update(@PathVariable Long id, Model model) {
-		Timeframe timeframe = timeframeService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find timeframe by id: %d", id)));
+		Timeframe timeframe = timeframeService.findById(id);
 		model.addAttribute("timeframe", timeframe);
 		return "timeframe/edit";
 	}

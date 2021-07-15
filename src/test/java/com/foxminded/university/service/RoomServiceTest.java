@@ -43,10 +43,10 @@ public class RoomServiceTest {
 
 	@Test
 	public void givenId_whenFindById_thenGetRightRoom() {
-		Optional<Room> expected = Optional.of(buildRoom());
-		when(roomDao.findById(1L)).thenReturn(expected);
+		Room expected = buildRoom();
+		when(roomDao.findById(1L)).thenReturn(Optional.of(expected));
 
-		Optional<Room> actual = roomService.findById(1L);
+		Room actual = roomService.findById(1L);
 
 		assertEquals(expected, actual);
 	}
@@ -64,6 +64,7 @@ public class RoomServiceTest {
 	@Test
 	public void givenRoom_whenUpdate_thenRoomIsUpdating() {
 		Room room = buildRoom();
+		when(roomDao.findById(room.getId())).thenReturn(Optional.of(room));
 
 		roomService.update(room);
 
@@ -114,6 +115,7 @@ public class RoomServiceTest {
 		Room room = buildRoom();
 		Room retrieved = buildRoom();
 		retrieved.setId(2L);
+		when(roomDao.findById(room.getId())).thenReturn(Optional.of(room));
 		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
 
 		Exception exception = assertThrows(NotUniqueNameException.class, () -> roomService.update(room));
@@ -124,6 +126,7 @@ public class RoomServiceTest {
 	public void givenNameIsUnique_whenUpdate_thenRoomIsUpdating() {
 		Room room = buildRoom();
 		Room retrieved = buildRoom();
+		when(roomDao.findById(room.getId())).thenReturn(Optional.of(room));
 		when(roomDao.findByName(room.getName())).thenReturn(Optional.of(retrieved));
 
 		roomService.update(room);
@@ -139,6 +142,23 @@ public class RoomServiceTest {
 		Page<Room> actual = roomService.getAllPage(PageRequest.of(0, 1));
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenFindById_thenNotFoundEntityExceptionThrown() {
+		when(roomDao.findById(1L)).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> roomService.findById(1L));
+		assertEquals("Cannot find room by id: 1", exception.getMessage());
+	}
+
+	@Test
+	public void givenEntityIsNotPresent_whenUpdate_thenNotFoundEntityExceptionThrown() {
+		Room room = buildRoom();
+		when(roomDao.findById(room.getId())).thenReturn(Optional.empty());
+
+		Exception exception = assertThrows(NotFoundEntityException.class, () -> roomService.update(room));
+		assertEquals("Cannot find room by id: 1", exception.getMessage());
 	}
 
 	private Room buildRoom() {

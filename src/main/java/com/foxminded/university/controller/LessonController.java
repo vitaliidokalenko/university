@@ -1,6 +1,5 @@
 package com.foxminded.university.controller;
 
-import static java.lang.String.format;
 import static java.util.stream.Collectors.toSet;
 
 import java.time.LocalDate;
@@ -28,7 +27,6 @@ import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.RoomService;
 import com.foxminded.university.service.TeacherService;
 import com.foxminded.university.service.TimeframeService;
-import com.foxminded.university.service.exception.NotFoundEntityException;
 
 @Controller
 @RequestMapping("/lessons")
@@ -60,8 +58,7 @@ public class LessonController {
 
 	@GetMapping("/{id}")
 	public String findById(@PathVariable Long id, Model model) {
-		Lesson lesson = lessonService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find lesson by id: %d", id)));
+		Lesson lesson = lessonService.findById(id);
 		model.addAttribute("lesson", lesson);
 		return "lesson/lesson";
 	}
@@ -78,8 +75,7 @@ public class LessonController {
 
 	@GetMapping("/{id}/edit")
 	public String update(@PathVariable Long id, Model model) {
-		Lesson lesson = lessonService.findById(id)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find lesson by id: %d", id)));
+		Lesson lesson = lessonService.findById(id);
 		model.addAttribute("lesson", lesson);
 		model.addAttribute("groups", groupService.getAll());
 		model.addAttribute("teachers", teacherService.getAll());
@@ -119,30 +115,19 @@ public class LessonController {
 			@RequestParam(value = "substituteTeacherId", required = false) List<Long> substituteTeacherIds,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-		Teacher teacher = teacherService.findById(teacherId)
-				.orElseThrow(() -> new NotFoundEntityException(format("Cannot find teacher by id: %d", teacherId)));
+		Teacher teacher = teacherService.findById(teacherId);
 		lessonService.replaceTeacherByDateBetween(teacher, startDate, endDate, substituteTeacherIds);
 		return "redirect:/lessons";
 	}
 
 	private void retrieveRelationsFields(Lesson lesson) {
-		lesson.setCourse(courseService.findById(lesson.getCourse().getId())
-				.orElseThrow(() -> new NotFoundEntityException(
-						format("Cannot find course by id: %d", lesson.getCourse().getId()))));
-		lesson.setRoom(roomService.findById(lesson.getRoom().getId())
-				.orElseThrow(() -> new NotFoundEntityException(
-						format("Cannot find room by id: %d", lesson.getRoom().getId()))));
-		lesson.setTeacher(teacherService.findById(lesson.getTeacher().getId())
-				.orElseThrow(() -> new NotFoundEntityException(
-						format("Cannot find teacher by id: %d", lesson.getTeacher().getId()))));
-		lesson.setTimeframe(timeframeService.findById(lesson.getTimeframe().getId())
-				.orElseThrow(() -> new NotFoundEntityException(
-						format("Cannot find timeframe by id: %d", lesson.getCourse().getId()))));
+		lesson.setCourse(courseService.findById(lesson.getCourse().getId()));
+		lesson.setRoom(roomService.findById(lesson.getRoom().getId()));
+		lesson.setTeacher(teacherService.findById(lesson.getTeacher().getId()));
+		lesson.setTimeframe(timeframeService.findById(lesson.getTimeframe().getId()));
 		lesson.setGroups(lesson.getGroups()
 				.stream()
-				.map(g -> groupService.findById(g.getId())
-						.orElseThrow(() -> new NotFoundEntityException(
-								format("Cannot find group by id: %d", g.getId()))))
+				.map(g -> groupService.findById(g.getId()))
 				.collect(toSet()));
 	}
 }

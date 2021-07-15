@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,6 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.foxminded.university.controller.exception.ControllerExceptionHandler;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.service.RoomService;
 
@@ -41,7 +39,6 @@ public class RoomControllerTest {
 	@BeforeEach
 	void setUp() {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(roomController)
-				.setControllerAdvice(new ControllerExceptionHandler())
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 	}
@@ -60,23 +57,12 @@ public class RoomControllerTest {
 	@Test
 	public void givenId_whenFindById_thenGetRightRoom() throws Exception {
 		Room expected = buildRoom();
-		when(roomService.findById(1L)).thenReturn(Optional.of(expected));
+		when(roomService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/rooms/{id}", 1))
 				.andExpect(status().isOk())
 				.andExpect(forwardedUrl("room/room"))
 				.andExpect(model().attribute("room", expected));
-	}
-
-	@Test
-	public void givenRoomIsNotPresent_whenFindById_thenRequestForwardedErrorView() throws Exception {
-		when(roomService.findById(1L)).thenReturn(Optional.empty());
-
-		mockMvc.perform(get("/rooms/{id}", 1))
-				.andExpect(status().isOk())
-				.andExpect(model().attribute("exception", "NotFoundEntityException"))
-				.andExpect(model().attribute("message", "Cannot find room by id: 1"))
-				.andExpect(forwardedUrl("error"));
 	}
 
 	@Test
@@ -90,7 +76,7 @@ public class RoomControllerTest {
 	@Test
 	public void whenUpdate_thenAddedRightRoomAttribute() throws Exception {
 		Room expected = buildRoom();
-		when(roomService.findById(1L)).thenReturn(Optional.of(expected));
+		when(roomService.findById(1L)).thenReturn(expected);
 
 		mockMvc.perform(get("/rooms/{id}/edit", 1))
 				.andExpect(status().isOk())
