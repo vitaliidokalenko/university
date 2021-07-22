@@ -29,6 +29,8 @@ import com.foxminded.university.model.Teacher;
 import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.TeacherService;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping("/api/v1/lessons")
 public class LessonRestController {
@@ -70,6 +72,7 @@ public class LessonRestController {
 		lessonService.deleteById(id);
 	}
 
+	@ApiOperation("Replace teacher by defined substitutes between dates")
 	@ResponseStatus(HttpStatus.OK)
 	@PutMapping("/teacher")
 	public void replaceTeacher(@RequestParam Long teacherId,

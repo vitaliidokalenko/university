@@ -29,6 +29,8 @@ import com.foxminded.university.model.Student;
 import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.StudentService;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping("/api/v1/students")
 public class StudentRestController {
@@ -70,6 +72,7 @@ public class StudentRestController {
 		studentService.deleteById(id);
 	}
 
+	@ApiOperation("Get timetable for the student between dates")
 	@GetMapping("/{id}/timetable")
 	public List<Lesson> getTimetable(@PathVariable Long id,
 			@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
