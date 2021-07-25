@@ -24,12 +24,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.foxminded.university.api.controller.swagger.annotation.ApiPageable;
 import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.TeacherService;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping("/api/v1/lessons")
@@ -43,16 +46,23 @@ public class LessonRestController {
 		this.teacherService = teacherService;
 	}
 
+	@ApiPageable
 	@GetMapping
 	public Page<Lesson> getAll(Pageable pageable) {
 		return lessonService.getAllPage(pageable);
 	}
 
+	@ApiResponses(value = { @ApiResponse(code = 404, message = "Not Found") })
 	@GetMapping("/{id}")
 	public Lesson getById(@PathVariable Long id) {
 		return lessonService.findById(id);
 	}
 
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Created"),
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 422, message = "Unprocessable Entity")
+	})
 	@PostMapping
 	public ResponseEntity<Object> create(@Valid @RequestBody Lesson lesson) {
 		lessonService.create(lesson);
@@ -60,12 +70,18 @@ public class LessonRestController {
 				.build();
 	}
 
+	@ApiResponses(value = {
+			@ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 404, message = "Not Found"),
+			@ApiResponse(code = 422, message = "Unprocessable Entity")
+	})
 	@ResponseStatus(HttpStatus.OK)
 	@PutMapping("/{id}")
 	public void update(@PathVariable Long id, @Valid @RequestBody Lesson lesson) {
 		lessonService.update(lesson);
 	}
 
+	@ApiResponses(value = { @ApiResponse(code = 404, message = "Not Found") })
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
@@ -73,6 +89,7 @@ public class LessonRestController {
 	}
 
 	@ApiOperation("Replace teacher by defined substitutes between dates")
+	@ApiResponses(value = { @ApiResponse(code = 404, message = "Not Found") })
 	@ResponseStatus(HttpStatus.OK)
 	@PutMapping("/teacher")
 	public void replaceTeacher(@RequestParam Long teacherId,
