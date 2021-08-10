@@ -20,7 +20,7 @@ public class TimeframeDaoTest {
 	TimeframeDao timeframeDao;
 
 	@Test
-	public void givenName_whenFindByName_thenGetRightCourse() {
+	public void givenName_whenFindBySequence_thenGetRightTimeframe() {
 		Optional<Timeframe> expected = Optional.of(entityManager.find(Timeframe.class, 1L));
 
 		Optional<Timeframe> actual = timeframeDao.findBySequence(1);
