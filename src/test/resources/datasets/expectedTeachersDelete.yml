@@ -1,0 +1,41 @@
+teachers:
+-  id: 1
+   name: Victor
+   surname: Doncov
+   email: doncov@gmail.com
+   birth_date: '1991-01-01'
+   gender: MALE
+-  id: 2
+   name: Aleksandra
+   surname: Ivanova
+   email: ivanova@ukr.net
+   birth_date: '1992-02-02'
+   gender: FEMALE
+-  id: 3
+   name: Anatoly
+   surname: Sviridov
+   email: sviridov@gmail.com
+   birth_date: '1993-03-03'
+   gender: MALE
+courses:
+-  id: 1
+   name: Law
+   description: null
+-  id: 2
+   name: Biology
+   description: null
+-  id: 3
+   name: Music
+   description: null
+-  id: 4
+   name: Accounting
+   description: null
+teachers_courses:
+-  teacher_id: 1
+   course_id: 1
+-  teacher_id: 1
+   course_id: 2
+-  teacher_id: 2
+   course_id: 2
+-  teacher_id: 2
+   course_id: 3

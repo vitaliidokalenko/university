@@ -23,9 +23,13 @@ import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
+import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @FlywayTestExtension
+@DBRider
 public class LessonRestControllerSystemTest {
 
 	@Autowired
@@ -35,6 +39,7 @@ public class LessonRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("lessons.yml")
 	public void whenGetAll_thenGetRightLessons() {
 		Lesson expected = buildLesson();
 
@@ -57,6 +62,7 @@ public class LessonRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("lessons.yml")
 	public void givenId_whenGetById_thenGetRightLesson() throws Exception {
 		Lesson expected = buildLesson();
 
@@ -73,10 +79,12 @@ public class LessonRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("lessonsRelations.yml")
+	@ExpectedDataSet("expectedLessonsCreate.yml")
 	public void givenNewLesson_whenCreate_thenLessonIsCreated() {
 		Lesson lesson = buildLesson();
 		lesson.setId(null);
-		lesson.setDate(LocalDate.parse("2070-12-15"));
+		lesson.setDate(LocalDate.parse("2070-12-12"));
 
 		webClient.post()
 				.uri("/api/v1/lessons")
@@ -87,11 +95,13 @@ public class LessonRestControllerSystemTest {
 				.expectStatus()
 				.isCreated()
 				.expectHeader()
-				.value("Location", containsString("/api/v1/lessons/5"));
+				.value("Location", containsString("/api/v1/lessons/1"));
 	}
 
 	@Test
 	@FlywayTest
+	@DataSet("lessons.yml")
+	@ExpectedDataSet("expectedLessonsUpdate.yml")
 	public void givenLesson_whenUpdate_thenLessonIsUpdated() {
 		Lesson lesson = buildLesson();
 		lesson.setDate(LocalDate.parse("2070-12-12"));
@@ -108,6 +118,8 @@ public class LessonRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("lessons.yml")
+	@ExpectedDataSet("expectedLessonsDelete.yml")
 	public void givenId_whenDelete_thenLessonIsDeleted() {
 		webClient.delete()
 				.uri("/api/v1/lessons/{id}", 3)
@@ -119,6 +131,8 @@ public class LessonRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("lessons.yml")
+	@ExpectedDataSet("expectedLessonsReplaceTeacher.yml")
 	public void givenTeacherAndDatesAndSubstituteTeacherId_whenReplaceTeacher_thenTeacherIsReplacing() {
 		webClient.put()
 				.uri(uriBuilder -> uriBuilder.path("/api/v1/lessons/teacher")

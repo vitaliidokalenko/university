@@ -1,0 +1,10 @@
+rooms:
+-  id: 1
+   name: A111
+   capacity: 30
+-  id: 2
+   name: B222
+   capacity: 30
+-  id: 3
+   name: C333
+   capacity: 30

@@ -18,9 +18,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foxminded.university.model.Gender;
 import com.foxminded.university.model.Group;
 import com.foxminded.university.model.Student;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
+import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @FlywayTestExtension
+@DBRider
 public class GroupRestControllerSystemTest {
 
 	@Autowired
@@ -30,6 +34,7 @@ public class GroupRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("groups.yml")
 	public void whenGetAll_thenGetRightGroups() {
 		Group expected = buildGroup();
 
@@ -52,6 +57,7 @@ public class GroupRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("groups.yml")
 	public void givenId_whenGetById_thenGetRightGroup() throws Exception {
 		Group expected = buildGroup();
 
@@ -68,9 +74,10 @@ public class GroupRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@ExpectedDataSet("expectedGroupsCreate.yml")
 	public void givenNewGroup_whenCreate_thenGroupIsCreated() {
 		Group group = Group.builder()
-				.name("ee-55")
+				.name("EE-55")
 				.build();
 
 		webClient.post()
@@ -82,13 +89,16 @@ public class GroupRestControllerSystemTest {
 				.expectStatus()
 				.isCreated()
 				.expectHeader()
-				.value("Location", containsString("/api/v1/groups/5"));
+				.value("Location", containsString("/api/v1/groups/1"));
 	}
 
 	@Test
 	@FlywayTest
+	@DataSet("groups.yml")
+	@ExpectedDataSet("expectedGroupsUpdate.yml")
 	public void givenGroup_whenUpdate_thenGroupIsUpdated() {
 		Group group = buildGroup();
+		group.setName("EE-55");
 
 		webClient.put()
 				.uri("/api/v1/groups/{id}", 1)
@@ -102,6 +112,8 @@ public class GroupRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("groups.yml")
+	@ExpectedDataSet("expectedGroupsDelete.yml")
 	public void givenId_whenDelete_thenGroupIsDeleted() {
 		webClient.delete()
 				.uri("/api/v1/groups/{id}", 4)

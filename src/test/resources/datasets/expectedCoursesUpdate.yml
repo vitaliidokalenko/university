@@ -1,0 +1,35 @@
+courses:
+-  id: 1
+   name: Geography
+   description: null
+-  id: 2
+   name: Biology
+   description: null
+-  id: 3
+   name: Music
+   description: null
+-  id: 4
+   name: Accounting
+   description: null
+rooms:
+-  id: 1
+   name: A111
+   capacity: 30
+-  id: 2
+   name: B222
+   capacity: 30
+-  id: 3
+   name: C333
+   capacity: 30
+-  id: 4
+   name: D444
+   capacity: 30
+courses_rooms:
+-  course_id: 1
+   room_id: 1
+-  course_id: 1
+   room_id: 2
+-  course_id: 2
+   room_id: 2
+-  course_id: 2
+   room_id: 3

@@ -1,0 +1,44 @@
+students:
+-  id: 1
+   group_id: 1
+   name: Anna
+   surname: Dvorecka
+   birth_date: '2001-01-01'
+   gender: FEMALE
+-  id: 2
+   group_id: 2
+   name: Sergii
+   surname: Koklush
+   birth_date: '2002-02-02'
+   gender: MALE
+groups:
+-  id: 1
+   name: AA-11
+-  id: 2
+   name: BB-22
+-  id: 3
+   name: CC-33
+-  id: 4
+   name: DD-44
+courses:
+-  id: 1
+   name: Law
+   description: null
+-  id: 2
+   name: Biology
+   description: null
+-  id: 3
+   name: Music
+   description: null
+-  id: 4
+   name: Accounting
+   description: null
+students_courses:
+-  student_id: 1
+   course_id: 1
+-  student_id: 1
+   course_id: 2
+-  student_id: 2
+   course_id: 2
+-  student_id: 2
+   course_id: 3

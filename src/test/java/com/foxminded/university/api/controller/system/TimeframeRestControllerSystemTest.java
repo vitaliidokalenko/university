@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 import java.time.LocalTime;
 
+import org.flywaydb.test.annotation.FlywayTest;
 import org.flywaydb.test.junit5.annotation.FlywayTestExtension;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,13 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foxminded.university.model.Timeframe;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
+import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @FlywayTestExtension
+@DBRider
 public class TimeframeRestControllerSystemTest {
 
 	@Autowired
@@ -25,6 +30,8 @@ public class TimeframeRestControllerSystemTest {
 	private WebTestClient webClient;
 
 	@Test
+	@FlywayTest
+	@DataSet("timeframes.yml")
 	public void whenGetAll_thenGetRightTimeframes() {
 		Timeframe expected = buildTimeframe();
 
@@ -46,6 +53,8 @@ public class TimeframeRestControllerSystemTest {
 	}
 
 	@Test
+	@FlywayTest
+	@DataSet("timeframes.yml")
 	public void givenId_whenGetById_thenGetRightTimeframe() throws Exception {
 		Timeframe expected = buildTimeframe();
 
@@ -61,6 +70,8 @@ public class TimeframeRestControllerSystemTest {
 	}
 
 	@Test
+	@FlywayTest
+	@ExpectedDataSet("expectedTimeframesCreate.yml")
 	public void givenNewTimeframe_whenCreate_thenTimeframeIsCreated() {
 		Timeframe timeframe = Timeframe.builder()
 				.sequence(5)
@@ -77,12 +88,16 @@ public class TimeframeRestControllerSystemTest {
 				.expectStatus()
 				.isCreated()
 				.expectHeader()
-				.value("Location", containsString("/api/v1/timeframes/5"));
+				.value("Location", containsString("/api/v1/timeframes/1"));
 	}
 
 	@Test
+	@FlywayTest
+	@DataSet("timeframes.yml")
+	@ExpectedDataSet("expectedTimeframesUpdate.yml")
 	public void givenTimeframe_whenUpdate_thenTimeframeIsUpdated() {
 		Timeframe timeframe = buildTimeframe();
+		timeframe.setSequence(5);
 
 		webClient.put()
 				.uri("/api/v1/timeframes/{id}", 1)
@@ -95,6 +110,9 @@ public class TimeframeRestControllerSystemTest {
 	}
 
 	@Test
+	@FlywayTest
+	@DataSet("timeframes.yml")
+	@ExpectedDataSet("expectedTimeframesDelete.yml")
 	public void givenId_whenDelete_thenTimeframeIsDeleted() {
 		webClient.delete()
 				.uri("/api/v1/timeframes/{id}", 4)

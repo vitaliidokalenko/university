@@ -16,9 +16,13 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foxminded.university.model.Course;
 import com.foxminded.university.model.Room;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
+import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @FlywayTestExtension
+@DBRider
 public class CourseRestControllerSystemTest {
 
 	@Autowired
@@ -28,6 +32,7 @@ public class CourseRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("courses.yml")
 	public void whenGetAll_thenGetRightCourses() {
 		Course expected = buildCourse();
 
@@ -50,6 +55,7 @@ public class CourseRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("courses.yml")
 	public void givenId_whenGetById_thenGetRightCourse() throws Exception {
 		Course expected = buildCourse();
 
@@ -66,6 +72,8 @@ public class CourseRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("coursesRelations.yml")
+	@ExpectedDataSet("expectedCoursesCreate.yml")
 	public void givenNewCourse_whenCreate_thenCourseIsCreated() {
 		Course course = Course.builder()
 				.name("Geography")
@@ -81,13 +89,16 @@ public class CourseRestControllerSystemTest {
 				.expectStatus()
 				.isCreated()
 				.expectHeader()
-				.value("Location", containsString("/api/v1/courses/5"));
+				.value("Location", containsString("/api/v1/courses/1"));
 	}
 
 	@Test
 	@FlywayTest
+	@DataSet("courses.yml")
+	@ExpectedDataSet("expectedCoursesUpdate.yml")
 	public void givenCourse_whenUpdate_thenCourseIsUpdated() {
 		Course course = buildCourse();
+		course.setName("Geography");
 
 		webClient.put()
 				.uri("/api/v1/courses/{id}", 1)
@@ -101,6 +112,8 @@ public class CourseRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("courses.yml")
+	@ExpectedDataSet("expectedCoursesDelete.yml")
 	public void givenId_whenDelete_thenCourseIsDeleted() {
 		webClient.delete()
 				.uri("/api/v1/courses/{id}", 4)

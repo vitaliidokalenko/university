@@ -13,9 +13,13 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foxminded.university.model.Room;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
+import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @FlywayTestExtension
+@DBRider
 public class RoomRestControllerSystemTest {
 
 	@Autowired
@@ -25,6 +29,7 @@ public class RoomRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("rooms.yml")
 	public void whenGetAll_thenGetRightRooms() {
 		Room expected = buildRoom();
 
@@ -47,6 +52,7 @@ public class RoomRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("rooms.yml")
 	public void givenId_whenGetById_thenGetRightRoom() throws Exception {
 		Room expected = buildRoom();
 
@@ -63,6 +69,7 @@ public class RoomRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@ExpectedDataSet("expectedRoomCreate.yml")
 	public void givenNewRoom_whenCreate_thenRoomIsCreated() {
 		Room room = Room.builder().name("E555").capacity(30).build();
 
@@ -75,13 +82,16 @@ public class RoomRestControllerSystemTest {
 				.expectStatus()
 				.isCreated()
 				.expectHeader()
-				.value("Location", containsString("/api/v1/rooms/5"));
+				.value("Location", containsString("/api/v1/rooms/1"));
 	}
 
 	@Test
 	@FlywayTest
+	@DataSet("rooms.yml")
+	@ExpectedDataSet("expectedRoomsUpdate.yml")
 	public void givenRoom_whenUpdate_thenRoomIsUpdated() {
 		Room room = buildRoom();
+		room.setName("E555");
 
 		webClient.put()
 				.uri("/api/v1/rooms/{id}", 1)
@@ -95,6 +105,8 @@ public class RoomRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("rooms.yml")
+	@ExpectedDataSet("expectedRoomsDelete.yml")
 	public void givenId_whenDelete_thenRoomIsDeleted() {
 		webClient.delete()
 				.uri("/api/v1/rooms/{id}", 4)

@@ -25,9 +25,13 @@ import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Student;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
+import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @FlywayTestExtension
+@DBRider
 public class StudentRestControllerSystemTest {
 
 	@Autowired
@@ -37,6 +41,7 @@ public class StudentRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("students.yml")
 	public void whenGetAll_thenGetRightStudents() {
 		Student expected = buildStudent();
 
@@ -59,6 +64,7 @@ public class StudentRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("students.yml")
 	public void givenId_whenGetById_thenGetRightStudent() throws Exception {
 		Student expected = buildStudent();
 
@@ -75,6 +81,8 @@ public class StudentRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("studentsRelations.yml")
+	@ExpectedDataSet("expectedStudentsCreate.yml")
 	public void givenNewStudent_whenCreate_thenStudentIsCreated() {
 		Student student = buildStudent();
 		student.setId(null);
@@ -88,13 +96,16 @@ public class StudentRestControllerSystemTest {
 				.expectStatus()
 				.isCreated()
 				.expectHeader()
-				.value("Location", containsString("/api/v1/students/4"));
+				.value("Location", containsString("/api/v1/students/1"));
 	}
 
 	@Test
 	@FlywayTest
+	@DataSet("students.yml")
+	@ExpectedDataSet("expectedStudentsUpdate.yml")
 	public void givenStudent_whenUpdate_thenStudentIsUpdated() {
 		Student student = buildStudent();
+		student.setName("Halyna");
 
 		webClient.put()
 				.uri("/api/v1/students/{id}", 1)
@@ -108,6 +119,8 @@ public class StudentRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("students.yml")
+	@ExpectedDataSet("expectedStudentsDelete.yml")
 	public void givenId_whenDelete_thenStudentIsDeleted() {
 		webClient.delete()
 				.uri("/api/v1/students/{id}", 3)
@@ -119,6 +132,7 @@ public class StudentRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("lessons.yml")
 	public void givenDates_whenGetTimetable_thenGetRightLessons() throws Exception {
 		List<Lesson> expected = List.of(buildLesson());
 

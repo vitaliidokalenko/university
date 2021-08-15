@@ -24,9 +24,13 @@ import com.foxminded.university.model.Lesson;
 import com.foxminded.university.model.Room;
 import com.foxminded.university.model.Teacher;
 import com.foxminded.university.model.Timeframe;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.ExpectedDataSet;
+import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @FlywayTestExtension
+@DBRider
 public class TeacherRestControllerSystemTest {
 
 	@Autowired
@@ -36,6 +40,7 @@ public class TeacherRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("teachers.yml")
 	public void whenGetAll_thenGetRightTeachers() throws Exception {
 		Teacher expected = buildTeacher();
 
@@ -58,6 +63,7 @@ public class TeacherRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("teachers.yml")
 	public void givenId_whenGetById_thenGetRightTeacher() throws Exception {
 		Teacher expected = buildTeacher();
 
@@ -74,6 +80,8 @@ public class TeacherRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("teachersRelations.yml")
+	@ExpectedDataSet("expectedTeachersCreate.yml")
 	public void givenNewTeacher_whenCreate_thenTeacherIsCreated() {
 		Teacher teacher = buildTeacher();
 		teacher.setId(null);
@@ -87,13 +95,16 @@ public class TeacherRestControllerSystemTest {
 				.expectStatus()
 				.isCreated()
 				.expectHeader()
-				.value("Location", containsString("/api/v1/teachers/5"));
+				.value("Location", containsString("/api/v1/teachers/1"));
 	}
 
 	@Test
 	@FlywayTest
+	@DataSet("teachers.yml")
+	@ExpectedDataSet("expectedTeachersUpdate.yml")
 	public void givenTeacher_whenUpdate_thenTeacherIsUpdated() {
 		Teacher teacher = buildTeacher();
+		teacher.setName("Vitalii");
 
 		webClient.put()
 				.uri("/api/v1/teachers/{id}", 1)
@@ -107,6 +118,8 @@ public class TeacherRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("teachers.yml")
+	@ExpectedDataSet("expectedTeachersDelete.yml")
 	public void givenId_whenDelete_thenTeacherIsDeleted() {
 		webClient.delete()
 				.uri("/api/v1/teachers/{id}", 4)
@@ -118,6 +131,7 @@ public class TeacherRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("lessons.yml")
 	public void givenDates_whenGetTimetable_thenGetRightLessons() throws Exception {
 		List<Lesson> expected = List.of(buildLesson());
 
@@ -137,6 +151,7 @@ public class TeacherRestControllerSystemTest {
 
 	@Test
 	@FlywayTest
+	@DataSet("teachers.yml")
 	public void givenId_whenGetSubstitutes_thenGetRightSubstitutesTeachers() throws Exception {
 		Teacher substituteTeacher = Teacher.builder()
 				.id(2L)

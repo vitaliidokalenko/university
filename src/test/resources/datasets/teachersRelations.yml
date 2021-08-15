@@ -1,0 +1,13 @@
+courses:
+-  id: 1
+   name: Law
+   description: null
+-  id: 2
+   name: Biology
+   description: null
+-  id: 3
+   name: Music
+   description: null
+-  id: 4
+   name: Accounting
+   description: null
