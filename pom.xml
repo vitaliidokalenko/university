@@ -15,6 +15,7 @@
 		<springfox.version>3.0.0</springfox.version>
 		<testcontainers.version>1.16.0</testcontainers.version>
 		<flyway-test.version>6.4.0</flyway-test.version>
+		<database-rider.version>1.28.0</database-rider.version>
 	</properties>
 	<build>
 		<plugins>
@@ -100,6 +101,12 @@
 			<groupId>org.flywaydb.flyway-test-extensions</groupId>
 			<artifactId>flyway-spring-test</artifactId>
 			<version>${flyway-test.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.database-rider</groupId>
+			<artifactId>rider-junit5</artifactId>
+			<version>${database-rider.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
