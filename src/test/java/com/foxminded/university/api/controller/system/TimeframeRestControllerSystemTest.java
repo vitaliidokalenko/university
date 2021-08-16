@@ -4,8 +4,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 import java.time.LocalTime;
 
-import org.flywaydb.test.annotation.FlywayTest;
-import org.flywaydb.test.junit5.annotation.FlywayTestExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +19,6 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@FlywayTestExtension
 @DBRider
 public class TimeframeRestControllerSystemTest {
 
@@ -29,8 +27,12 @@ public class TimeframeRestControllerSystemTest {
 	@Autowired
 	private WebTestClient webClient;
 
+	@BeforeEach
+	@DataSet(cleanBefore = true)
+	public void setUp() {
+	}
+
 	@Test
-	@FlywayTest
 	@DataSet("timeframes.yml")
 	public void whenGetAll_thenGetRightTimeframes() {
 		Timeframe expected = buildTimeframe();
@@ -53,7 +55,6 @@ public class TimeframeRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("timeframes.yml")
 	public void givenId_whenGetById_thenGetRightTimeframe() throws Exception {
 		Timeframe expected = buildTimeframe();
@@ -70,7 +71,6 @@ public class TimeframeRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@ExpectedDataSet("expectedTimeframesCreate.yml")
 	public void givenNewTimeframe_whenCreate_thenTimeframeIsCreated() {
 		Timeframe timeframe = Timeframe.builder()
@@ -92,7 +92,6 @@ public class TimeframeRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("timeframes.yml")
 	@ExpectedDataSet("expectedTimeframesUpdate.yml")
 	public void givenTimeframe_whenUpdate_thenTimeframeIsUpdated() {
@@ -110,7 +109,6 @@ public class TimeframeRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("timeframes.yml")
 	@ExpectedDataSet("expectedTimeframesDelete.yml")
 	public void givenId_whenDelete_thenTimeframeIsDeleted() {

@@ -6,8 +6,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import java.time.LocalDate;
 import java.util.Set;
 
-import org.flywaydb.test.annotation.FlywayTest;
-import org.flywaydb.test.junit5.annotation.FlywayTestExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +27,6 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@FlywayTestExtension
 @DBRider
 public class LessonRestControllerSystemTest {
 
@@ -37,8 +35,12 @@ public class LessonRestControllerSystemTest {
 	@Autowired
 	private WebTestClient webClient;
 
+	@BeforeEach
+	@DataSet(cleanBefore = true)
+	public void setUp() {
+	}
+
 	@Test
-	@FlywayTest
 	@DataSet("lessons.yml")
 	public void whenGetAll_thenGetRightLessons() {
 		Lesson expected = buildLesson();
@@ -61,7 +63,6 @@ public class LessonRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("lessons.yml")
 	public void givenId_whenGetById_thenGetRightLesson() throws Exception {
 		Lesson expected = buildLesson();
@@ -78,7 +79,6 @@ public class LessonRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("lessonsRelations.yml")
 	@ExpectedDataSet("expectedLessonsCreate.yml")
 	public void givenNewLesson_whenCreate_thenLessonIsCreated() {
@@ -99,7 +99,6 @@ public class LessonRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("lessons.yml")
 	@ExpectedDataSet("expectedLessonsUpdate.yml")
 	public void givenLesson_whenUpdate_thenLessonIsUpdated() {
@@ -117,7 +116,6 @@ public class LessonRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("lessons.yml")
 	@ExpectedDataSet("expectedLessonsDelete.yml")
 	public void givenId_whenDelete_thenLessonIsDeleted() {
@@ -130,7 +128,6 @@ public class LessonRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("lessons.yml")
 	@ExpectedDataSet("expectedLessonsReplaceTeacher.yml")
 	public void givenTeacherAndDatesAndSubstituteTeacherId_whenReplaceTeacher_thenTeacherIsReplacing() {

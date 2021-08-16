@@ -4,8 +4,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 import java.util.Set;
 
-import org.flywaydb.test.annotation.FlywayTest;
-import org.flywaydb.test.junit5.annotation.FlywayTestExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +20,6 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@FlywayTestExtension
 @DBRider
 public class CourseRestControllerSystemTest {
 
@@ -30,8 +28,12 @@ public class CourseRestControllerSystemTest {
 	@Autowired
 	private WebTestClient webClient;
 
+	@BeforeEach
+	@DataSet(cleanBefore = true)
+	public void setUp() {
+	}
+
 	@Test
-	@FlywayTest
 	@DataSet("courses.yml")
 	public void whenGetAll_thenGetRightCourses() {
 		Course expected = buildCourse();
@@ -54,7 +56,6 @@ public class CourseRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("courses.yml")
 	public void givenId_whenGetById_thenGetRightCourse() throws Exception {
 		Course expected = buildCourse();
@@ -71,7 +72,6 @@ public class CourseRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("coursesRelations.yml")
 	@ExpectedDataSet("expectedCoursesCreate.yml")
 	public void givenNewCourse_whenCreate_thenCourseIsCreated() {
@@ -93,7 +93,6 @@ public class CourseRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("courses.yml")
 	@ExpectedDataSet("expectedCoursesUpdate.yml")
 	public void givenCourse_whenUpdate_thenCourseIsUpdated() {
@@ -111,7 +110,6 @@ public class CourseRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("courses.yml")
 	@ExpectedDataSet("expectedCoursesDelete.yml")
 	public void givenId_whenDelete_thenCourseIsDeleted() {

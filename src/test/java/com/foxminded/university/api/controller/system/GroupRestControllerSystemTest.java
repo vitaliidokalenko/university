@@ -5,8 +5,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.flywaydb.test.annotation.FlywayTest;
-import org.flywaydb.test.junit5.annotation.FlywayTestExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +22,6 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@FlywayTestExtension
 @DBRider
 public class GroupRestControllerSystemTest {
 
@@ -32,8 +30,12 @@ public class GroupRestControllerSystemTest {
 	@Autowired
 	private WebTestClient webClient;
 
+	@BeforeEach
+	@DataSet(cleanBefore = true)
+	public void setUp() {
+	}
+
 	@Test
-	@FlywayTest
 	@DataSet("groups.yml")
 	public void whenGetAll_thenGetRightGroups() {
 		Group expected = buildGroup();
@@ -56,7 +58,6 @@ public class GroupRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("groups.yml")
 	public void givenId_whenGetById_thenGetRightGroup() throws Exception {
 		Group expected = buildGroup();
@@ -73,7 +74,6 @@ public class GroupRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@ExpectedDataSet("expectedGroupsCreate.yml")
 	public void givenNewGroup_whenCreate_thenGroupIsCreated() {
 		Group group = Group.builder()
@@ -93,7 +93,6 @@ public class GroupRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("groups.yml")
 	@ExpectedDataSet("expectedGroupsUpdate.yml")
 	public void givenGroup_whenUpdate_thenGroupIsUpdated() {
@@ -111,7 +110,6 @@ public class GroupRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("groups.yml")
 	@ExpectedDataSet("expectedGroupsDelete.yml")
 	public void givenId_whenDelete_thenGroupIsDeleted() {

@@ -7,8 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import org.flywaydb.test.annotation.FlywayTest;
-import org.flywaydb.test.junit5.annotation.FlywayTestExtension;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,7 +29,6 @@ import com.github.database.rider.core.api.dataset.ExpectedDataSet;
 import com.github.database.rider.junit5.api.DBRider;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@FlywayTestExtension
 @DBRider
 public class StudentRestControllerSystemTest {
 
@@ -39,8 +37,12 @@ public class StudentRestControllerSystemTest {
 	@Autowired
 	private WebTestClient webClient;
 
+	@BeforeEach
+	@DataSet(cleanBefore = true)
+	public void setUp() {
+	}
+
 	@Test
-	@FlywayTest
 	@DataSet("students.yml")
 	public void whenGetAll_thenGetRightStudents() {
 		Student expected = buildStudent();
@@ -63,7 +65,6 @@ public class StudentRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("students.yml")
 	public void givenId_whenGetById_thenGetRightStudent() throws Exception {
 		Student expected = buildStudent();
@@ -80,7 +81,6 @@ public class StudentRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("studentsRelations.yml")
 	@ExpectedDataSet("expectedStudentsCreate.yml")
 	public void givenNewStudent_whenCreate_thenStudentIsCreated() {
@@ -100,7 +100,6 @@ public class StudentRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("students.yml")
 	@ExpectedDataSet("expectedStudentsUpdate.yml")
 	public void givenStudent_whenUpdate_thenStudentIsUpdated() {
@@ -118,7 +117,6 @@ public class StudentRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("students.yml")
 	@ExpectedDataSet("expectedStudentsDelete.yml")
 	public void givenId_whenDelete_thenStudentIsDeleted() {
@@ -131,7 +129,6 @@ public class StudentRestControllerSystemTest {
 	}
 
 	@Test
-	@FlywayTest
 	@DataSet("lessons.yml")
 	public void givenDates_whenGetTimetable_thenGetRightLessons() throws Exception {
 		List<Lesson> expected = List.of(buildLesson());
