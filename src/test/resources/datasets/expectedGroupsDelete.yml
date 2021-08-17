@@ -1,0 +1,26 @@
+groups:
+-  id: 1
+   name: AA-11
+-  id: 2
+   name: BB-22
+-  id: 3
+   name: CC-33
+students:
+-  id: 1
+   group_id: 1
+   name: Anna
+   surname: Dvorecka
+   birth_date: '2001-01-01'
+   gender: FEMALE
+-  id: 2
+   group_id: 2
+   name: Sergii
+   surname: Koklush
+   birth_date: '2002-02-02'
+   gender: MALE
+-  id: 3
+   group_id: null
+   name: Vladislav
+   surname: Ostrovski
+   birth_date: '2003-03-03'
+   gender: MALE

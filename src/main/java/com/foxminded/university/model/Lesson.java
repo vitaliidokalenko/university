@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.foxminded.university.validator.annotation.NotWeekend;
 
 import lombok.AllArgsConstructor;
@@ -49,12 +50,10 @@ public class Lesson {
 
 	@NotNull
 	@ManyToOne
-	@JsonIgnoreProperties("courses")
 	private Teacher teacher;
 
 	@NotNull
 	@ManyToOne
-	@JsonIgnoreProperties("rooms")
 	private Course course;
 
 	@NotNull

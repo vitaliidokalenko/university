@@ -17,8 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,7 +40,6 @@ import com.foxminded.university.service.LessonService;
 import com.foxminded.university.service.StudentService;
 import com.foxminded.university.service.exception.NotFoundEntityException;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(StudentRestController.class)
 public class StudentRestControllerTest {
 

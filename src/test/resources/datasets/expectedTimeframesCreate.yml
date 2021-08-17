@@ -1,0 +1,5 @@
+timeframes:
+-  id: 1
+   sequence: 5
+   start_time: '14:40:00'
+   end_time: '16:00:00'
