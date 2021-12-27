@@ -1,0 +1,42 @@
+# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+version: '3'
+
+#Define services
+services:
+
+  #PostgreSQL Database for the application
+  university-postgres:
+    image: "postgres:12"
+    container_name: university-postgres
+    #Volume mounted for database for the storage
+    volumes:
+      - university-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432 # Forward the exposed port 5432 on the container to port 5432 on the host machine
+
+    #Environment variable for DB name, user and password
+    environment:
+      - POSTGRES_DB=university_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345678
+
+  #Back-end Spring Boot Application
+  university-app:
+    #The docker file in scrum-app build the jar and provides the docker image with the following name.
+    build: .
+    container_name: university-app
+
+    #Environment variables for Spring Boot Application.
+    environment:
+      - DB_SERVER=university-postgres
+      - POSTGRES_DB=university_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345678
+    ports:
+      - 8080:8080 # Forward the exposed port 8080 on the container to port 8080 on the host machine
+    links:
+      - university-postgres
+
+#Volumes for DB data
+volumes:
+  university-data:
