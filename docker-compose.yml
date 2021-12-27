@@ -22,7 +22,7 @@ services:
 
   #Back-end Spring Boot Application
   university-app:
-    #The docker file in scrum-app build the jar and provides the docker image with the following name.
+    #The docker file in . build the jar and provides the docker image with the following name.
     build: .
     container_name: university-app
 
